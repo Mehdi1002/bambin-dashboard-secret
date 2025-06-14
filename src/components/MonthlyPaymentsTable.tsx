@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Check, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import MonthlyPaymentRow from "./MonthlyPaymentRow";
 import QuickPaymentModal from "./QuickPaymentModal";
 
 const MONTHS = [
@@ -175,62 +176,19 @@ export default function MonthlyPaymentsTable() {
               <TableRow>
                 <TableCell colSpan={9} className="text-center">Aucun enfant trouvé.</TableCell>
               </TableRow>
-            ) : (children.map(child => {
-              // Trouve le paiement de l’enfant pour ce mois, s’il existe
-              const pay = (payments ?? []).find(p => p.child_id === child.id);
-              if (!pay) {
-                // Peut compléter la génération automatique dans une étape suivante
+            ) : (
+              children.map(child => {
+                const pay = (payments ?? []).find(p => p.child_id === child.id);
                 return (
-                  <TableRow key={child.id}>
-                    <TableCell>{child.nom}</TableCell>
-                    <TableCell>{child.prenom}</TableCell>
-                    <TableCell>{child.section}</TableCell>
-                    <TableCell colSpan={6} className="italic text-muted-foreground">
-                      Paiement non généré
-                    </TableCell>
-                  </TableRow>
+                  <MonthlyPaymentRow
+                    key={pay ? pay.id : child.id}
+                    child={child}
+                    pay={pay}
+                    onEdit={handleOpenModal}
+                  />
                 );
-              }
-              const totalDue = pay.amount_due + pay.registration_fee;
-              const reste = Math.max(totalDue - pay.amount_paid, 0);
-              const isValidated = pay.validated;
-              const statusLabel = isValidated
-                ? { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline" /> }
-                : (pay.amount_paid === 0
-                  ? { label: "Retard", icon: <X className="text-red-500 w-4 h-4 inline" /> }
-                  : (pay.amount_paid < totalDue
-                    ? { label: "Retard", icon: <Clock className="text-yellow-500 w-4 h-4 inline" /> }
-                    : { label: "À valider", icon: <Clock className="text-blue-500 w-4 h-4 inline" /> })
-                );
-
-              return (
-                <TableRow key={pay.id}>
-                  <TableCell>{child.nom}</TableCell>
-                  <TableCell>{child.prenom}</TableCell>
-                  <TableCell>{child.section}</TableCell>
-                  <TableCell>{pay.amount_due}</TableCell>
-                  <TableCell>{pay.registration_fee}</TableCell>
-                  <TableCell>{pay.amount_paid}</TableCell>
-                  <TableCell>{reste}</TableCell>
-                  <TableCell>
-                    <span className="flex items-center gap-1">
-                      {statusLabel.icon}
-                      <span>{statusLabel.label}</span>
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="default"
-                      className="px-2 py-1"
-                      onClick={() => handleOpenModal(pay)}
-                    >
-                      Enregistrer un paiement
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            }))}
+              })
+            )}
           </TableBody>
         </Table>
       </div>
@@ -255,3 +213,6 @@ export default function MonthlyPaymentsTable() {
     </div>
   );
 }
+
+// Export types for reuse in MonthlyPaymentRow
+export type { Payment, Child };
