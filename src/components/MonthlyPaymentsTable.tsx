@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Check, Clock, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useCallback } from "react";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
@@ -99,6 +102,9 @@ export default function MonthlyPaymentsTable() {
   };
 
   // Pour l’utilisateur
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState<number>(0);
+
   if (loadingChildren || loadingPayments) {
     return <div>Chargement...</div>;
   }
@@ -106,7 +112,22 @@ export default function MonthlyPaymentsTable() {
     return <div>Aucun enfant trouvé.</div>;
   }
 
-  // On mappe les paiements à chaque enfant
+  const handleEditClick = useCallback((pay: Payment) => {
+    setEditId(pay.id);
+    setEditValue(pay.amount_paid);
+  }, []);
+
+  const handleEditCancel = () => {
+    setEditId(null);
+  };
+
+  const handleEditSave = (pay: Payment) => {
+    if (editValue !== pay.amount_paid) {
+      mutation.mutate({ id: pay.id, amount_paid: editValue });
+    }
+    setEditId(null);
+  };
+
   return (
     <div>
       <div className="flex gap-4 mb-4 items-end flex-wrap">
@@ -143,7 +164,7 @@ export default function MonthlyPaymentsTable() {
               <TableHead>Payé</TableHead>
               <TableHead>Reste</TableHead>
               <TableHead>Statut</TableHead>
-              <TableHead>Valider</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -164,6 +185,7 @@ export default function MonthlyPaymentsTable() {
                 );
               }
               const reste = pay.amount_due + pay.registration_fee - pay.amount_paid;
+              const isEditing = editId === pay.id;
               return (
                 <TableRow key={pay.id}>
                   <TableCell>{child.nom}</TableCell>
@@ -172,15 +194,47 @@ export default function MonthlyPaymentsTable() {
                   <TableCell>{pay.amount_due}</TableCell>
                   <TableCell>{pay.registration_fee}</TableCell>
                   <TableCell>
-                    <input
-                      type="number"
-                      className="border rounded px-2 py-1 w-24"
-                      value={pay.amount_paid}
-                      onChange={e =>
-                        handlePaidChange(pay.id, Number(e.target.value))}
-                      min={0}
-                      disabled={pay.validated}
-                    />
+                    {isEditing ? (
+                      <div className="flex gap-1 items-center">
+                        <Input
+                          type="number"
+                          className="w-24"
+                          value={editValue}
+                          min={0}
+                          onChange={e => setEditValue(Number(e.target.value))}
+                          disabled={pay.validated}
+                        />
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => handleEditSave(pay)}
+                          disabled={pay.validated}
+                        >
+                          Enregistrer
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={handleEditCancel}
+                        >
+                          Annuler
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 items-center">
+                        <span>{pay.amount_paid}</span>
+                        {!pay.validated &&
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="px-2 py-1"
+                            onClick={() => handleEditClick(pay)}
+                          >
+                            Versement
+                          </Button>
+                        }
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     {reste}
@@ -192,15 +246,15 @@ export default function MonthlyPaymentsTable() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    {/* Affiche le bouton Valider SYSTÉMATIQUEMENT si non validé */}
-                    {!pay.validated && (
-                      <button
+                    {!pay.validated &&
+                      <Button
+                        size="sm"
                         className="bg-green-600 text-white rounded px-3 py-1 text-xs hover:bg-green-700"
                         onClick={() => handleValidate(pay.id)}
                       >
-                        Valider
-                      </button>
-                    )}
+                        Valider le paiement
+                      </Button>
+                    }
                   </TableCell>
                 </TableRow>
               );
@@ -208,9 +262,12 @@ export default function MonthlyPaymentsTable() {
           </TableBody>
         </Table>
       </div>
-      {/* <div className="mt-4 text-xs text-muted-foreground">
-        Double-cliquez sur un montant pour l’éditer, puis cliquez sur “Valider” si tout est ok.
-      </div> */}
+      {/* Aide utilisateur */}
+      <div className="mt-4 text-xs text-muted-foreground">
+        - Cliquez sur <b>Versement</b> pour saisir un montant payé ou corriger un versement.<br />
+        - Utilisez <b>Valider le paiement</b> pour confirmer un paiement complet ou partiel, selon les réalités.<br />
+        - Le reste à payer se met à jour automatiquement.
+      </div>
     </div>
   );
 }
