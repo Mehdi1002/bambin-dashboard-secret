@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +36,8 @@ function paymentStatus(p: Payment) {
   if (p.validated) return { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline" /> };
   if (p.amount_paid === 0) return { label: "Retard", icon: <X className="text-red-500 w-4 h-4 inline" /> };
   if (p.amount_paid < p.amount_due + p.registration_fee) return { label: "Partiel", icon: <Clock className="text-yellow-500 w-4 h-4 inline"/> };
-  return { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline"/> };
+  // Paiement complet mais non validé
+  return { label: "À valider", icon: <Clock className="text-blue-500 w-4 h-4 inline"/> };
 }
 
 export default function MonthlyPaymentsTable() {
@@ -163,6 +163,7 @@ export default function MonthlyPaymentsTable() {
                   </TableRow>
                 );
               }
+              const reste = pay.amount_due + pay.registration_fee - pay.amount_paid;
               return (
                 <TableRow key={pay.id}>
                   <TableCell>{child.nom}</TableCell>
@@ -178,10 +179,11 @@ export default function MonthlyPaymentsTable() {
                       onChange={e =>
                         handlePaidChange(pay.id, Number(e.target.value))}
                       min={0}
+                      disabled={pay.validated}
                     />
                   </TableCell>
                   <TableCell>
-                    {pay.amount_due + pay.registration_fee - pay.amount_paid}
+                    {reste}
                   </TableCell>
                   <TableCell>
                     <span className="flex items-center gap-1">
@@ -190,6 +192,7 @@ export default function MonthlyPaymentsTable() {
                     </span>
                   </TableCell>
                   <TableCell>
+                    {/* Affiche le bouton Valider SYSTÉMATIQUEMENT si non validé */}
                     {!pay.validated && (
                       <button
                         className="bg-green-600 text-white rounded px-3 py-1 text-xs hover:bg-green-700"
