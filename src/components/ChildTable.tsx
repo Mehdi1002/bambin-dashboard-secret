@@ -45,12 +45,10 @@ export default function ChildTable() {
     mutationFn: async (child: any) => {
       const row = {
         ...child,
-        // On s'assure que les clés sont en snake_case !
-        date_naissance: child.date_naissance ?? child.dateNaissance, // on accepte date_naissance (normal) ou dateNaissance (remonté du formulaire)
+        date_naissance: child.date_naissance ?? child.dateNaissance,
         date_inscription: child.date_inscription ?? child.dateInscription,
         tel_pere: child.tel_pere ?? child.telPere,
         tel_mere: child.tel_mere ?? child.telMere,
-        // camelCase à snake_case
         photo: child.photo ?? null,
       };
       // Élimine toutes les variantes camelCase pour éviter la confusion
@@ -58,6 +56,7 @@ export default function ChildTable() {
       delete row.dateInscription;
       delete row.telPere;
       delete row.telMere;
+
       if (row.id) {
         // update
         const { data, error } = await supabase
@@ -68,10 +67,12 @@ export default function ChildTable() {
         if (error) throw error;
         return data?.[0];
       } else {
-        // insert
+        // création : NE PAS inclure la clé `id` (sinon null !)
+        const insertRow = { ...row };
+        delete insertRow.id;
         const { data, error } = await supabase
           .from("children")
-          .insert([row])
+          .insert([insertRow])
           .select();
         if (error) throw error;
         return data?.[0];
@@ -120,9 +121,11 @@ export default function ChildTable() {
   };
 
   const handleSubmit = (c: any) => {
+    // Pour la création, NE PAS passer id !
+    const isUpdate = !!edit?.id;
     mutationUpsert.mutate({
       ...c,
-      id: edit?.id,
+      ...(isUpdate ? { id: edit.id } : {}),
       // Les clés sont déjà en snake_case depuis ChildForm
     });
   };
