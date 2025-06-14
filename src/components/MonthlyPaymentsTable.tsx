@@ -1,12 +1,12 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Check, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCallback } from "react";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
@@ -105,13 +105,6 @@ export default function MonthlyPaymentsTable() {
   const [editId, setEditId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<number>(0);
 
-  if (loadingChildren || loadingPayments) {
-    return <div>Chargement...</div>;
-  }
-  if (!children || children.length === 0) {
-    return <div>Aucun enfant trouvé.</div>;
-  }
-
   const handleEditClick = useCallback((pay: Payment) => {
     setEditId(pay.id);
     setEditValue(pay.amount_paid);
@@ -128,6 +121,7 @@ export default function MonthlyPaymentsTable() {
     setEditId(null);
   };
 
+  // --- Start returning the UI ---
   return (
     <div>
       <div className="flex gap-4 mb-4 items-end flex-wrap">
@@ -168,7 +162,16 @@ export default function MonthlyPaymentsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {children.map(child => {
+            {/* Hook safety: only render table rows if data is loaded */}
+            {loadingChildren || loadingPayments ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center">Chargement...</TableCell>
+              </TableRow>
+            ) : !children || children.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center">Aucun enfant trouvé.</TableCell>
+              </TableRow>
+            ) : (children.map(child => {
               // Trouve le paiement de l’enfant pour ce mois, s’il existe
               const pay = (payments ?? []).find(p => p.child_id === child.id);
               if (!pay) {
@@ -258,7 +261,7 @@ export default function MonthlyPaymentsTable() {
                   </TableCell>
                 </TableRow>
               );
-            })}
+            }))}
           </TableBody>
         </Table>
       </div>
@@ -271,3 +274,6 @@ export default function MonthlyPaymentsTable() {
     </div>
   );
 }
+
+// ... end of file
+
