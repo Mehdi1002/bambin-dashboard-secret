@@ -60,6 +60,56 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount_due: number
+          amount_paid: number
+          child_id: string
+          created_at: string | null
+          id: string
+          month: number
+          registration_fee: number
+          status: string
+          updated_at: string | null
+          validated: boolean
+          year: number
+        }
+        Insert: {
+          amount_due: number
+          amount_paid?: number
+          child_id: string
+          created_at?: string | null
+          id?: string
+          month: number
+          registration_fee?: number
+          status?: string
+          updated_at?: string | null
+          validated?: boolean
+          year: number
+        }
+        Update: {
+          amount_due?: number
+          amount_paid?: number
+          child_id?: string
+          created_at?: string | null
+          id?: string
+          month?: number
+          registration_fee?: number
+          status?: string
+          updated_at?: string | null
+          validated?: boolean
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
