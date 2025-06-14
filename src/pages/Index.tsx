@@ -1,14 +1,15 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+// Page dashboard synthétique
+
+import Layout from "@/components/Layout";
+import StatCards from "@/components/StatCards";
+
+// Les stats sont fictives pour la V1
+export default function Index() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
+      <StatCards />
+    </Layout>
   );
-};
-
-export default Index;
+}
