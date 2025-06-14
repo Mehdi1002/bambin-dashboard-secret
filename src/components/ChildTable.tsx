@@ -9,7 +9,7 @@ type Child = {
   nom: string;
   prenom: string;
   dateNaissance: string;
-  section: "Petite" | "Moyenne" | "Grande";
+  section: "Petite" | "Moyenne" | "Prescolaire";
   dateInscription: string;
   statut: "Actif" | "Inactif";
   photo?: string;
@@ -21,7 +21,7 @@ const initial: Child[] = [
     nom: "BOUCHAKOUR",
     prenom: "Yasmine",
     dateNaissance: "2018-09-13",
-    section: "Grande",
+    section: "Prescolaire",
     dateInscription: "2023-09-01",
     statut: "Actif",
     photo: "",

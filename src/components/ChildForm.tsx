@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 
-const sectionList = ["Petite", "Moyenne", "Grande"] as const;
+const sectionList = ["Petite", "Moyenne", "Prescolaire"] as const;
 const statutList = ["Actif", "Inactif"] as const;
 
 type Props = {
