@@ -11,13 +11,21 @@ type Props = {
 };
 
 export default function ChildForm({ initial, onSubmit, onCancel }: Props) {
+  // Remapper les clés snake_case du backend vers camelCase pour le formulaire
+  const formatInitial = (init: any) => {
+    if (!init) return undefined;
+    return {
+      ...init,
+      dateNaissance: init.date_naissance ?? init.dateNaissance ?? "",
+      dateInscription: init.date_inscription ?? init.dateInscription ?? "",
+      telPere: init.tel_pere ?? init.telPere ?? "",
+      telMere: init.tel_mere ?? init.telMere ?? "",
+    };
+  };
+
   const [form, setForm] = useState(
     initial
-      ? {
-          ...initial,
-          dateNaissance: initial.date_naissance ?? initial.dateNaissance ?? "",
-          dateInscription: initial.date_inscription ?? initial.dateInscription ?? "",
-        }
+      ? formatInitial(initial)
       : {
           nom: "",
           prenom: "",
@@ -57,7 +65,25 @@ export default function ChildForm({ initial, onSubmit, onCancel }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    // Remap les clés camelCase vers snake_case (conforme à la base)
+    const dataToSubmit = {
+      nom: form.nom,
+      prenom: form.prenom,
+      date_naissance: form.dateNaissance,
+      section: form.section,
+      date_inscription: form.dateInscription,
+      statut: form.statut,
+      pere: form.pere,
+      tel_pere: form.telPere,
+      mere: form.mere,
+      tel_mere: form.telMere,
+      allergies: form.allergies,
+      photo: form.photo,
+    };
+    if (initial && initial.id) {
+      dataToSubmit["id"] = initial.id;
+    }
+    onSubmit(dataToSubmit);
   };
 
   return (

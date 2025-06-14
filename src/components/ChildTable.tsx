@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus, Trash } from "lucide-react";
@@ -41,17 +40,24 @@ export default function ChildTable() {
     },
   });
 
-  // Ajout/enregistrement
+  // Ajout/enregistrement : mapping snake_case avant mutation
   const mutationUpsert = useMutation({
     mutationFn: async (child: any) => {
       const row = {
         ...child,
-        date_naissance: child.dateNaissance ?? child.date_naissance,
-        date_inscription: child.dateInscription ?? child.date_inscription,
+        // On s'assure que les clés sont en snake_case !
+        date_naissance: child.date_naissance ?? child.dateNaissance, // on accepte date_naissance (normal) ou dateNaissance (remonté du formulaire)
+        date_inscription: child.date_inscription ?? child.dateInscription,
+        tel_pere: child.tel_pere ?? child.telPere,
+        tel_mere: child.tel_mere ?? child.telMere,
+        // camelCase à snake_case
         photo: child.photo ?? null,
       };
+      // Élimine toutes les variantes camelCase pour éviter la confusion
       delete row.dateNaissance;
       delete row.dateInscription;
+      delete row.telPere;
+      delete row.telMere;
       if (row.id) {
         // update
         const { data, error } = await supabase
@@ -117,8 +123,7 @@ export default function ChildTable() {
     mutationUpsert.mutate({
       ...c,
       id: edit?.id,
-      date_naissance: c.dateNaissance,
-      date_inscription: c.dateInscription,
+      // Les clés sont déjà en snake_case depuis ChildForm
     });
   };
 
