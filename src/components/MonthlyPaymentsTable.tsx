@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Check, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import QuickPaymentModal from "./QuickPaymentModal";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
@@ -93,32 +93,36 @@ export default function MonthlyPaymentsTable() {
     }
   });
 
-  // Édition rapide du montant payé 
-  const handlePaidChange = (id: string, value: number) => {
-    mutation.mutate({ id, amount_paid: value });
-  };
-  const handleValidate = (id: string) => {
-    mutation.mutate({ id, validated: true, status: "validated" });
-  };
-
   // Pour l’utilisateur
-  const [editId, setEditId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState<number>(0);
+  const [modalPayId, setModalPayId] = useState<string | null>(null);
+  const [modal, setModal] = useState<{
+    open: boolean;
+    pay?: Payment | null;
+  }>({ open: false, pay: null });
 
-  const handleEditClick = useCallback((pay: Payment) => {
-    setEditId(pay.id);
-    setEditValue(pay.amount_paid);
-  }, []);
-
-  const handleEditCancel = () => {
-    setEditId(null);
+  // On Open modal, configure initial data
+  const handleOpenModal = (pay: Payment) => {
+    setModal({ open: true, pay });
+    setModalPayId(pay.id);
   };
 
-  const handleEditSave = (pay: Payment) => {
-    if (editValue !== pay.amount_paid) {
-      mutation.mutate({ id: pay.id, amount_paid: editValue });
-    }
-    setEditId(null);
+  const handleCloseModal = () => {
+    setModal({ open: false, pay: null });
+    setModalPayId(null);
+  };
+
+  const handleSavePayment = (amountDue: number, amountPaid: number) => {
+    if (!modal.pay) return;
+    // Valide si paiement total, sinon statut = retard
+    const validated = amountPaid >= amountDue;
+    mutation.mutate({
+      id: modal.pay.id,
+      amount_due: amountDue,
+      amount_paid: amountPaid,
+      validated,
+      status: validated ? "validated" : "pending"
+    });
+    handleCloseModal();
   };
 
   // --- Start returning the UI ---
@@ -187,8 +191,18 @@ export default function MonthlyPaymentsTable() {
                   </TableRow>
                 );
               }
-              const reste = pay.amount_due + pay.registration_fee - pay.amount_paid;
-              const isEditing = editId === pay.id;
+              const totalDue = pay.amount_due + pay.registration_fee;
+              const reste = Math.max(totalDue - pay.amount_paid, 0);
+              const isValidated = pay.validated;
+              const statusLabel = isValidated
+                ? { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline" /> }
+                : (pay.amount_paid === 0
+                  ? { label: "Retard", icon: <X className="text-red-500 w-4 h-4 inline" /> }
+                  : (pay.amount_paid < totalDue
+                    ? { label: "Retard", icon: <Clock className="text-yellow-500 w-4 h-4 inline" /> }
+                    : { label: "À valider", icon: <Clock className="text-blue-500 w-4 h-4 inline" /> })
+                );
+
               return (
                 <TableRow key={pay.id}>
                   <TableCell>{child.nom}</TableCell>
@@ -196,68 +210,23 @@ export default function MonthlyPaymentsTable() {
                   <TableCell>{child.section}</TableCell>
                   <TableCell>{pay.amount_due}</TableCell>
                   <TableCell>{pay.registration_fee}</TableCell>
-                  <TableCell>
-                    {isEditing ? (
-                      <div className="flex gap-1 items-center">
-                        <Input
-                          type="number"
-                          className="w-24"
-                          value={editValue}
-                          min={0}
-                          onChange={e => setEditValue(Number(e.target.value))}
-                          disabled={pay.validated}
-                        />
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleEditSave(pay)}
-                          disabled={pay.validated}
-                        >
-                          Enregistrer
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={handleEditCancel}
-                        >
-                          Annuler
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 items-center">
-                        <span>{pay.amount_paid}</span>
-                        {!pay.validated &&
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="px-2 py-1"
-                            onClick={() => handleEditClick(pay)}
-                          >
-                            Versement
-                          </Button>
-                        }
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {reste}
-                  </TableCell>
+                  <TableCell>{pay.amount_paid}</TableCell>
+                  <TableCell>{reste}</TableCell>
                   <TableCell>
                     <span className="flex items-center gap-1">
-                      {paymentStatus(pay).icon}
-                      <span>{paymentStatus(pay).label}</span>
+                      {statusLabel.icon}
+                      <span>{statusLabel.label}</span>
                     </span>
                   </TableCell>
                   <TableCell>
-                    {!pay.validated &&
-                      <Button
-                        size="sm"
-                        className="bg-green-600 text-white rounded px-3 py-1 text-xs hover:bg-green-700"
-                        onClick={() => handleValidate(pay.id)}
-                      >
-                        Valider le paiement
-                      </Button>
-                    }
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="px-2 py-1"
+                      onClick={() => handleOpenModal(pay)}
+                    >
+                      Enregistrer un paiement
+                    </Button>
                   </TableCell>
                 </TableRow>
               );
@@ -265,15 +234,24 @@ export default function MonthlyPaymentsTable() {
           </TableBody>
         </Table>
       </div>
-      {/* Aide utilisateur */}
+      {/* Modale paiement rapide */}
+      <QuickPaymentModal
+        open={modal.open}
+        onClose={handleCloseModal}
+        onSave={handleSavePayment}
+        initialAmountDue={
+          modal.pay
+            ? (modal.pay.amount_due + modal.pay.registration_fee)
+            : 10000
+        }
+        initialAmountPaid={modal.pay ? modal.pay.amount_paid : 0}
+      />
+      {/* Info utilisateur */}
       <div className="mt-4 text-xs text-muted-foreground">
-        - Cliquez sur <b>Versement</b> pour saisir un montant payé ou corriger un versement.<br />
-        - Utilisez <b>Valider le paiement</b> pour confirmer un paiement complet ou partiel, selon les réalités.<br />
-        - Le reste à payer se met à jour automatiquement.
+        - Cliquez sur <b>Enregistrer un paiement</b> pour saisir ou ajuster un versement.<br />
+        - Le statut et le reste à payer se mettent à jour automatiquement.<br />
+        - Le paiement est considéré "Validé" seulement si la totalité est réglée.
       </div>
     </div>
   );
 }
-
-// ... end of file
-
