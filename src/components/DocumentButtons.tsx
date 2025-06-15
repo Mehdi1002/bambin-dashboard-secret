@@ -1,4 +1,3 @@
-
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
@@ -28,7 +27,7 @@ function toFrenchDate(dateIso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-// Fonction pour générer dynamiquement l’en-tête depuis les infos admin
+// Fonction pour générer dynamiquement l’en-tête depuis les infos admin SANS LE LOGO
 function getAdminHeader() {
   // Par défaut si aucun profil n’est enregistré
   // DOIT correspondre à l’aperçu du module AdminProfileForm
@@ -52,18 +51,13 @@ function getAdminHeader() {
   } catch {
     // default fallback
   }
-  // Compose l’en-tête HTML
+  // Compose l’en-tête HTML (SANS logo)
   return `
-    <div style="display: flex; align-items:center; gap:16px; margin-bottom: 24px;">
-      <div>
-        ${
-          admin.logo
-            ? `<img src="${admin.logo}" alt="Logo" width="64" height="64" style="border-radius: 50%;border:1px solid #ddd;object-fit:cover;"/>`
-            : `<img src="/placeholder.svg" alt="Logo" width="64" height="64" style="border-radius: 50%;border:1px solid #ddd;" />`
-        }
+    <div style="margin-bottom: 24px; text-align: center;">
+      <div style="font-size: 1.13em; line-height:1.5; font-weight:bold;">
+        ${admin.nom}
       </div>
-      <div style="font-size: 1.1em; line-height:1.5;">
-        <b>${admin.nom}</b><br/>
+      <div style="font-size: 1em; color: #222;">
         ${admin.adresse ? admin.adresse + "<br/>" : ""}
         ${
           [admin.telephone, admin.email]
@@ -98,12 +92,12 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
 
   // Certificat de scolarité
   const scolariteHtml = `
-    <div style="width: 480px; font-family: Arial,sans-serif; color:#222; padding:20px;background: #fff;">
+    <div style="width: 480px; font-family: Arial,sans-serif; color:#222; padding:20px; background: #fff;">
       ${header}
-      <h2 style="text-align:center; margin-top:16px;">Certificat de scolarité</h2>
-      <p style="margin:34px 0 44px 0;">
-        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.
-        <br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.
+      <h2 style="text-align:center; margin-top:24px; margin-bottom:24px; font-size:1.25em;">Certificat de scolarité</h2>
+      <p style="margin:34px 0 44px 0; text-align:justify;">
+        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+        Cette attestation est faite pour servir et valoir ce que de droit.
       </p>
       <div style="margin-top:90px; text-align:right;">
         Le Directeur
@@ -115,8 +109,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const inscriptionHtml = `
     <div style="width: 480px; font-family: Arial,sans-serif; color:#222; padding:20px; background: #fff;">
       ${header}
-      <h2 style="text-align:center; margin-top:16px;">Attestation d’inscription</h2>
-      <p style="margin:30px 0 44px 0;">
+      <h2 style="text-align:center; margin-top:24px; margin-bottom:24px; font-size:1.25em;">Attestation d’inscription</h2>
+      <p style="margin:30px 0 44px 0; text-align:justify;">
         Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
         Fait pour servir et valoir ce que de droit.
       </p>
