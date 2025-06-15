@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus, Trash } from "lucide-react";
@@ -21,10 +20,6 @@ type ChildRow = {
   tel_mere: string | null;
   allergies: string | null;
   sexe: string | null;
-  type_doc_pere: string | null;
-  num_doc_pere: string | null;
-  type_doc_mere: string | null;
-  num_doc_mere: string | null;
 };
 
 export default function ChildTable() {
@@ -55,11 +50,7 @@ export default function ChildTable() {
         mere: row.mere ?? "",
         tel_mere: row.tel_mere ?? "",
         allergies: row.allergies ?? "",
-        sexe: row.sexe ?? "",
-        type_doc_pere: row.type_doc_pere ?? "",
-        num_doc_pere: row.num_doc_pere ?? "",
-        type_doc_mere: row.type_doc_mere ?? "",
-        num_doc_mere: row.num_doc_mere ?? ""
+        sexe: row.sexe ?? ""
       })) as ChildRow[];
     },
   });
@@ -185,10 +176,7 @@ export default function ChildTable() {
                   <th className="px-3 py-2 text-left">Sexe</th>
                   <th className="px-3 py-2 text-left">Date naissance</th>
                   <th className="px-3 py-2 text-left">Section</th>
-                  <th className="px-3 py-2 text-left">Type doc Père</th>
-                  <th className="px-3 py-2 text-left">N° doc Père</th>
-                  <th className="px-3 py-2 text-left">Type doc Mère</th>
-                  <th className="px-3 py-2 text-left">N° doc Mère</th>
+                  {/* Suppression des colonnes documents parents */}
                   <th className="px-3 py-2 text-left">Date inscription</th>
                   <th className="px-3 py-2 text-left">Statut</th>
                   <th className="px-3 py-2">Actions</th>
@@ -204,10 +192,7 @@ export default function ChildTable() {
                       <td className="px-3 py-2">{c.sexe ?? ""}</td>
                       <td className="px-3 py-2">{c.date_naissance}</td>
                       <td className="px-3 py-2">{c.section}</td>
-                      <td className="px-3 py-2">{c.type_doc_pere ?? ""}</td>
-                      <td className="px-3 py-2">{c.num_doc_pere ?? ""}</td>
-                      <td className="px-3 py-2">{c.type_doc_mere ?? ""}</td>
-                      <td className="px-3 py-2">{c.num_doc_mere ?? ""}</td>
+                      {/* Suppression des colonnes doc parents */}
                       <td className="px-3 py-2">{c.date_inscription ?? ""}</td>
                       <td className="px-3 py-2">
                         <span
@@ -233,23 +218,20 @@ export default function ChildTable() {
                         >
                           <Trash className="w-4 h-4 inline" /> Supprimer
                         </button>
+                        {/* DocumentButtons conserve juste l'essentiel */}
                         <DocumentButtons child={{
                           nom: c.nom,
                           prenom: c.prenom,
                           section: c.section,
                           sexe: c.sexe,
-                          date_naissance: c.date_naissance,
-                          type_doc_pere: c.type_doc_pere,
-                          num_doc_pere: c.num_doc_pere,
-                          type_doc_mere: c.type_doc_mere,
-                          num_doc_mere: c.num_doc_mere
+                          date_naissance: c.date_naissance
                         }} />
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={12} className="p-5 text-center text-muted-foreground">
+                    <td colSpan={8} className="p-5 text-center text-muted-foreground">
                       Aucun enfant enregistré.
                     </td>
                   </tr>
