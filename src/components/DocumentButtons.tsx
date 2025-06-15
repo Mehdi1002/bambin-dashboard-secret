@@ -194,17 +194,17 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
   const header = headerHtml ?? getAdminHeader();
 
-  // Génère le HTML du titre — parfaitement centré même en aperçu
+  // Génère le HTML du titre — centré
   function makeTitle(label: string) {
     return `
       <div style="
         width:100%;
         text-align:center;
         margin:0 auto 12px auto;
-        font-size:1.38em;
-        font-weight:600;
-        letter-spacing:0.2px;
-        color:#172044;
+        font-size:1.6em;
+        font-weight:700;
+        letter-spacing:1.2px;
+        color:#1852a1;
         font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
       ">
         ${label}
@@ -217,6 +217,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const PADDING = 50;
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
+  // --- MODIFICATION: Ajout du titre centré juste avant le paragraphe ---
   const scolariteHtml = `
     <div style="
       background:#fff;
@@ -230,6 +231,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       padding:0;
     ">
       ${getAdminHeaderFlexCertif()}
+      ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
       <div style="
         margin:32px 0 42px 0;
         font-size:1.08em;
