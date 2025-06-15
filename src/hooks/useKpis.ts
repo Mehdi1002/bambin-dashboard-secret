@@ -1,25 +1,31 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { startOfMonth, subMonths, format } from "date-fns";
+import { subMonths } from "date-fns";
 
+// Retourne [{ section: string, count: number }]
 export function useSectionsCount() {
-  // Nombre d'enfants par section, sous forme : [{ section: string, count: number }]
   return useQuery({
     queryKey: ['kpi', 'section-count'],
     queryFn: async () => {
+      // On récupère toutes les sections
       const { data, error } = await supabase
         .from('children')
-        .select('section, count:section')
-        .group('section');
+        .select('section');
       if (error) throw error;
-      return data ?? [];
+      const counts: Record<string, number> = {};
+      (data ?? []).forEach((row: any) => {
+        if (row.section) {
+          counts[row.section] = (counts[row.section] || 0) + 1;
+        }
+      });
+      // On renvoie au format [{ section, count }]
+      return Object.entries(counts).map(([section, count]) => ({ section, count }));
     }
   });
 }
 
 export function useCurrentMonthPaymentsCount() {
-  // Nombre d'enfants ayant payé pour le mois courant (champ validated=true)
   return useQuery({
     queryKey: ['kpi', 'current-month-payments'],
     queryFn: async () => {
@@ -31,7 +37,6 @@ export function useCurrentMonthPaymentsCount() {
         .eq('month', date.getMonth() + 1)
         .eq('validated', true);
       if (error) throw error;
-      // On veut le nombre d'enfants ayant payé, donc il faut compter les child_id distincts
       const unique = Array.from(new Set((data ?? []).map((p: any) => p.child_id)));
       return unique.length;
     }
@@ -43,7 +48,6 @@ export function useCurrentMonthPaymentsCount() {
  * Retourne : [{ nom, prenom, month, year }]
  */
 export function usePaiementRetardataires({ prevMonth }: { prevMonth: boolean }) {
-  // Le mois à vérifier
   const today = new Date();
   const date = prevMonth
     ? subMonths(today, 1)
@@ -87,4 +91,3 @@ export function usePaiementRetardataires({ prevMonth }: { prevMonth: boolean }) 
     }
   });
 }
-
