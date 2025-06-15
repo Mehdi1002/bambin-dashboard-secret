@@ -120,6 +120,75 @@ function genreInscrit(sexe?: string) {
   return "inscrit";
 }
 
+function getAdminHeaderFlexCertif(date?: string) {
+  const defaultData = {
+    nom: "Crèche et préscolaire L’île des Bambins",
+    sousTitre: "Vente de radiateurs automobile-motoculture-industrie",
+    adresse: "1000 logt IHEDDADEN BEJAIA",
+    telephone: "0553367356 / 034 11 98 27",
+    email: "liledesbambins@gmail.com",
+    cb: "",
+    nif: "196506010063735",
+    article: "06017732933",
+    rc: "06/01-0961315A10",
+    nis: "",
+    logo: ""
+  };
+  let admin = defaultData;
+  try {
+    const stored = localStorage.getItem("admin_profile");
+    if (stored) {
+      admin = { ...defaultData, ...JSON.parse(stored) };
+    }
+  } catch {}
+
+  // Note: on laisse volontairement « CERTIFICAT DE SCOLARITÉ » à droite
+  return `
+    <div style="
+      width:100%;
+      margin-bottom:28px;
+      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;
+      border-bottom:2px solid #d1e3fc;
+      padding-bottom:22px;
+    ">
+      <div style="flex:1;min-width:0;">
+        ${admin.logo
+          ? `<img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:12px;object-fit:cover;border:2px solid #1852a1;background:#f5f8ff;margin-bottom:9px;margin-right:8px;vertical-align:middle;display:block;" />`
+          : ""}
+        <div style="font-size:1.3em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
+          ${admin.nom}
+        </div>
+        <div style="font-style:italic;color:#2e4a70;font-size:1em;line-height:1.4;margin-bottom:10px;">
+          ${admin.sousTitre || "Crèche et préscolaire"}
+        </div>
+        <div style="font-size:1em;line-height:1.7;margin-bottom:0px;">
+          <div style="margin-bottom:3px;"><b>Adresse :</b> ${admin.adresse || ""}</div>
+          <div style="margin-bottom:3px;"><b>Tél :</b> ${admin.telephone || ""}</div>
+          <div style="margin-bottom:3px;"><b>Email :</b> ${admin.email || ""}</div>
+          ${admin.cb ? `<div style="margin-bottom:3px;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
+        </div>
+        <div style="margin-top:10px;font-size:0.98em;color:#1852a1;">
+          ${admin.nif ? `<div><b>NIF :</b> ${admin.nif}</div>` : ""}
+          ${admin.article ? `<div><b>N° Article :</b> ${admin.article}</div>` : ""}
+          ${admin.rc ? `<div><b>RC :</b> ${admin.rc}</div>` : ""}
+          ${admin.nis ? `<div><b>NIS :</b> ${admin.nis}</div>` : ""}
+        </div>
+      </div>
+      <div style="flex-shrink:0;text-align:right;padding-left:28px;min-width:235px;">
+        <div style="font-size:2em;font-weight:800;letter-spacing:1.2px;color:#1852a1;line-height:1.2;margin-bottom:14px;margin-top:6px;">
+          CERTIFICAT<br/>DE SCOLARITÉ
+        </div>
+        <div style="background:#dbeafe;padding:7px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.13em;font-weight:500;color:#1059b0;margin-bottom:4px;">
+          Date : <span style="font-weight:700;">${date ?? getTodayFR()}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Props) {
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
@@ -162,40 +231,23 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       box-sizing:border-box;
       padding:0;
     ">
+      ${getAdminHeaderFlexCertif()}
       <div style="
-        width:${PAGE_WIDTH}pt;
-        display:flex;
-        justify-content:flex-end;
-        align-items:flex-start;
-        margin:0;
-        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
-        font-size:1em;
-        color:#172044;
-        font-weight:500;
+        margin:32px 0 42px 0;
+        font-size:1.08em;
+        line-height:1.72;
+        text-align:justify;
+        padding:0 50pt;
+        width:495pt;
         box-sizing:border-box;
       ">
-        <span style="padding:0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
+        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
+        <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
+        <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+        Cette attestation est faite pour servir et valoir ce que de droit.
       </div>
-      <div style="padding:0 ${PADDING}pt;">
-        ${header}
-        ${makeTitle("Certificat de scolarité")}
-        <div style="
-          margin:32px 0 42px 0;
-          font-size:1.08em;
-          line-height:1.72;
-          text-align:justify;
-          padding:0;
-          width:${innerWidth}pt;
-          box-sizing:border-box;
-        ">
-          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
-          <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
-          <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
-          Cette attestation est faite pour servir et valoir ce que de droit.
-        </div>
-        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
-          Le Directeur
-        </div>
+      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:495pt;">
+        Le Directeur
       </div>
     </div>
   `;
