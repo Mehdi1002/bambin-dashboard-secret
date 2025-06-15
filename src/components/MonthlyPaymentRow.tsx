@@ -1,3 +1,4 @@
+
 import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -71,14 +72,25 @@ export default function MonthlyPaymentRow({
         >
           Enregistrer un paiement
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          className="px-2 py-1"
-          onClick={onInvoice}
-        >
-          Facture
-        </Button>
+        {pay && pay.validated ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="px-2 py-1"
+            onClick={onInvoice}
+          >
+            Facture
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="px-2 py-1"
+            disabled
+          >
+            Facture
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   );
