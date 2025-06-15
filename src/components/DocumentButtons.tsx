@@ -74,31 +74,31 @@ function getAdminHeader() {
           <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
             ${admin.sousTitre || ""}
           </div>
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>Adresse :</b> ${admin.adresse || ""}
           </div>
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>Tél :</b> ${admin.telephone || ""}
           </div>
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>Email :</b> ${admin.email || ""}
           </div>
           ${admin.cb ? `
-            <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+            <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
               <b>C.B BNA :</b> ${admin.cb}
             </div>
           ` : ""}
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>NIF :</b> ${admin.nif || ""}
           </div>
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>N° Article :</b> ${admin.article || ""}
           </div>
-          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
             <b>RC :</b> ${admin.rc || ""}
           </div>
           ${admin.nis ? `
-            <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
+            <div style="margin-bottom:2.5px;color:#222;font-size:1em;line-height:1.56;">
               <b>NIS :</b> ${admin.nis}
             </div>
           ` : ""}
@@ -148,20 +148,20 @@ function getAdminHeaderFlexCertif(date?: string) {
         <div style="font-size:1.3em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
           L’île des Bambins
         </div>
-        <div style="font-style:italic;color:#2e4a70;font-size:1em;line-height:1.4;margin-bottom:10px;">
+        <div style="font-style:italic;color:#2e4a70;font-size:1em;line-height:1.4;margin-bottom:7px;">
           ${admin.sousTitre || ""}
         </div>
         <div style="font-size:1em;line-height:1.7;margin-bottom:0px;">
-          <div style="margin-bottom:3px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
-          <div style="margin-bottom:3px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
-          <div style="margin-bottom:3px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
-          ${admin.cb ? `<div style="margin-bottom:3px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
+          <div style="margin-bottom:2.5px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
+          <div style="margin-bottom:2.5px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
+          <div style="margin-bottom:2.5px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
+          ${admin.cb ? `<div style="margin-bottom:2.5px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
         </div>
-        <div style="margin-top:10px;font-size:0.98em;">
-          ${admin.nif ? `<div style="color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
-          ${admin.article ? `<div style="color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
-          ${admin.rc ? `<div style="color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
-          ${admin.nis ? `<div style="color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
+        <div style="margin-top:7px;font-size:0.98em;">
+          ${admin.nif ? `<div style="margin-bottom:2.5px;color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
+          ${admin.article ? `<div style="margin-bottom:2.5px;color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
+          ${admin.rc ? `<div style="margin-bottom:2.5px;color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
+          ${admin.nis ? `<div style="margin-bottom:2.5px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
         </div>
       </div>
       <div style="flex-shrink:0;text-align:right;padding-left:28px;min-width:235px;">
