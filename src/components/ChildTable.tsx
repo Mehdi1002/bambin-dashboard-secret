@@ -5,6 +5,7 @@ import avatar from "/placeholder.svg";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import DocumentButtons from "./DocumentButtons";
 
 type ChildRow = {
   id: string;
@@ -169,7 +170,7 @@ export default function ChildTable() {
                   <th className="px-3 py-2 text-left">Section</th>
                   <th className="px-3 py-2 text-left">Date inscription</th>
                   <th className="px-3 py-2 text-left">Statut</th>
-                  <th className="px-3 py-2"></th>
+                  <th className="px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,7 +208,7 @@ export default function ChildTable() {
                           {c.statut}
                         </span>
                       </td>
-                      <td className="px-3 py-2 flex gap-2">
+                      <td className="px-3 py-2 flex gap-2 flex-wrap">
                         <button
                           className="text-primary hover:underline text-xs"
                           onClick={() => handleEdit(c)}
@@ -220,6 +221,13 @@ export default function ChildTable() {
                         >
                           <Trash className="w-4 h-4 inline" /> Supprimer
                         </button>
+                        {/* Boutons document ici */}
+                        <DocumentButtons child={{
+                          nom: c.nom,
+                          prenom: c.prenom,
+                          section: c.section,
+                          date_naissance: c.date_naissance,
+                        }} />
                       </td>
                     </tr>
                   ))
