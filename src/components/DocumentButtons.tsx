@@ -213,7 +213,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
           <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est ${genreInscrit(child.sexe)} au sein de l’établissement pour l’année scolaire
-          <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
+          <b>${annee}</b>, en <b>${child.section} section.</b><br/><br/> <!-- Ajout de "section" ici -->
           Fait pour servir et valoir ce que de droit.
         </div>
         <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
