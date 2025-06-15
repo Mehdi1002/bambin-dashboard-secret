@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -133,6 +134,23 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <DialogTitle>Facture du mois de {moisEtAnnee}</DialogTitle>
         </DialogHeader>
         <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl mx-auto text-sm">
+          {/* Numéro de facture en haut à droite */}
+          <div style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "flex-end",
+            marginBottom: "4px"
+          }}>
+            <div style={{
+              fontWeight: 700,
+              fontSize: "1.13em",
+              color: "#1852a1",
+              letterSpacing: "0.5px"
+            }}>
+              {invoiceNumber}
+            </div>
+          </div>
           {/* EN-TÊTE ADMINISTRATIF */}
           <div
             className="mb-4"
@@ -145,7 +163,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <tr className="text-left bg-gray-800 text-white border-b">
                 <th className="py-2 px-3">Nom & Prénom</th>
                 <th className="py-2 px-3">Mois facturé</th>
-                <th className="py-2 px-3 text-right">Total à payer 
+                <th className="py-2 px-3 text-right">Total à payer&nbsp;
               </th>
               </tr>
             </thead>
@@ -181,3 +199,4 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     </Dialog>;
 };
 export default InvoiceModal;
+
