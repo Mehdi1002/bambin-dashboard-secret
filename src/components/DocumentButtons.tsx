@@ -404,11 +404,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const getHtml = (type: "scolarite" | "inscription") =>
     type === "scolarite" ? scolariteHtml : inscriptionHtml;
 
-  // Remplacement : option PDF → margin: [10, 10, 10, 10]
+  // Remplacement : option PDF → margin: [6, 6, 6, 6] (réduction de la marge)
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
-      margin: [10, 10, 10, 10], // 10mm sur chaque côté
+      margin: [6, 6, 6, 6], // 6mm sur chaque côté (marges réduites)
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
       html2canvas: { scale: 2 },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
