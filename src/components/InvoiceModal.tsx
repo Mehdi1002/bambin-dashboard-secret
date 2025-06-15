@@ -147,7 +147,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               {admin.rc && <div className="mt-1"><span className="font-medium">RC&nbsp;: </span>{admin.rc}</div>}
               {admin.article && <div className="mt-1"><span className="font-medium">N°Article&nbsp;: </span>{admin.article}</div>}
               {admin.nis && <div className="mt-1"><span className="font-medium">NIS&nbsp;: </span>{admin.nis}</div>}
-              {/* Numéro unique de facture */}
               <div className="mt-2 font-semibold text-blue-700">Facture N° : {invoiceNumber}</div>
             </div>
             <div className="ml-auto text-right">
@@ -173,21 +172,16 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </tr>
             </tbody>
           </table>
+
           {/* TOTAUX bas de page */}
           <div className="flex flex-col items-end">
             <div className="font-bold text-lg mb-1">
               Total général&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
-            {/* Montant en lettres (petit, aligné à gauche, sans fond) */}
-            
             {/* Phrase finale sur une seule ligne, alignée à gauche, marge latérale réduite, sans fond */}
-            <div className="font-medium mt-2 w-full text-left" style={{
-            background: "none",
-            paddingLeft: "0.5rem",
-            paddingRight: "0.5rem"
-          }}>
-              Arrêtée la présente facture à la somme de&nbsp;
-              <span className="uppercase text-black">{totalStr}</span>.
+            <div className="font-medium w-full text-left px-1" style={{ background: "none" }}>
+              Arrêtée la présente facture à la somme de&nbsp;:
+              <span className="uppercase text-black">&nbsp;{totalStr}</span>.
             </div>
           </div>
         </div>
