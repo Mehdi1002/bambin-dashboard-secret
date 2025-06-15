@@ -175,12 +175,11 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
             {/* Montant en lettres (petit, aligné à gauche, sans fond) */}
             <div className="italic text-[1rem] font-medium text-muted-foreground mb-2 w-full text-left" style={{ background: "none" }}>
-              {/* Ceci n'affiche qu'une fois le montant en lettres, petit, sous le total */}
               {totalStr}
             </div>
-            {/* Phrase alignée à gauche + montant en lettres final en gras/majuscule, sans fond */}
+            {/* Phrase finale sur une seule ligne, alignée à gauche, sans fond */}
             <div className="font-medium mt-2 w-full text-left" style={{ background: "none" }}>
-              Arrêtée la présente facture à la somme de&nbsp;:<br />
+              Arrêtée la présente facture à la somme de&nbsp;
               <span className="uppercase text-black">{totalStr}</span>.
             </div>
           </div>
