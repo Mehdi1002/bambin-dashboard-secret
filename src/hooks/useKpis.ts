@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { subMonths } from "date-fns";
+import { subMonths, lastDayOfMonth } from "date-fns";
 
 // Retourne [{ section: string, count: number }]
 export function useSectionsCount() {
@@ -53,18 +53,23 @@ export function usePaiementRetardataires({ prevMonth }: { prevMonth: boolean }) 
     : today;
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
+  const lastDay = lastDayOfMonth(date);
+
   return useQuery({
     queryKey: ['kpi', 'paiement-retardataires', year, month],
     queryFn: async () => {
       // 1. Récupérer tous les enfants inscrits (statut différent d'archive/supprimé ? au besoin)
       const { data: enfants, error: errorEnfants } = await supabase
         .from('children')
-        .select('id, nom, prenom, statut');
-
+        .select('id, nom, prenom, statut, date_inscription');
       if (errorEnfants) throw errorEnfants;
-      // On ne prend que ceux actifs (statut peut varier selon projet, ajuster si besoin)
+
+      // Seuls ceux actifs et inscrits (date_inscription <= dernier jour du mois concerné)
       const enfantsInscrits = (enfants ?? []).filter((e: any) =>
-        e.statut !== 'archivé' && e.statut !== 'supprimé'
+        e.statut !== 'archivé' &&
+        e.statut !== 'supprimé' &&
+        e.date_inscription !== null &&
+        new Date(e.date_inscription) <= lastDay
       );
 
       // 2. Récupérer TOUS les paiements du mois/année ciblé
@@ -83,7 +88,7 @@ export function usePaiementRetardataires({ prevMonth }: { prevMonth: boolean }) 
           .map((p: any) => p.child_id)
       );
 
-      // 4. Les "retardataires" sont tous les enfants inscrits NON présents dans le set ci-dessus
+      // 4. Les "retardataires" sont les enfants inscrits à cette date, sans paiement validé
       const retardataires = enfantsInscrits
         .filter((e: any) => !enfantsAvecPaiementValide.has(e.id))
         .map((e: any) => ({
