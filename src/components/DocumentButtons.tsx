@@ -29,9 +29,8 @@ function toFrenchDate(dateIso: string) {
 }
 
 function getAdminHeader() {
-  // Style amélioré pour affichage "administratif", tout sur lignes différentes
   const defaultData = {
-    nom: "Crèche et préscolaire L’île des Bambins",
+    nom: "L’île des Bambins",   // ← n’affiche plus “Crèche et préscolaire”
     sousTitre: "Vente de radiateurs automobile-motoculture-industrie",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
@@ -70,10 +69,10 @@ function getAdminHeader() {
         }
         <div style="flex:1;">
           <div style="font-size:1.55em;font-weight:700;color:#1852a1;line-height:1;margin-bottom:3px;letter-spacing:0.1px;">
-            ${admin.nom}
+            L’île des Bambins
           </div>
           <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
-            ${admin.sousTitre || "Crèche et préscolaire"}
+            ${admin.sousTitre || ""}
           </div>
           <div style="margin-bottom:6px;color:#233046;font-size:1em;line-height:1.56;">
             <b>Adresse :</b> ${admin.adresse || ""}
@@ -122,7 +121,7 @@ function genreInscrit(sexe?: string) {
 
 function getAdminHeaderFlexCertif(date?: string) {
   const defaultData = {
-    nom: "Crèche et préscolaire L’île des Bambins",
+    nom: "L’île des Bambins", // ← nom raccourci partout
     sousTitre: "Vente de radiateurs automobile-motoculture-industrie",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
@@ -142,7 +141,6 @@ function getAdminHeaderFlexCertif(date?: string) {
     }
   } catch {}
 
-  // Note: on laisse volontairement « CERTIFICAT DE SCOLARITÉ » à droite
   return `
     <div style="
       width:100%;
@@ -159,10 +157,10 @@ function getAdminHeaderFlexCertif(date?: string) {
           ? `<img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:12px;object-fit:cover;border:2px solid #1852a1;background:#f5f8ff;margin-bottom:9px;margin-right:8px;vertical-align:middle;display:block;" />`
           : ""}
         <div style="font-size:1.3em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
-          ${admin.nom}
+          L’île des Bambins
         </div>
         <div style="font-style:italic;color:#2e4a70;font-size:1em;line-height:1.4;margin-bottom:10px;">
-          ${admin.sousTitre || "Crèche et préscolaire"}
+          ${admin.sousTitre || ""}
         </div>
         <div style="font-size:1em;line-height:1.7;margin-bottom:0px;">
           <div style="margin-bottom:3px;"><b>Adresse :</b> ${admin.adresse || ""}</div>
