@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import n2words from "n2words";
 import html2pdf from "html2pdf.js";
+import { getAdminHeaderHtml } from "./AdminHeaderHtml";
 interface InvoiceModalProps {
   open: boolean;
   onClose: () => void;
@@ -133,32 +134,11 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         </DialogHeader>
         <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl mx-auto text-sm">
           {/* EN-TÊTE ADMINISTRATIF */}
-          <div className="flex items-start gap-8 border-b pb-4 mb-4">
-            {admin.logo && <img src={admin.logo} alt="Logo" className="w-20 h-20 rounded-full object-cover border" />}
-            <div>
-              <div className="font-bold text-lg">{admin.nom || "L’île des Bambins"}</div>
-              <div className="text-base text-muted-foreground mb-2">Crèche et préscolaire</div>
-              <div>
-                <span className="font-medium">Adresse :</span> {admin.adresse || <span className="text-muted-foreground italic">Non renseignée</span>}
-              </div>
-              <div>
-                <span className="font-medium">Tél :</span> {admin.telephone || <span className="text-muted-foreground italic">Non renseigné</span>}
-              </div>
-              <div>
-                <span className="font-medium">Email :</span> {admin.email || <span className="text-muted-foreground italic">Non renseigné</span>}
-              </div>
-              {/* Numéros administratifs sur lignes séparées */}
-              {admin.nif && <div className="mt-1"><span className="font-medium">NIF&nbsp;: </span>{admin.nif}</div>}
-              {admin.rc && <div className="mt-1"><span className="font-medium">RC&nbsp;: </span>{admin.rc}</div>}
-              {admin.article && <div className="mt-1"><span className="font-medium">N°Article&nbsp;: </span>{admin.article}</div>}
-              {admin.nis && <div className="mt-1"><span className="font-medium">NIS&nbsp;: </span>{admin.nis}</div>}
-              <div className="mt-2 font-semibold text-blue-700">Facture N° : {invoiceNumber}</div>
-            </div>
-            <div className="ml-auto text-right">
-              <div className="font-medium">Date facture : {date}</div>
-            </div>
-          </div>
-
+          <div
+            className="mb-4"
+            // Ajout via __html pour styling identique à DocumentButtons
+            dangerouslySetInnerHTML={{ __html: getAdminHeaderHtml() }}
+          />
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
