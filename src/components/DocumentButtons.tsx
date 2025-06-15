@@ -29,11 +29,14 @@ function toFrenchDate(dateIso: string) {
 }
 
 function getAdminHeader() {
+  // Style inspiré du modèle fourni par l'utilisateur
   const defaultData = {
     nom: "Crèche et préscolaire L’île des Bambins",
+    sousTitre: "Vente de radiateurs automobile-motoculture-industrie", // Optionel, laisse vide si profil crèche
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
+    cb: "", // Pour le champ C.B BNA (optionel), s'affichera si présent
     nif: "196506010063735",
     article: "06017732933",
     rc: "06/01-0961315A10",
@@ -48,35 +51,44 @@ function getAdminHeader() {
     }
   } catch {}
 
-  // En-tête : chaque info sur une ligne différente, marges minimales, layout vertical
   return `
     <div style="
       width:100%;
-      display:flex;
-      align-items:flex-start;
+      padding:0 0 6px 0;
       border-bottom:1.5px solid #e5e7eb;
       box-sizing:border-box;
       margin-bottom:18px;
-      flex-direction:row;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      padding:0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     ">
-      ${
-        admin.logo
-          ? `<div style="flex-shrink:0;margin-right:14px">
-                  <img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:1.5px solid #E0E0E0;background:#fafbfc;" />
-                </div>`
-          : ""
-      }
-      <div style="margin:0;display:flex;flex-direction:column;">
-        <div style="font-size:1.13em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
-        <div style="color:#697184;font-size:1em;line-height:1;margin-bottom:4px;">Crèche et préscolaire</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Adresse :</b> ${admin.adresse}</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Tél :</b> ${admin.telephone}</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Email :</b> ${admin.email}</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>NIF :</b> ${admin.nif}</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>RC :</b> ${admin.rc}</div>
-        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>N°Article :</b> ${admin.article}</div>
+      <div style="display:flex;align-items:flex-start;">
+        ${
+          admin.logo
+            ? `<div style="flex-shrink:0;margin-right:16px"><img src="${admin.logo}" alt="logo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1.5px solid #E0E0E0;background:#fafbfc;" /></div>`
+            : ""
+        }
+        <div>
+          <div style="font-size:1.38em;font-weight:700;color:#1d3977;line-height:1;">
+            ${admin.nom}
+          </div>
+          <div style="font-style:italic;color:#42516d;font-size:1em;line-height:1.2;margin-top:2px;">
+            ${admin.sousTitre || "Crèche et préscolaire"}
+          </div>
+          <div style="margin-top:10px;color:#262b35;font-size:1em;line-height:1.5;">
+            ${admin.adresse ? ` ${admin.adresse}<br/>` : ""}
+            ${admin.telephone ? `Tél: ${admin.telephone}<br/>` : ""}
+            ${admin.email ? `Email: ${admin.email}<br/>` : ""}
+            ${admin.cb ? `C.B BNA: ${admin.cb}<br/>` : ""}
+          </div>
+        </div>
+      </div>
+      <div style="color:#878b94;font-size:0.97em;line-height:1.5;margin-top:8px;margin-bottom:2px;">
+        ${admin.nif ? `NIF: ${admin.nif} ` : ""}
+        ${admin.article ? ` N° Article: ${admin.article} ` : ""}
+        ${admin.rc ? ` RC: ${admin.rc} ` : ""}
+        ${admin.nis ? ` NIS: ${admin.nis}` : ""}
       </div>
     </div>
   `;
