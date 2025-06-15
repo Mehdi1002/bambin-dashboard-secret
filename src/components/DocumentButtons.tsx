@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
 import { useState } from "react";
@@ -88,16 +88,18 @@ function getTodayFR() {
 
 export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Props) {
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
+
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
   const header = headerHtml ?? getAdminHeader();
 
-  // Titre parfaitement centré sur toute la largeur de la page
+  // Génère le HTML du titre — parfaitement centré même en aperçu
   function makeTitle(label: string) {
     return `
       <div style="
-        width:595pt;
+        width:100%;
         text-align:center;
-        margin:0;
+        margin:0 auto 12px auto;
         font-size:1.38em;
         font-weight:600;
         letter-spacing:0.2px;
@@ -109,9 +111,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     `;
   }
 
-  // *** Nouveau padding latéral accru pour que le paragraphe fasse ~4 lignes ***
+  // Marges latérales pour garder 4 lignes de texte (environ 50pt)
   const PAGE_WIDTH = 595;
-  const PADDING = 50; // Augmenter la marge à gauche et à droite
+  const PADDING = 50;
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
   const scolariteHtml = `
@@ -126,7 +128,6 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       box-sizing:border-box;
       padding:0;
     ">
-      <!-- DATE EN HAUT À DROITE -->
       <div style="
         width:${PAGE_WIDTH}pt;
         display:flex;
@@ -177,7 +178,6 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       box-sizing:border-box;
       padding:0;
     ">
-      <!-- DATE EN HAUT À DROITE -->
       <div style="
         width:${PAGE_WIDTH}pt;
         display:flex;
@@ -216,6 +216,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     </div>
   `;
 
+  const getHtml = (type: "scolarite" | "inscription") =>
+    type === "scolarite" ? scolariteHtml : inscriptionHtml;
+
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
@@ -224,33 +227,88 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       html2canvas: { scale: 2 },
       jsPDF: { unit: "pt", format: "a4", orientation: "portrait" }
     };
-    const content = type === "scolarite" ? scolariteHtml : inscriptionHtml;
+    const content = getHtml(type);
     await html2pdf().set(opt).from(content).save();
     setLoading(false);
   };
 
+  // Affiche document dans une modal avant téléchargement :
+  function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        style={{ fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif" }}
+      >
+        {/* fond modal */}
+        <div className="bg-white max-w-2xl w-[800px] rounded-lg shadow-xl border relative overflow-auto max-h-[90vh]">
+          <button
+            className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1"
+            aria-label="Fermer"
+            onClick={onClose}
+            style={{ background: "none", border: "none" }}
+          >
+            ✕
+          </button>
+          <div className="p-5">
+            <div
+              // Attention : rendu HTML "en brut" pour affichage fidèle
+              dangerouslySetInnerHTML={{ __html: getHtml(type) }}
+            />
+          </div>
+          <div className="flex gap-3 justify-end px-5 pb-5 pt-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={loading}
+            >
+              Fermer
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                handleExport(type);
+                onClose();
+              }}
+              disabled={loading}
+            >
+              <Download className="w-4 h-4" /> Télécharger
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={loading}
-        onClick={() => handleExport("scolarite")}
-        title="Générer le certificat de scolarité"
-      >
-        <Download className="w-4 h-4" />
-        Certificat
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={loading}
-        onClick={() => handleExport("inscription")}
-        title="Générer l'attestation d'inscription"
-      >
-        <Download className="w-4 h-4" />
-        Attestation
-      </Button>
-    </div>
+    <>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={loading}
+          onClick={() => setShowPreview("scolarite")}
+          title="Aperçu du certificat de scolarité"
+        >
+          <Eye className="w-4 h-4" />
+          Certificat
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={loading}
+          onClick={() => setShowPreview("inscription")}
+          title="Aperçu de l'attestation d'inscription"
+        >
+          <Eye className="w-4 h-4" />
+          Attestation
+        </Button>
+      </div>
+      {showPreview && (
+        <PreviewModal
+          type={showPreview}
+          onClose={() => setShowPreview(null)}
+        />
+      )}
+    </>
   );
 }
