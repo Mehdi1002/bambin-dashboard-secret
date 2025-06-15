@@ -142,6 +142,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             right: invoiceNumber
           })
         }} />
+          {/* Affiche la date de facturation alignée à droite */}
+          <div className="text-right mb-3 text-xs text-gray-600 font-medium">
+            Date de facturation&nbsp;: <span className="font-semibold">{date}</span>
+          </div>
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold mb-3 mt-1 mx-1 text-center">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
