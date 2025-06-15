@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 const sectionList = ["Petite", "Moyenne", "Prescolaire"] as const;
 const statutList = ["Actif", "Inactif"] as const;
@@ -56,6 +57,7 @@ export default function ChildForm({
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Ici on convertit les "" en null pour les champs à contrainte
     const dataToSubmit: Record<string, any> = {
       nom: form.nom,
       prenom: form.prenom,
@@ -66,11 +68,11 @@ export default function ChildForm({
       statut: form.statut,
       pere: form.pere,
       tel_pere: form.telPere,
-      type_doc_pere: form.typeDocPere,
+      type_doc_pere: form.typeDocPere === "" ? null : form.typeDocPere,
       num_doc_pere: form.numDocPere,
       mere: form.mere,
       tel_mere: form.telMere,
-      type_doc_mere: form.typeDocMere,
+      type_doc_mere: form.typeDocMere === "" ? null : form.typeDocMere,
       num_doc_mere: form.numDocMere,
       allergies: form.allergies
     };
