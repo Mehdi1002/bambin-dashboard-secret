@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -129,6 +128,21 @@ export default function MultiMonthInvoicing() {
     }
   };
 
+  // Calculer mois & montants pour tableau (paiements détaillés par mois pour la facture)
+  const getPaiementsForChild = (child: Child): { mois: string; montant: number }[] => {
+    return selectedMonths.map((m) => {
+      const paiement = (payments ?? []).find(
+        (p) => p.child_id === child.id && p.year === selectedYear && p.month === m
+      );
+      // valeur par défaut
+      const montant = paiement ? (paiement.amount_due + paiement.registration_fee) : 10000;
+      return {
+        mois: MONTHS[m - 1] + " " + selectedYear,
+        montant
+      };
+    });
+  };
+
   // Pour chaque enfant, on calcule les mois sélectionnés + le total à facturer
   const getMonthsForChild = (child: Child): string[] => {
     return selectedMonths
@@ -225,6 +239,7 @@ export default function MultiMonthInvoicing() {
         total={modalChild ? getTotalForChild(modalChild) : 0}
         indexFacture={modalIdx}
         dateFacturation={selectedYear + "-01-01"}
+        paiements={modalChild ? getPaiementsForChild(modalChild) : []} // 💡 nouveau
       />
       <div className="mt-4 text-xs text-muted-foreground">
         Sélectionnez un ou plusieurs enfants, un ou plusieurs mois et cliquez sur "Générer les factures regroupées".<br />

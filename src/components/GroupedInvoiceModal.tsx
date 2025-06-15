@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import n2words from "n2words";
 import html2pdf from "html2pdf.js";
 
+interface PaiementParMois {
+  mois: string; // "Mars"
+  montant: number; // montant total de ce mois
+}
+
 interface GroupedInvoiceModalProps {
   open: boolean;
   onClose: () => void;
@@ -16,6 +21,7 @@ interface GroupedInvoiceModalProps {
   total: number;
   dateFacturation?: string;
   indexFacture?: number;
+  paiements: PaiementParMois[]; // 🆕 détails par mois (Mois + montant)
 }
 
 function useAdminProfile() {
@@ -55,27 +61,17 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
   mois,
   total,
   dateFacturation,
-  indexFacture
+  indexFacture,
+  paiements
 }) => {
   const admin = useAdminProfile();
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
   const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation);
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
-  const moisEtAnnees = useMemo(() => {
-    // ex: "Mars 2025, Avril 2025"
-    if (!mois.length) return "";
-    if (dateFacturation) {
-      try {
-        const d = new Date(dateFacturation);
-        const annee = d.getFullYear();
-        return mois.map((m) => `${m} ${annee}`).join(", ");
-      } catch {
-        return mois.join(", ");
-      }
-    }
-    return mois.map((m) => `${m} ${new Date().getFullYear()}`).join(", ");
-  }, [mois, dateFacturation]);
+
+  if (!child) return null;
+
   const handlePrint = () => {
     const printContent = document.getElementById("invoice-printable");
     const win = window.open("", "FACTURE", "width=800,height=900");
@@ -116,8 +112,9 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
     };
     html2pdf().set(opt).from(invoiceElem).save();
   };
-  if (!child) return null;
-  return <Dialog open={open} onOpenChange={onClose}>
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Facture regroupée ({mois.length} mois)</DialogTitle>
@@ -155,16 +152,20 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
             <thead>
               <tr className="text-left bg-gray-800 text-white border-b">
                 <th className="py-2 px-3">Nom & Prénom</th>
-                <th className="py-2 px-3">Mois facturés</th>
-                <th className="py-2 px-3 text-right">Total à payer&nbsp;</th>
+                <th className="py-2 px-3">Mois facturé</th>
+                <th className="py-2 px-3 text-right">Montant (DA)</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 px-3">{child.nom + " " + child.prenom}</td>
-                <td className="py-2 px-3">{moisEtAnnees}</td>
-                <td className="py-2 px-3 text-right">{total.toLocaleString("fr-DZ")} DA</td>
-              </tr>
+              {paiements.map((p, idx) => (
+                <tr key={idx}>
+                  <td className="py-2 px-3">
+                    {child.nom + " " + child.prenom}
+                  </td>
+                  <td className="py-2 px-3">{p.mois}</td>
+                  <td className="py-2 px-3 text-right">{p.montant.toLocaleString("fr-DZ")} DA</td>
+                </tr>
+              ))}
             </tbody>
           </table>
           {/* TOTAUX bas de page */}
@@ -184,7 +185,8 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           <Button onClick={onClose} variant="secondary">Fermer</Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
 
 export default GroupedInvoiceModal;
