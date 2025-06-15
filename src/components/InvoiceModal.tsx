@@ -1,10 +1,8 @@
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import n2words from "n2words";
 import html2pdf from "html2pdf.js";
-
 interface InvoiceModalProps {
   open: boolean;
   onClose: () => void;
@@ -17,13 +15,14 @@ interface InvoiceModalProps {
   dateFacturation?: string;
   indexFacture?: number; // 👈 Nouvelle prop pour index facture
 }
-
 function useAdminProfile() {
   return useMemo(() => {
     try {
       const s = localStorage.getItem("admin_profile");
       return s ? JSON.parse(s) : {};
-    } catch { return {}; }
+    } catch {
+      return {};
+    }
   }, []);
 }
 
@@ -39,7 +38,10 @@ function useInvoiceNumber(indexFacture?: number, dateFacturation?: string) {
 // Met en MAJUSCULES françaises et retire la devise de n2words à la fin
 function totalEnLettres(total: number) {
   // n2words retourne ex : ‘douze mille dinars algériens’
-  let txt = n2words(total, { lang: "fr", currency: "DZD" });
+  let txt = n2words(total, {
+    lang: "fr",
+    currency: "DZD"
+  });
   txt = txt.replace(/^un /i, "Un "); // Respect Maj initiale
   txt = txt.replace(/ et zéro centime\.?$/i, " ET ZÉRO CENTIME");
   // Force en majuscules
@@ -48,7 +50,6 @@ function totalEnLettres(total: number) {
   if (!txt.includes("CENTIME")) txt += " ET ZÉRO CENTIME";
   return txt;
 }
-
 const InvoiceModal: React.FC<InvoiceModalProps> = ({
   open,
   onClose,
@@ -56,15 +57,13 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   mois,
   total,
   dateFacturation,
-  indexFacture,
+  indexFacture
 }) => {
   const admin = useAdminProfile();
-
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
   const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation); // modifié
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
-
   const moisEtAnnee = useMemo(() => {
     // Ex : Avril 2025
     if (dateFacturation) {
@@ -78,7 +77,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     }
     return `${mois} ${new Date().getFullYear()}`;
   }, [mois, dateFacturation]);
-
   const handlePrint = () => {
     const printContent = document.getElementById("invoice-printable");
     const win = window.open("", "FACTURE", "width=800,height=900");
@@ -100,20 +98,30 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
     // html2pdf utilisera l’élément HTML déjà stylé (ce que voit l’utilisateur)
     const opt = {
-      margin:       [0.5, 0.5], // pouces
-      filename:     `${invoiceNumber}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      margin: [0.5, 0.5],
+      // pouces
+      filename: `${invoiceNumber}.pdf`,
+      image: {
+        type: 'jpeg',
+        quality: 0.98
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true
+      },
+      jsPDF: {
+        unit: 'in',
+        format: 'a4',
+        orientation: 'portrait'
+      },
+      pagebreak: {
+        mode: ['avoid-all', 'css', 'legacy']
+      }
     };
     html2pdf().set(opt).from(invoiceElem).save();
   };
-
   if (!child) return null;
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
+  return <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Facture du mois de {moisEtAnnee}</DialogTitle>
@@ -148,7 +156,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <tr className="text-left bg-gray-800 text-white border-b">
                 <th className="py-2 px-3">Nom & Prénom</th>
                 <th className="py-2 px-3">Mois facturé</th>
-                <th className="py-2 px-3 text-right">Total à payer (DA)</th>
+                <th className="py-2 px-3 text-right">Total à payer 
+              </th>
               </tr>
             </thead>
             <tbody>
@@ -177,9 +186,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <Button onClick={onClose} variant="secondary">Fermer</Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default InvoiceModal;
-
