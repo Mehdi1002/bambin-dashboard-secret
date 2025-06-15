@@ -118,6 +118,7 @@ function getAdminHeaderFlexCertif(date?: string) {
     cb: "",
     nif: "196506010063735",
     article: "06017732933",
+    agrement: "", // <- Ajout du champ N° Agrément (prise en charge)
     rc: "06/01-0961315A10",
     nis: "",
     logo: ""
@@ -160,15 +161,17 @@ function getAdminHeaderFlexCertif(date?: string) {
         <div style="margin-top:7px;font-size:0.98em;">
           ${admin.nif ? `<div style="margin-bottom:7px;color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
           ${admin.article ? `<div style="margin-bottom:7px;color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
+          ${
+            admin.agrement
+              ? `<div style="margin-bottom:7px;color:#222;"><b>N° Agrément :</b> ${admin.agrement}</div>`
+              : ""
+          }
           ${admin.rc ? `<div style="margin-bottom:7px;color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
           ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
         </div>
       </div>
       <div style="flex-shrink:0;text-align:right;padding-left:28px;min-width:235px;">
-        <div style="font-size:2em;font-weight:800;letter-spacing:1.2px;color:#1852a1;line-height:1.2;margin-bottom:14px;margin-top:6px;">
-          CERTIFICAT<br/>DE SCOLARITÉ
-        </div>
-        <div style="background:#dbeafe;padding:7px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.13em;font-weight:500;color:#1059b0;margin-bottom:4px;">
+        <div style="background:#dbeafe;padding:7px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.13em;font-weight:500;color:#1059b0;margin-bottom:4px;margin-top:20px;">
           Date : <span style="font-weight:700;">${date ?? getTodayFR()}</span>
         </div>
       </div>
