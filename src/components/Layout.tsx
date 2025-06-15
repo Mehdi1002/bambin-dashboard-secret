@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Users, FileText, Check, ArrowDown, ArrowUp } from "lucide-react";
@@ -8,6 +7,7 @@ const nav = [
   { name: "Profil crèche", to: "/admin", icon: FileText },
   { name: "Enfants", to: "/enfants", icon: Users },
   { name: "Paiements", to: "/paiements", icon: Check },
+  { name: "Facturation", to: "/facturation", icon: FileText },
   { name: "Documents", to: "/documents", icon: FileText },
 ];
 
