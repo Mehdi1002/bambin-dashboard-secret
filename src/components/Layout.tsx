@@ -35,7 +35,7 @@ export default function Layout({
     pathname
   } = useLocation();
   return <div className="min-h-screen flex flex-col bg-background">
-      <header className="flex items-center justify-between px-10 py-4 bg-white border-b border-muted shadow-sm">
+      <header className="flex items-center justify-between px-10 py-4 border-b border-muted shadow-sm bg-slate-500">
         <div className="flex items-center gap-3">
           
           <span className="text-xl font-bold tracking-tight">
