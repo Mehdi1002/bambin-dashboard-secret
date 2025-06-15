@@ -150,7 +150,7 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           <table className="w-full mb-6">
             <thead>
               <tr className="text-left bg-gray-800 text-white border-b">
-                <th className="py-2 px-3">Nom & Prénom</th>
+                <th className="py-2 px-3 text-center">Nom & Prénom</th>
                 <th className="py-2 px-3">Mois facturé</th>
                 <th className="py-2 px-3 text-right">Montant (DA)</th>
               </tr>
@@ -158,9 +158,14 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
             <tbody>
               {paiements.map((p, idx) => (
                 <tr key={idx}>
-                  <td className="py-2 px-3">
-                    {idx === 0 ? child.nom + " " + child.prenom : ""}
-                  </td>
+                  {idx === 0 ? (
+                    <td
+                      className="py-2 px-3 text-center align-middle font-medium"
+                      rowSpan={paiements.length}
+                    >
+                      {child.nom + " " + child.prenom}
+                    </td>
+                  ) : null}
                   <td className="py-2 px-3">{p.mois}</td>
                   <td className="py-2 px-3 text-right">{p.montant.toLocaleString("fr-DZ")} DA</td>
                 </tr>
