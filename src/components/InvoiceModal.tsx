@@ -170,16 +170,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </table>
           {/* TOTAUX bas de page */}
           <div className="flex flex-col items-end">
-            <div className="font-bold text-lg mb-1">Total général : {total.toLocaleString("fr-DZ")} DA</div>
-            {/* Montant en lettres aligné à gauche avec un fond foncé/doux */}
-            <div 
-              className="italic pl-4 pr-4 py-2 mb-2 w-full rounded bg-muted text-left text-[1rem] font-medium text-muted-foreground"
-              style={{ maxWidth: 520 }}
-            >
+            <div className="font-bold text-lg mb-1">
+              Total général&nbsp;: {total.toLocaleString("fr-DZ")} DA
+            </div>
+            {/* Montant en lettres (petit, aligné à gauche, sans fond) */}
+            <div className="italic text-[1rem] font-medium text-muted-foreground mb-2 w-full text-left" style={{ background: "none" }}>
+              {/* Ceci n'affiche qu'une fois le montant en lettres, petit, sous le total */}
               {totalStr}
             </div>
-            <div className="font-medium mt-2 text-right w-full">
-              Arrêtée la présente facture à la somme de :<br />
+            {/* Phrase alignée à gauche + montant en lettres final en gras/majuscule, sans fond */}
+            <div className="font-medium mt-2 w-full text-left" style={{ background: "none" }}>
+              Arrêtée la présente facture à la somme de&nbsp;:<br />
               <span className="uppercase text-black">{totalStr}</span>.
             </div>
           </div>
