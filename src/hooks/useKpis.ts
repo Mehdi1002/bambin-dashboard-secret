@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { subMonths } from "date-fns";
@@ -57,37 +56,44 @@ export function usePaiementRetardataires({ prevMonth }: { prevMonth: boolean }) 
   return useQuery({
     queryKey: ['kpi', 'paiement-retardataires', year, month],
     queryFn: async () => {
-      // On récupère ceux dont validated=false pour ce mois, et le lien avec l'enfant
-      const { data, error } = await supabase
-        .from('payments')
-        .select('child_id, month, year')
-        .eq('year', year)
-        .eq('month', month)
-        .eq('validated', false);
-
-      if (error) throw error;
-
-      if (!data || !data.length) return [];
-
-      // Récupérer les informations enfants en batch
-      const enfantsIds = data.map((p) => p.child_id);
+      // 1. Récupérer tous les enfants inscrits (statut différent d'archive/supprimé ? au besoin)
       const { data: enfants, error: errorEnfants } = await supabase
         .from('children')
-        .select('id, nom, prenom')
-        .in('id', enfantsIds);
+        .select('id, nom, prenom, statut');
 
       if (errorEnfants) throw errorEnfants;
+      // On ne prend que ceux actifs (statut peut varier selon projet, ajuster si besoin)
+      const enfantsInscrits = (enfants ?? []).filter((e: any) =>
+        e.statut !== 'archivé' && e.statut !== 'supprimé'
+      );
 
-      // Rejoint noms/prénoms + mois
-      return data.map((r) => {
-        const enfant = enfants?.find((e) => e.id === r.child_id);
-        return {
-          nom: enfant?.nom ?? "",
-          prenom: enfant?.prenom ?? "",
-          month: r.month,
-          year: r.year,
-        };
-      });
+      // 2. Récupérer TOUS les paiements du mois/année ciblé
+      const { data: paiements, error: errorPaiements } = await supabase
+        .from('payments')
+        .select('child_id, validated')
+        .eq('year', year)
+        .eq('month', month);
+
+      if (errorPaiements) throw errorPaiements;
+
+      // 3. Lister les IDs des enfants qui ont AU MOINS un paiement validé (=> ne sont PAS en retard)
+      const enfantsAvecPaiementValide = new Set(
+        (paiements ?? [])
+          .filter((p: any) => p.validated === true)
+          .map((p: any) => p.child_id)
+      );
+
+      // 4. Les "retardataires" sont tous les enfants inscrits NON présents dans le set ci-dessus
+      const retardataires = enfantsInscrits
+        .filter((e: any) => !enfantsAvecPaiementValide.has(e.id))
+        .map((e: any) => ({
+          nom: e.nom,
+          prenom: e.prenom,
+          month,
+          year,
+        }));
+
+      return retardataires;
     }
   });
 }
