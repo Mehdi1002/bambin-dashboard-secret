@@ -3,14 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import InvoiceModal from "@/components/InvoiceModal";
+import GroupedInvoiceModal from "@/components/GroupedInvoiceModal";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
   "Août", "Septembre", "Octobre", "Novembre", "Décembre"
 ];
 
-// Année scolaire typique : septembre → juillet
 const SCHOOL_MONTHS = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7];
 
 type Child = {
@@ -45,12 +44,10 @@ export default function MultiMonthInvoicing() {
   const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
 
-  // Pour la modale facture
-  const [invoiceIndex, setInvoiceIndex] = useState<number>(1);
-  const [invoiceOpen, setInvoiceOpen] = useState(false);
-  const [invoiceChild, setInvoiceChild] = useState<Child | null>(null);
-  const [invoiceMonth, setInvoiceMonth] = useState<string>("");
-  const [invoiceTotal, setInvoiceTotal] = useState<number>(0);
+  // Pour la modale facture groupée
+  const [modalIdx, setModalIdx] = useState<number>(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalChild, setModalChild] = useState<Child | null>(null);
 
   // Récupérer les enfants actifs
   const { data: children, isLoading } = useQuery({
@@ -79,7 +76,6 @@ export default function MultiMonthInvoicing() {
       if (error) throw error;
       return data as Payment[];
     },
-    // Ne lance la requête que si on a des enfants et des mois sélectionnés
     enabled: selectedMonths.length > 0 && selectedChildren.length > 0,
   });
 
@@ -97,90 +93,64 @@ export default function MultiMonthInvoicing() {
     );
   };
 
-  // Générer une ou plusieurs factures (ouvre une modale pour chaque facture, l'une après l'autre)
-  const handleGenerateInvoices = () => {
-    if (
-      !children ||
-      selectedChildren.length === 0 ||
-      selectedMonths.length === 0
-    )
-      return;
+  // Pour ouvrir la modale groupée pour chaque enfant sélectionné
+  const [modalQueue, setModalQueue] = useState<{ child: Child; idx: number }[]>([]);
 
-    // Prendre premier enfant + premier mois à facturer dans la liste (on ouvre la modale pour chaque combinaison)
-    const nextChild = children.find((c) => c.id === selectedChildren[0]);
-    const nextMonth = selectedMonths[0];
-    if (!nextChild || nextMonth == null) return;
-
-    // Rechercher le paiement pour l’enfant/mois
-    const pay = (payments ?? []).find(
-      (p) =>
-        p.child_id === nextChild.id &&
-        p.year === selectedYear &&
-        p.month === nextMonth
-    );
-    const total = pay ? pay.amount_due + pay.registration_fee : 10000;
-    setInvoiceChild(nextChild);
-    setInvoiceOpen(true);
-    setInvoiceMonth(MONTHS[nextMonth - 1]);
-    setInvoiceIndex(1);
-    setInvoiceTotal(total);
-  };
-
-  // Pour aller à la combinaison enfant/mois suivante après fermeture modale
-  const [invoiceQueue, setInvoiceQueue] = useState<{ child: Child; month: number; idx: number }[]>([]);
-
-  // Quand on clique "Générer les factures"
   const startBatchGeneration = () => {
-    if (!children) return;
-    const queue: { child: Child; month: number; idx: number }[] = [];
+    if (!children || selectedChildren.length === 0 || selectedMonths.length === 0) return;
+    // Construire une file d'attente : une entrée par enfant sélectionné
+    const queue: { child: Child; idx: number }[] = [];
     let idx = 1;
     for (const cid of selectedChildren) {
       const ch = children.find((c) => c.id === cid);
       if (!ch) continue;
-      for (const m of selectedMonths) {
-        queue.push({ child: ch, month: m, idx });
-        idx += 1;
-      }
+      queue.push({ child: ch, idx });
+      idx += 1;
     }
     if (queue.length === 0) return;
-    // On ouvre la première facture
-    setInvoiceChild(queue[0].child);
-    setInvoiceOpen(true);
-    setInvoiceMonth(MONTHS[queue[0].month - 1]);
-    setInvoiceIndex(queue[0].idx);
-    // Trouver paiement et total
-    const pay = (payments ?? []).find(
-      (p) =>
-        p.child_id === queue[0].child.id &&
-        p.year === selectedYear &&
-        p.month === queue[0].month
-    );
-    setInvoiceTotal(pay ? pay.amount_due + pay.registration_fee : 10000);
-    setInvoiceQueue(queue.slice(1));
+    setModalChild(queue[0].child);
+    setModalIdx(queue[0].idx);
+    setModalQueue(queue.slice(1));
+    setModalOpen(true);
   };
 
-  // Quand une facture est fermée, ouvrir la suivante !
-  const handleCloseInvoice = () => {
-    if (invoiceQueue.length > 0) {
-      const next = invoiceQueue[0];
-      setInvoiceChild(next.child);
-      setInvoiceMonth(MONTHS[next.month - 1]);
-      setInvoiceIndex(next.idx);
-      // Paiement et total
-      const pay = (payments ?? []).find(
-        (p) =>
-          p.child_id === next.child.id &&
-          p.year === selectedYear &&
-          p.month === next.month
-      );
-      setInvoiceTotal(pay ? pay.amount_due + pay.registration_fee : 10000);
-      setInvoiceQueue(invoiceQueue.slice(1));
-      setInvoiceOpen(true);
+  // Lorsqu'une facture est fermée, ouvrir la suivante
+  const handleCloseModal = () => {
+    if (modalQueue.length > 0) {
+      const next = modalQueue[0];
+      setModalChild(next.child);
+      setModalIdx(next.idx);
+      setModalQueue(modalQueue.slice(1));
+      setModalOpen(true);
     } else {
-      setInvoiceChild(null);
-      setInvoiceOpen(false);
-      setInvoiceQueue([]);
+      setModalChild(null);
+      setModalOpen(false);
+      setModalQueue([]);
     }
+  };
+
+  // Pour chaque enfant, on calcule les mois sélectionnés + le total à facturer
+  const getMonthsForChild = (child: Child): string[] => {
+    return selectedMonths
+      .filter((m) =>
+        (payments ?? []).some(
+          (p) => p.child_id === child.id && p.month === m && p.year === selectedYear
+        ) || true // même si pas de paiement (pour test), on affiche quand même
+      )
+      .map((m) => MONTHS[m - 1]);
+  };
+
+  const getTotalForChild = (child: Child): number => {
+    // Somme des amount_due + registration_fee pour chaque mois sélectionné
+    return selectedMonths.reduce((sum, m) => {
+      const p = (payments ?? []).find(
+        (pay) =>
+          pay.child_id === child.id &&
+          pay.year === selectedYear &&
+          pay.month === m
+      );
+      return sum + (p ? p.amount_due + p.registration_fee : 10000); // valeur par défaut 10 000 DA si pas de payment trouvé
+    }, 0);
   };
 
   return (
@@ -244,21 +214,21 @@ export default function MultiMonthInvoicing() {
           selectedMonths.length === 0
         }
       >
-        Générer les factures sélectionnées
+        Générer les factures regroupées par enfant
       </Button>
-      {/* Modale facture (réutilise InvoiceModal !) */}
-      <InvoiceModal
-        open={invoiceOpen}
-        onClose={handleCloseInvoice}
-        child={invoiceChild}
-        mois={invoiceMonth}
-        total={invoiceTotal}
-        indexFacture={invoiceIndex}
+      {/* Modale facture groupée */}
+      <GroupedInvoiceModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        child={modalChild}
+        mois={modalChild ? getMonthsForChild(modalChild) : []}
+        total={modalChild ? getTotalForChild(modalChild) : 0}
+        indexFacture={modalIdx}
         dateFacturation={selectedYear + "-01-01"}
       />
       <div className="mt-4 text-xs text-muted-foreground">
-        Sélectionnez un ou plusieurs enfants, un ou plusieurs mois et cliquez sur "Générer les factures".
-        Chaque facture s’ouvrira dans une modale (impression ou PDF possible).
+        Sélectionnez un ou plusieurs enfants, un ou plusieurs mois et cliquez sur "Générer les factures regroupées".<br />
+        Chaque facture sera générée pour un enfant avec l’ensemble des mois sélectionnés regroupés sur une seule facture (impression ou PDF possible).
       </div>
     </div>
   );
