@@ -9,8 +9,13 @@ export default function PaymentLateTable({ prevMonth = false }: Props) {
   if (isLoading) return <div>Chargement…</div>;
   if (error) return <div className="text-red-500">Erreur lors du chargement des retards</div>;
   if (!data || data.length === 0) return <div>Aucun retard</div>;
+
+  // Affichage du nombre d'enfants en retard
   return (
     <div className="mt-3">
+      <div className="font-semibold mb-2">
+        {data.length} enfant{data.length > 1 ? "s" : ""} en retard
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -32,4 +37,3 @@ export default function PaymentLateTable({ prevMonth = false }: Props) {
     </div>
   );
 }
-
