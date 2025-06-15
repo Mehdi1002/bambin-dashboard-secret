@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 type PaymentModalProps = {
   open: boolean;
   onClose: () => void;
-  onSave: (amountDue: number, amountPaid: number) => void;
+  onSave: (amountDue: number, amountPaid: number, registrationFee?: number) => void;
   initialAmountDue: number;
   initialAmountPaid: number;
+  inscriptionFeeEditable?: boolean;
+  initialInscriptionFee?: number;
 };
 
 export default function QuickPaymentModal({
@@ -18,17 +20,21 @@ export default function QuickPaymentModal({
   onSave,
   initialAmountDue,
   initialAmountPaid,
+  inscriptionFeeEditable = false,
+  initialInscriptionFee = 0,
 }: PaymentModalProps) {
   const [amountDue, setAmountDue] = useState(initialAmountDue);
   const [amountPaid, setAmountPaid] = useState(initialAmountPaid);
+  const [registrationFee, setRegistrationFee] = useState(initialInscriptionFee);
 
   useEffect(() => {
     setAmountDue(initialAmountDue);
     setAmountPaid(initialAmountPaid);
-  }, [initialAmountDue, initialAmountPaid, open]);
+    setRegistrationFee(initialInscriptionFee ?? 0);
+  }, [initialAmountDue, initialAmountPaid, initialInscriptionFee, open]);
 
-  const reste = Math.max(amountDue - amountPaid, 0);
-  const isValidated = amountPaid >= amountDue;
+  const reste = Math.max(amountDue + (inscriptionFeeEditable ? registrationFee : 0) - amountPaid, 0);
+  const isValidated = amountPaid >= (amountDue + (inscriptionFeeEditable ? registrationFee : 0));
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -47,6 +53,18 @@ export default function QuickPaymentModal({
               onChange={(e) => setAmountDue(Number(e.target.value))}
             />
           </div>
+          {inscriptionFeeEditable && (
+            <div>
+              <label className="block text-xs mb-1">Frais d'inscription</label>
+              <Input
+                type="number"
+                value={registrationFee}
+                min={0}
+                step={500}
+                onChange={(e) => setRegistrationFee(Number(e.target.value))}
+              />
+            </div>
+          )}
           <div>
             <label className="block text-xs mb-1">Montant versé</label>
             <Input
@@ -76,7 +94,7 @@ export default function QuickPaymentModal({
           </Button>
           <Button
             variant="default"
-            onClick={() => onSave(amountDue, amountPaid)}
+            onClick={() => onSave(amountDue, amountPaid, inscriptionFeeEditable ? registrationFee : undefined)}
           >
             Enregistrer
           </Button>

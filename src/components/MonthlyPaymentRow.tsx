@@ -9,11 +9,19 @@ type MonthlyPaymentRowProps = {
   child: Child;
   pay: Payment | null | undefined;
   onEdit: () => void;
+  month: number;
+  monthInscription: number | null;
 };
 
-export default function MonthlyPaymentRow({ child, pay, onEdit }: MonthlyPaymentRowProps) {
-  const totalDue = pay ? pay.amount_due + pay.registration_fee : 10000;
-  const registrationFee = pay ? pay.registration_fee : 0;
+export default function MonthlyPaymentRow({ child, pay, onEdit, month, monthInscription }: MonthlyPaymentRowProps) {
+  const showInscriptionFee = monthInscription && month === monthInscription;
+
+  const totalDue = pay
+    ? pay.amount_due + (showInscriptionFee ? pay.registration_fee : 0)
+    : showInscriptionFee
+      ? 10000 // suppose le montant par défaut inclut les frais d'inscription
+      : 10000;
+  const registrationFee = pay && showInscriptionFee ? pay.registration_fee : 0;
   const amountPaid = pay ? pay.amount_paid : 0;
   const reste = Math.max(totalDue - amountPaid, 0);
   const isValidated = pay ? pay.validated : false;

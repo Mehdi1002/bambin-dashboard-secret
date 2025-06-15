@@ -58,7 +58,7 @@ export default function MonthlyPaymentsTable() {
     queryKey: ["children-list"],
     queryFn: async () => {
       const { data, error } = await supabase.from("children")
-        .select("id, nom, prenom, section, statut")
+        .select("id, nom, prenom, section, statut, date_inscription")
         .order("nom", { ascending: true });
       if (error) throw error;
       return (data ?? []).filter((c) => c.statut === "Actif") as Child[];
@@ -85,48 +85,59 @@ export default function MonthlyPaymentsTable() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalChild, setModalChild] = useState<Child | null>(null);
   const [modalPay, setModalPay] = useState<Payment | null>(null);
+  const [modalMonthInscription, setModalMonthInscription] = useState<number | null>(null);
 
-  // On ouvre la modale pour n'importe quel enfant
+  // On ouvre la modale pour n'importe quel enfant 
   const handleOpenModal = (child: Child, pay: Payment | null | undefined) => {
     setModalChild(child);
     setModalPay(pay ?? null);
+
+    // Récupérer le mois d’inscription pour l’enfant (c.date_inscription: "YYYY-MM-DD")
+    let monthInscription = null;
+    const c = child as any;
+    if (c.date_inscription) {
+      monthInscription = Number(c.date_inscription.split("-")[1]);
+    }
+    setModalMonthInscription(monthInscription);
+
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalChild(null);
     setModalPay(null);
+    setModalMonthInscription(null);
     setModalOpen(false);
   };
 
-  // Création ou maj d'un paiement
   const mutation = useMutation({
     mutationFn: async (params: {
       child: Child,
       pay: Payment | null,
       amount_due: number,
       amount_paid: number,
+      registration_fee: number,
       year: number,
       month: number
     }) => {
-      const { child, pay, amount_due, amount_paid, year, month } = params;
-      const validated = amount_paid >= amount_due;
+      const { child, pay, amount_due, amount_paid, registration_fee, year, month } = params;
+      // Toujours valider : à payer = mensualité (+ frais d'inscription si c'est le mois d'inscription)
+      const totalDue = amount_due + registration_fee;
+      const validated = amount_paid >= totalDue;
       const updateData = {
         child_id: child.id,
         year,
         month,
         amount_due,
-        registration_fee: pay ? pay.registration_fee : 0,
+        registration_fee,
         amount_paid,
         validated,
         status: validated ? "validated" : "pending"
       };
       if (pay) {
-        // Paiement existe : update
         const { error } = await supabase.from("payments").update(updateData).eq("id", pay.id);
         if (error) throw error;
       } else {
-        // Paiement n'existe pas : insert
         const { error } = await supabase.from("payments").insert(updateData);
         if (error) throw error;
       }
@@ -141,13 +152,18 @@ export default function MonthlyPaymentsTable() {
   });
 
   // Quand on valide la modale
-  const handleSavePayment = (amountDue: number, amountPaid: number) => {
+  const handleSavePayment = (amountDue: number, amountPaid: number, registrationFee?: number) => {
     if (!modalChild) return;
+
+    // Le champ frais d’inscription n’est éditable que si le mois sélectionné est le mois d’inscription de l’enfant
+    const inscriptionFeeEditable = modalMonthInscription && month === modalMonthInscription;
+
     mutation.mutate({
       child: modalChild,
       pay: modalPay,
       amount_due: amountDue,
       amount_paid: amountPaid,
+      registration_fee: inscriptionFeeEditable ? (registrationFee ?? 0) : (modalPay ? modalPay.registration_fee : 0),
       year,
       month,
     });
@@ -206,12 +222,25 @@ export default function MonthlyPaymentsTable() {
             ) : (
               children.map(child => {
                 const pay = (payments ?? []).find(p => p.child_id === child.id);
+                // Trouver le mois d’inscription de l’enfant
+                const monthInscription = (() => {
+                  // Chercher l’enfant dans children list pour trouver date_inscription (string ou null)
+                  const c = child as any;
+                  if (c.date_inscription) {
+                    // c.date_inscription: "YYYY-MM-DD" => on récupère le mois
+                    return Number(c.date_inscription.split("-")[1]);
+                  }
+                  return null;
+                })();
+
                 return (
                   <MonthlyPaymentRow
                     key={pay ? pay.id : child.id}
                     child={child}
                     pay={pay}
                     onEdit={() => handleOpenModal(child, pay)}
+                    month={month}
+                    monthInscription={monthInscription}
                   />
                 );
               })
@@ -226,10 +255,17 @@ export default function MonthlyPaymentsTable() {
         onSave={handleSavePayment}
         initialAmountDue={
           modalPay
-            ? (modalPay.amount_due + modalPay.registration_fee)
+            ? modalPay.amount_due
             : 10000
         }
+        // frais d’inscription pour ce mois ? affichable/éditable si mois d’inscription
         initialAmountPaid={modalPay ? modalPay.amount_paid : 0}
+        inscriptionFeeEditable={modalMonthInscription && month === modalMonthInscription}
+        initialInscriptionFee={
+          modalPay && modalMonthInscription && month === modalMonthInscription
+            ? modalPay.registration_fee
+            : 1000 // valeur par défaut, à ajuster si besoin
+        }
       />
       <div className="mt-4 text-xs text-muted-foreground">
         - Cliquez sur <b>Enregistrer un paiement</b> pour saisir ou ajuster un versement.<br />
