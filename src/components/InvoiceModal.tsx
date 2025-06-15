@@ -128,18 +128,19 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   };
   if (!child) return null;
   return <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl mx-0">
         <DialogHeader>
           <DialogTitle>Facture du mois de {moisEtAnnee}</DialogTitle>
         </DialogHeader>
-        <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl text-sm my-[9px] mx-[7px]">
+        <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl text-sm my-[9px] mx-0">
           {/* EN-TÊTE ADMINISTRATIF avec le numéro à droite */}
-          <div className="mb-4"
-            dangerouslySetInnerHTML={{
-              __html: getAdminHeaderHtml({ right: invoiceNumber })
-            }} />
+          <div className="mb-4" dangerouslySetInnerHTML={{
+          __html: getAdminHeaderHtml({
+            right: invoiceNumber
+          })
+        }} />
           {/* Titre "Facture" */}
-          <h2 className="text-xl font-semibold text-center mb-3 mt-1">Facture</h2>
+          <h2 className="text-xl font-semibold mb-3 mt-1 mx-[4px] text-center">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
