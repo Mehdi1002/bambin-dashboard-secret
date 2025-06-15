@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import DocumentButtons from "./DocumentButtons";
+import ChildrenCsvImport from "./ChildrenCsvImport";
 
 type ChildRow = {
   id: string;
@@ -26,6 +27,7 @@ export default function ChildTable() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [edit, setEdit] = useState<ChildRow | null>(null);
+  const [showCsvImport, setShowCsvImport] = useState(false);
 
   // Récupère les enfants en veillant à gérer les nouvelles colonnes (photo retirée)
   const { data: children, isLoading, error } = useQuery({
@@ -165,15 +167,30 @@ export default function ChildTable() {
           onCancel={() => setShowForm(false)}
         />
       )}
-      {!showForm && (
+      {showCsvImport && (
+        <ChildrenCsvImport
+          onClose={() => setShowCsvImport(false)}
+          onSuccess={() => {
+            setShowCsvImport(false);
+            queryClient.invalidateQueries({ queryKey: ["children"] });
+          }}
+        />
+      )}
+      {!showForm && !showCsvImport && (
         <>
-          <div className="flex justify-end mb-3">
+          <div className="flex justify-between mb-3 gap-3 flex-wrap">
             <button
               onClick={handleAdd}
               className="flex items-center bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/80 transition text-sm gap-2"
             >
               <Plus className="w-4 h-4" />
               Ajouter un enfant
+            </button>
+            <button
+              onClick={() => setShowCsvImport(true)}
+              className="flex items-center bg-muted text-primary border border-primary px-4 py-2 rounded hover:bg-muted/80 transition text-sm gap-2"
+            >
+              Importer CSV
             </button>
           </div>
           <div className="border rounded-lg overflow-x-auto">
