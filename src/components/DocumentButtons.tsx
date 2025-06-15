@@ -163,7 +163,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
           <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
-          <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+          <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
           Cette attestation est faite pour servir et valoir ce que de droit.
         </div>
         <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
