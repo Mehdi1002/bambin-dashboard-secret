@@ -207,6 +207,74 @@ function getAdminHeaderFlexCertif(date?: string) {
   `;
 }
 
+function getAdminHeaderFlexCertifSansDate() {
+  // Version du header SANS la date à droite
+  const defaultData = {
+    nom: "L’île des Bambins",
+    sousTitre: "Crèche et préscolaire",
+    adresse: "1000 logt IHEDDADEN BEJAIA",
+    telephone: "0553367356 / 034 11 98 27",
+    email: "liledesbambins@gmail.com",
+    cb: "",
+    nif: "196506010063735",
+    article: "06017732933",
+    agrement: "",
+    rc: "06/01-0961315A10",
+    nis: "",
+    logo: ""
+  };
+  let admin = defaultData;
+  try {
+    const stored = localStorage.getItem("admin_profile");
+    if (stored) {
+      admin = { ...defaultData, ...JSON.parse(stored) };
+    }
+  } catch {}
+
+  return `
+    <div style="
+      width:100%;
+      margin-bottom:28px;
+      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;
+      border-bottom:2px solid #d1e3fc;
+      padding-bottom:20px;
+      box-sizing:border-box;
+    ">
+      <div style="flex:1;min-width:0;">
+        ${admin.logo
+          ? `<img src="${admin.logo}" alt="logo" style="width:58px;height:58px;border-radius:12px;object-fit:cover;border:2px solid #1852a1;background:#f5f8ff;margin-bottom:9px;margin-right:8px;vertical-align:middle;display:block;" />`
+          : ""}
+        <div style="font-size:1.18em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
+          L’île des Bambins
+        </div>
+        <div style="font-style:italic;color:#2e4a70;font-size:.98em;line-height:1.3;margin-bottom:7px;">
+          ${admin.sousTitre || ""}
+        </div>
+        <div style="font-size:.98em;line-height:1.7;margin-bottom:0px;">
+          <div style="margin-bottom:7px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
+          <div style="margin-bottom:7px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
+          <div style="margin-bottom:7px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
+          ${admin.cb ? `<div style="margin-bottom:7px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
+        </div>
+        <div style="margin-top:6px;font-size:0.95em;">
+          ${admin.nif ? `<div style="margin-bottom:7px;color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
+          ${admin.article ? `<div style="margin-bottom:7px;color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
+          ${
+            admin.agrement
+              ? `<div style="margin-bottom:7px;color:#222;"><b>N° Agrément :</b> ${admin.agrement}</div>`
+              : ""
+          }
+          ${admin.rc ? `<div style="margin-bottom:7px;color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
+          ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function getTodayFR() {
   const now = new Date();
   return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -252,33 +320,33 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const scolariteHtml = `
     <div style="
       background:#fff;
-      width:${PAGE_WIDTH}pt;
-      min-height:842pt;
+      width:100%;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
       color:#222;
-      border-radius:0;
       margin:0;
       box-sizing:border-box;
+      border-radius:12px;
       padding:0;
     ">
-      ${getAdminHeaderFlexCertif()}
-      ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
-      <div style="
-        margin:32px 0 42px 0;
-        font-size:1.08em;
-        line-height:1.72;
-        text-align:justify;
-        padding:0 50pt;
-        width:495pt;
-        box-sizing:border-box;
-      ">
-        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
-        <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
-        <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
-        Cette attestation est faite pour servir et valoir ce que de droit.
-      </div>
-      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:495pt;">
-        Le Directeur
+      <div style="max-width:540px;margin:0 auto;padding:26px 24px 32px 24px;">
+        ${getAdminHeaderFlexCertifSansDate()}
+        ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
+        <div style="
+          margin:24px 0 38px 0;
+          font-size:1.09em;
+          line-height:1.7;
+          text-align:justify;
+          padding:0 2px;
+          color:#23344a;
+        ">
+          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
+          <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
+          <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+          Cette attestation est faite pour servir et valoir ce que de droit.
+        </div>
+        <div style="margin-top:52px;text-align:right;font-size:1.07em;">
+          Le Directeur
+        </div>
       </div>
     </div>
   `;
@@ -357,7 +425,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
         style={{ fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif" }}
       >
-        <div className="w-full max-w-4xl h-auto flex flex-col items-center justify-center p-2 relative">
+        <div className="w-full max-w-lg h-auto flex flex-col items-center justify-center p-2 relative">
           <button
             className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1 z-10"
             aria-label="Fermer"
@@ -371,11 +439,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
             className="border bg-white shadow-lg flex items-center justify-center overflow-auto"
             style={{
               width: "100%",
-              maxWidth: "650px",
-              minHeight: "60vh",
+              maxWidth: "550px",
+              minHeight: "320px",
               margin: "0 auto",
               padding: "0",
-              borderRadius: "8px",
+              borderRadius: "12px",
               boxShadow: "0 8px 32px rgba(0,0,0,.13)",
               position: "relative",
               boxSizing: "border-box",
@@ -384,7 +452,6 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
             <div
               style={{
                 width: "100%",
-                minHeight: "750px",
                 background: "#fff",
                 overflow: "hidden",
                 boxSizing: "border-box",
@@ -392,7 +459,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
               dangerouslySetInnerHTML={{ __html: getHtml(type) }}
             />
           </div>
-          <div className="flex gap-3 justify-end w-full max-w-4xl mt-4 px-7">
+          <div className="flex gap-3 justify-end w-full max-w-lg mt-4 px-7">
             <Button
               variant="outline"
               onClick={onClose}
