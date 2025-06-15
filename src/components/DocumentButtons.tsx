@@ -30,7 +30,6 @@ function toFrenchDate(dateIso: string) {
 // Fonction pour générer dynamiquement l’en-tête depuis les infos admin SANS LE LOGO
 function getAdminHeader() {
   // Par défaut si aucun profil n’est enregistré
-  // DOIT correspondre à l’aperçu du module AdminProfileForm
   const defaultData = {
     nom: "Crèche et préscolaire L’île des Bambins",
     adresse: "123, Avenue de l’Exemple",
@@ -51,34 +50,29 @@ function getAdminHeader() {
   } catch {
     // default fallback
   }
-  // Compose l’en-tête HTML (SANS logo)
+
+  // Style du header harmonisé avec la facture (centré, typo, espacement)
   return `
-    <div style="margin-bottom: 24px; text-align: center;">
-      <div style="font-size: 1.13em; line-height:1.5; font-weight:bold;">
+    <div style="margin-bottom:28px; text-align:center;">
+      <div style="font-size:1.2em; font-weight:bold; letter-spacing:0.5px; margin-bottom:4px; color:#212121;">
         ${admin.nom}
       </div>
-      <div style="font-size: 1em; color: #222;">
+      <div style="color:#484848; font-size:1em; margin-bottom:2px;">
         ${admin.adresse ? admin.adresse + "<br/>" : ""}
-        ${
-          [admin.telephone, admin.email]
-            .filter(Boolean)
-            .map(
-              (it) =>
-                `<span style="font-size:1em;color:#555;">${it}</span>`
-            )
-            .join(" | ")
-        }
-        ${
-          [admin.nif, admin.article, admin.rc, admin.nis].some(Boolean)
-            ? `<div style="font-size:0.97em;color:#555;margin-top:3px;">
-          ${admin.nif ? "NIF : " + admin.nif + " &nbsp; " : ""}
-          ${admin.article ? "N° Article : " + admin.article + " &nbsp; " : ""}
-          ${admin.rc ? "RC : " + admin.rc + " &nbsp; " : ""}
-          ${admin.nis ? "NIS : " + admin.nis : ""}
-          </div>`
-            : ""
-        }
       </div>
+      <div style="color:#444; font-size:0.97em; margin-bottom:2px;">
+        ${[admin.telephone, admin.email].filter(Boolean).join(" | ")}
+      </div>
+      ${
+        [admin.nif, admin.article, admin.rc, admin.nis].some(Boolean)
+          ? `<div style="font-size:0.94em; color:#666; margin-top:1.5px;">
+              ${admin.nif ? "NIF : " + admin.nif + " &nbsp; " : ""}
+              ${admin.article ? "N° Article : " + admin.article + " &nbsp; " : ""}
+              ${admin.rc ? "RC : " + admin.rc + " &nbsp; " : ""}
+              ${admin.nis ? "NIS : " + admin.nis : ""}
+            </div>`
+          : ""
+      }
     </div>
   `;
 }
