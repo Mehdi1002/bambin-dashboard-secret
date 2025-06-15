@@ -162,7 +162,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* TOTAUX bas de page */}
           <div className="flex flex-col items-end">
             <div className="font-bold text-lg mb-1">
-              Total général&nbsp;: {total.toLocaleString("fr-DZ")} DA
+              Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
             {/* Phrase finale sur une seule ligne, alignée à gauche, marge latérale réduite, sans fond */}
             <div style={{

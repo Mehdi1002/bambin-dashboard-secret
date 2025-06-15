@@ -162,7 +162,7 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           {/* TOTAUX bas de page */}
           <div className="flex flex-col items-end">
             <div className="font-bold text-lg mb-1">
-              Total général&nbsp;: {total.toLocaleString("fr-DZ")} DA
+              Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
             <div className="font-medium w-full text-left px-1" style={{ background: "none" }}>
               Arrêtée la présente facture à la somme de&nbsp;:
