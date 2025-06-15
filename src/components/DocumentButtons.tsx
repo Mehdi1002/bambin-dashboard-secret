@@ -28,7 +28,6 @@ function toFrenchDate(dateIso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-// Nouvelle fonction d’en-tête sans marges latérales à droite.
 function getAdminHeader() {
   const defaultData = {
     nom: "Crèche et préscolaire L’île des Bambins",
@@ -48,15 +47,16 @@ function getAdminHeader() {
       admin = { ...defaultData, ...JSON.parse(stored) };
     }
   } catch {}
-  // Largeur 100% de A4 : 595pt (≈21cm)
+
+  // En-tête sur toute la largeur sans aucune marge/padding
   return `
     <div style="
-      width:100%;display:flex;align-items:flex-start;justify-content:space-between;
-      border-bottom:1.5px solid #e5e7eb;padding-bottom:13px;
+      width:595pt;display:flex;align-items:flex-start;justify-content:space-between;
+      border-bottom:1.5px solid #e5e7eb;padding:0;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      box-sizing:border-box;margin-bottom:24px;
+      box-sizing:border-box;margin-bottom:20px;
     ">
-      <div style="display:flex;align-items:flex-start;gap:22px;">
+      <div style="display:flex;align-items:flex-start;gap:18px;margin:0;">
         ${
           admin.logo
             ? `<div style="flex-shrink:0">
@@ -64,9 +64,9 @@ function getAdminHeader() {
                 </div>`
             : ""
         }
-        <div>
-          <div style="font-size:1.21em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
-          <div style="color:#697184;font-size:1em;line-height:1.3;margin-bottom:7px;">Crèche et préscolaire</div>
+        <div style="margin:0;">
+          <div style="font-size:1.13em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
+          <div style="color:#697184;font-size:1em;line-height:1.3;margin-bottom:6px;">Crèche et préscolaire</div>
           <div style="color:#223046;font-size:1em;"><b>Adresse :</b> ${admin.adresse}</div>
           <div style="color:#223046;font-size:1em;"><b>Tél :</b> ${admin.telephone}</div>
           <div style="color:#223046;font-size:1em;"><b>Email :</b> ${admin.email}</div>
@@ -77,7 +77,6 @@ function getAdminHeader() {
   `;
 }
 
-// Date en haut à droite, largeur max, pas de marge !
 function getTodayFR() {
   const now = new Date();
   return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -88,60 +87,117 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
   const header = headerHtml ?? getAdminHeader();
 
-  // Titre clairement centré, occupe toute la largeur
+  // Titre parfaitement centré sur toute la largeur de la page
   function makeTitle(label: string) {
     return `
-      <div style="width:100%;text-align:center;margin:0 auto 24px auto;
-        font-size:1.37em;font-weight:600;letter-spacing:0.2px;
-        color:#172044;font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;">
+      <div style="
+        width:595pt;
+        text-align:center;
+        margin:0;
+        font-size:1.38em;
+        font-weight:600;
+        letter-spacing:0.2px;
+        color:#172044;
+        font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      ">
         ${label}
       </div>
     `;
   }
 
-  // Wrapper général : largeur exacte A4, contenu sans padding horizontal
-  const PAGE_WIDTH = 595; // pt (A4)
+  // Wrapper principal : pas de padding/marge horizontale (0), 100% largeur 595pt 
+  const PAGE_WIDTH = 595;
   const scolariteHtml = `
-    <div style="background:#fff;width:${PAGE_WIDTH}px;box-sizing:border-box;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;color:#222;border-radius:8px;">
+    <div style="
+      background:#fff;
+      width:${PAGE_WIDTH}pt;
+      min-height:842pt;
+      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      color:#222;
+      border-radius:0;
+      margin:0;
+      box-sizing:border-box;
+      padding:0;
+    ">
       <!-- DATE EN HAUT À DROITE -->
-      <div style="width:100%;display:flex;justify-content:flex-end;margin-top:18px">
-        <span style="font-size:1em;color:#172044;font-weight:500;">
-          Date : <span style="font-weight:600">${getTodayFR()}</span>
-        </span>
+      <div style="
+        width:595pt;
+        display:flex;
+        justify-content:flex-end;
+        align-items:flex-start;
+        margin:0;
+        padding:0;
+        font-size:1em;
+        color:#172044;
+        font-weight:500;
+      ">
+        <span style="padding:14px 8px 0 0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
       </div>
       ${header}
       ${makeTitle("Certificat de scolarité")}
-      <div style="margin:34px 0 48px 0;font-size:1.09em;line-height:1.72;text-align:justify;padding:0 34px;">
+      <div style="
+        margin:32px 0 42px 0;
+        font-size:1.08em;
+        line-height:1.72;
+        text-align:justify;
+        padding:0 0 0 0;
+        width:595pt;
+        box-sizing:border-box;
+      ">
         Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
         <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en
         <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
         Cette attestation est faite pour servir et valoir ce que de droit.
       </div>
-      <div style="margin-top:68px;padding-right:34px;text-align:right;font-size:1.07em;">
+      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:595pt;">
         Le Directeur
       </div>
     </div>
   `;
 
   const inscriptionHtml = `
-    <div style="background:#fff;width:${PAGE_WIDTH}px;box-sizing:border-box;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;color:#222;border-radius:8px;">
+    <div style="
+      background:#fff;
+      width:${PAGE_WIDTH}pt;
+      min-height:842pt;
+      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      color:#222;
+      border-radius:0;
+      margin:0;
+      box-sizing:border-box;
+      padding:0;
+    ">
       <!-- DATE EN HAUT À DROITE -->
-      <div style="width:100%;display:flex;justify-content:flex-end;margin-top:18px">
-        <span style="font-size:1em;color:#172044;font-weight:500;">
-          Date : <span style="font-weight:600">${getTodayFR()}</span>
-        </span>
+      <div style="
+        width:595pt;
+        display:flex;
+        justify-content:flex-end;
+        align-items:flex-start;
+        margin:0;
+        padding:0;
+        font-size:1em;
+        color:#172044;
+        font-weight:500;
+      ">
+        <span style="padding:14px 8px 0 0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
       </div>
       ${header}
       ${makeTitle("Attestation d’inscription")}
-      <div style="margin:34px 0 48px 0;font-size:1.09em;line-height:1.72;text-align:justify;padding:0 34px;">
+      <div style="
+        margin:32px 0 42px 0;
+        font-size:1.08em;
+        line-height:1.72;
+        text-align:justify;
+        padding:0 0 0 0;
+        width:595pt;
+        box-sizing:border-box;
+      ">
         Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
         <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire
         <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
         Fait pour servir et valoir ce que de droit.
       </div>
-      <div style="margin-top:68px;padding-right:34px;text-align:right;font-size:1.07em;">
+      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:595pt;">
         Le Directeur
       </div>
     </div>
