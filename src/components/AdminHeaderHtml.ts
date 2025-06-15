@@ -2,8 +2,9 @@
 /**
  * Utilitaire: génère le HTML à injecter pour en-tête admin
  * Usage: import { getAdminHeaderHtml } from "./AdminHeaderHtml"
+ * Ajout: optionnellement, permet d’inclure un bloc à droite (ex : numéro de facture)
  */
-export function getAdminHeaderHtml() {
+export function getAdminHeaderHtml(options?: { right?: string }) {
   const defaultData = {
     nom: "L’île des Bambins",
     sousTitre: "Crèche et préscolaire",
@@ -24,6 +25,29 @@ export function getAdminHeaderHtml() {
       admin = { ...defaultData, ...JSON.parse(stored) };
     }
   } catch {}
+
+  // Ajout du bloc à droite si fourni (ex : numéro de facture)
+  const rightBloc =
+    options?.right
+      ? `<div style="
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            flex-shrink: 0;
+            margin-left: 18px;
+            min-width: 105px;
+            justify-content: flex-start;
+          ">
+            <span style="
+              font-weight: 700;
+              font-size: 1.09em;
+              color: #1852a1;
+              letter-spacing: 0.7px;
+              margin-top: 4px;
+              white-space: nowrap;
+            ">${options.right}</span>
+          </div>`
+      : "";
 
   // Style et marges identiques au DocumentButtons (modifié)
   return `
@@ -79,8 +103,8 @@ export function getAdminHeaderHtml() {
             </div>
           ` : ""}
         </div>
+        ${rightBloc}
       </div>
     </div>
   `;
 }
-

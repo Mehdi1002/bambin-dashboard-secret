@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -125,27 +124,12 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           <DialogTitle>Facture regroupée ({mois.length} mois)</DialogTitle>
         </DialogHeader>
         <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl mx-auto text-sm">
-          {/* Numéro de facture en haut à droite */}
-          <div style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "flex-end",
-            marginBottom: "4px"
-          }}>
-            <div style={{
-              fontWeight: 700,
-              fontSize: "1.13em",
-              color: "#1852a1",
-              letterSpacing: "0.5px"
-            }}>
-              {invoiceNumber}
-            </div>
-          </div>
-          {/* EN-TÊTE ADMINISTRATIF */}
+          {/* EN-TÊTE ADMINISTRATIF avec numéro à droite */}
           <div
             className="mb-4"
-            dangerouslySetInnerHTML={{ __html: getAdminHeaderHtml() }}
+            dangerouslySetInnerHTML={{
+              __html: getAdminHeaderHtml({ right: invoiceNumber })
+            }}
           />
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
@@ -195,4 +179,3 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
 };
 
 export default GroupedInvoiceModal;
-
