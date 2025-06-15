@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -160,7 +159,7 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
               {paiements.map((p, idx) => (
                 <tr key={idx}>
                   <td className="py-2 px-3">
-                    {child.nom + " " + child.prenom}
+                    {idx === 0 ? child.nom + " " + child.prenom : ""}
                   </td>
                   <td className="py-2 px-3">{p.mois}</td>
                   <td className="py-2 px-3 text-right">{p.montant.toLocaleString("fr-DZ")} DA</td>
@@ -190,4 +189,3 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
 };
 
 export default GroupedInvoiceModal;
-
