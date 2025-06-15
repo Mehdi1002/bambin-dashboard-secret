@@ -1,4 +1,3 @@
-
 /**
  * Utilitaire: génère le HTML à injecter pour en-tête admin
  * Usage: import { getAdminHeaderHtml } from "./AdminHeaderHtml"
@@ -26,6 +25,10 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
     }
   } catch {}
 
+  // On force nom et sousTitre fixes pour l'entête facture
+  const MAIN_TITLE = "L’île des Bambins";
+  const SUB_TITLE = "Crèche et préscolaire";
+
   // Ajout du bloc à droite si fourni (ex : numéro de facture)
   const rightBloc =
     options?.right
@@ -49,7 +52,7 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
           </div>`
       : "";
 
-  // Afficher le sous-titre sous le nom
+  // Afficher le titre et sous-titre fixes
   return `
     <div style="
       width:100%;
@@ -69,10 +72,10 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
         }
         <div style="flex:1;">
           <div style="font-size:1.55em;font-weight:700;color:#1852a1;line-height:1;margin-bottom:3px;letter-spacing:0.1px;">
-            ${admin.nom}
+            ${MAIN_TITLE}
           </div>
           <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
-            ${admin.sousTitre || ""}
+            ${SUB_TITLE}
           </div>
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
             <b>Adresse :</b> ${admin.adresse || ""}
@@ -108,4 +111,3 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
     </div>
   `;
 }
-
