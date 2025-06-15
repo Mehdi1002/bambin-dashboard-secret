@@ -30,8 +30,8 @@ function toFrenchDate(dateIso: string) {
 
 function getAdminHeader() {
   const defaultData = {
-    nom: "L’île des Bambins",   // ← n’affiche plus “Crèche et préscolaire”
-    sousTitre: "Crèche et préscolaire", // ← remis sur la bonne valeur
+    nom: "L’île des Bambins",
+    sousTitre: "Crèche et préscolaire",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
@@ -74,31 +74,31 @@ function getAdminHeader() {
           <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
             ${admin.sousTitre || ""}
           </div>
-          <div style="margin-bottom:6px;color:#233046;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>Adresse :</b> ${admin.adresse || ""}
           </div>
-          <div style="margin-bottom:6px;color:#233046;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>Tél :</b> ${admin.telephone || ""}
           </div>
-          <div style="margin-bottom:6px;color:#233046;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>Email :</b> ${admin.email || ""}
           </div>
           ${admin.cb ? `
-            <div style="margin-bottom:6px;color:#233046;font-size:1em;line-height:1.56;">
+            <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
               <b>C.B BNA :</b> ${admin.cb}
             </div>
           ` : ""}
-          <div style="margin-bottom:6px;color:#1852a1;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>NIF :</b> ${admin.nif || ""}
           </div>
-          <div style="margin-bottom:6px;color:#1852a1;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>N° Article :</b> ${admin.article || ""}
           </div>
-          <div style="margin-bottom:6px;color:#1852a1;font-size:1em;line-height:1.56;">
+          <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
             <b>RC :</b> ${admin.rc || ""}
           </div>
           ${admin.nis ? `
-            <div style="margin-bottom:6px;color:#1852a1;font-size:1em;line-height:1.56;">
+            <div style="margin-bottom:6px;color:#222;font-size:1em;line-height:1.56;">
               <b>NIS :</b> ${admin.nis}
             </div>
           ` : ""}
@@ -108,21 +108,10 @@ function getAdminHeader() {
   `;
 }
 
-function getTodayFR() {
-  const now = new Date();
-  return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
-}
-
-// Utilitaire accord genre
-function genreInscrit(sexe?: string) {
-  if ((sexe ?? "").toLowerCase().startsWith("f")) return "inscrite";
-  return "inscrit";
-}
-
 function getAdminHeaderFlexCertif(date?: string) {
   const defaultData = {
-    nom: "L’île des Bambins", // ← nom raccourci partout
-    sousTitre: "Crèche et préscolaire", // ← remis sur la bonne valeur
+    nom: "L’île des Bambins",
+    sousTitre: "Crèche et préscolaire",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
@@ -163,16 +152,16 @@ function getAdminHeaderFlexCertif(date?: string) {
           ${admin.sousTitre || ""}
         </div>
         <div style="font-size:1em;line-height:1.7;margin-bottom:0px;">
-          <div style="margin-bottom:3px;"><b>Adresse :</b> ${admin.adresse || ""}</div>
-          <div style="margin-bottom:3px;"><b>Tél :</b> ${admin.telephone || ""}</div>
-          <div style="margin-bottom:3px;"><b>Email :</b> ${admin.email || ""}</div>
-          ${admin.cb ? `<div style="margin-bottom:3px;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
+          <div style="margin-bottom:3px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
+          <div style="margin-bottom:3px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
+          <div style="margin-bottom:3px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
+          ${admin.cb ? `<div style="margin-bottom:3px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
         </div>
-        <div style="margin-top:10px;font-size:0.98em;color:#1852a1;">
-          ${admin.nif ? `<div><b>NIF :</b> ${admin.nif}</div>` : ""}
-          ${admin.article ? `<div><b>N° Article :</b> ${admin.article}</div>` : ""}
-          ${admin.rc ? `<div><b>RC :</b> ${admin.rc}</div>` : ""}
-          ${admin.nis ? `<div><b>NIS :</b> ${admin.nis}</div>` : ""}
+        <div style="margin-top:10px;font-size:0.98em;">
+          ${admin.nif ? `<div style="color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
+          ${admin.article ? `<div style="color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
+          ${admin.rc ? `<div style="color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
+          ${admin.nis ? `<div style="color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
         </div>
       </div>
       <div style="flex-shrink:0;text-align:right;padding-left:28px;min-width:235px;">
@@ -185,6 +174,17 @@ function getAdminHeaderFlexCertif(date?: string) {
       </div>
     </div>
   `;
+}
+
+function getTodayFR() {
+  const now = new Date();
+  return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+// Utilitaire accord genre
+function genreInscrit(sexe?: string) {
+  if ((sexe ?? "").toLowerCase().startsWith("f")) return "inscrite";
+  return "inscrit";
 }
 
 export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Props) {
