@@ -43,6 +43,26 @@ export function useCurrentMonthPaymentsCount() {
 }
 
 /**
+ * Nombre total d'enfants inscrits (hors archivés/supprimés).
+ */
+export function useChildrenCount() {
+  return useQuery({
+    queryKey: ['kpi', 'children-count'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('children')
+        .select('id, statut');
+      if (error) throw error;
+      // On ne compte que les enfants actifs
+      const actifs = (data ?? []).filter((e: any) =>
+        e.statut !== "archivé" && e.statut !== "supprimé"
+      );
+      return actifs.length;
+    }
+  });
+}
+
+/**
  * KPIs retards de paiement pour un mois donné (par défaut : mois courant OU mois -1)
  * Retourne : [{ nom, prenom, month, year }]
  */

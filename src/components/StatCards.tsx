@@ -1,13 +1,23 @@
-import { Users, ArrowUp, ArrowDown } from "lucide-react";
-import { useSectionsCount, useCurrentMonthPaymentsCount } from "@/hooks/useKpis";
+
+import { Users } from "lucide-react";
+import { useSectionsCount, useCurrentMonthPaymentsCount, useChildrenCount } from "@/hooks/useKpis";
 
 export default function StatCards() {
   // KPIs dynamiques
   const { data: sections, isLoading: loadingSections } = useSectionsCount();
   const { data: paidCount, isLoading: loadingPaid } = useCurrentMonthPaymentsCount();
+  const { data: childrenCount, isLoading: loadingChildren } = useChildrenCount();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+      <div className="bg-card rounded-lg shadow p-6 flex flex-col items-start border min-h-[120px]">
+        <span className="text-muted-foreground mb-1 text-sm">Nombre total d'enfants</span>
+        <div className="flex items-center gap-2 mt-2">
+          <Users className="text-primary w-6 h-6" />
+          <span className="text-2xl font-bold">{loadingChildren ? "…" : childrenCount ?? 0}</span>
+        </div>
+        <span className="mt-2 text-xs text-muted-foreground">Enfants actifs uniquement</span>
+      </div>
       <div className="bg-card rounded-lg shadow p-6 flex flex-col items-start border min-h-[120px]">
         <span className="text-muted-foreground mb-1 text-sm">Enfants par section</span>
         {loadingSections ? (
