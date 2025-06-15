@@ -74,10 +74,10 @@ export default function ChildForm({
       num_doc_mere: form.numDocMere,
       allergies: form.allergies
     };
-    // Facultatif : Ajouter l'ID uniquement lors de l'édition
     if (initial && initial.id) {
       dataToSubmit["id"] = initial.id;
     }
+    console.log("[ChildForm] handleSubmit dataToSubmit:", dataToSubmit);
     onSubmit(dataToSubmit);
   };
   return (

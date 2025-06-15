@@ -69,6 +69,9 @@ export default function ChildTable() {
       delete row.telPere;
       delete row.telMere;
 
+      // Ajout d'un log pour tout ce qui va être envoyé à Supabase
+      console.log("[ChildTable] mutationUpsert row envoyé à Supabase:", row);
+
       if (row.id) {
         // update
         const { data, error } = await supabase
@@ -76,7 +79,10 @@ export default function ChildTable() {
           .update(row)
           .eq("id", row.id)
           .select();
-        if (error) throw error;
+        if (error) {
+          console.error("[ChildTable] erreur update:", error);
+          throw error;
+        }
         return data?.[0];
       } else {
         // création : NE PAS inclure la clé `id` (sinon null !)
@@ -86,7 +92,10 @@ export default function ChildTable() {
           .from("children")
           .insert([insertRow])
           .select();
-        if (error) throw error;
+        if (error) {
+          console.error("[ChildTable] erreur insert:", error);
+          throw error;
+        }
         return data?.[0];
       }
     },
@@ -96,8 +105,9 @@ export default function ChildTable() {
       setShowForm(false);
       setEdit(null);
     },
-    onError: () => {
-      toast({ variant: "destructive", title: "Erreur", description: "Problème lors de la sauvegarde." });
+    onError: (error: any) => {
+      console.error("[ChildTable] onError", error);
+      toast({ variant: "destructive", title: "Erreur", description: "Problème lors de la sauvegarde. " + (error?.message || "") });
     },
   });
 
