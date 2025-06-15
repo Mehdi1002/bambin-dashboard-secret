@@ -319,38 +319,50 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   }
 
   const PAGE_WIDTH = 595;
-  const PADDING = 50;
+  const PADDING = 36; // Harmonisé avec la facture (facture = 36pt de chaque côté)
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
   // --- Présentation du certificat et de l'attestation avec l'en-tête unifié ---
   const scolariteHtml = `
     <div style="
       background:#fff;
-      width:100%;
+      width:${PAGE_WIDTH}pt;
+      min-height:842pt;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
       color:#222;
       margin:0;
       box-sizing:border-box;
-      border-radius:12px;
+      border-radius:0;
       padding:0;
     ">
-      <div style="max-width:520px;margin:0 auto;padding:30px 0 36px 0;">
+      <div style="
+        width:${PAGE_WIDTH}pt;
+        min-height:800pt;
+        box-sizing:border-box;
+        margin:0;
+        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+      ">
         ${unifiedHeader}
         ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
         <div style="
-          margin:24px 0 38px 0;
-          font-size:1.09em;
+          margin:28px 0 42px 0;
+          font-size:1.10em;
           line-height:1.7;
           text-align:justify;
-          padding:0 2px;
+          padding:0;
           color:#23344a;
+          width:100%;
+          box-sizing:border-box;
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
           <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
           <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
           Cette attestation est faite pour servir et valoir ce que de droit.
         </div>
-        <div style="margin-top:52px;text-align:right;font-size:1.07em;">
+        <div style="margin-top:62px;text-align:right;font-size:1.07em;width:100%;">
           Le Directeur
         </div>
       </div>
@@ -371,19 +383,14 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     ">
       <div style="
         width:${PAGE_WIDTH}pt;
-        display:flex;
-        justify-content:flex-end;
-        align-items:flex-start;
+        min-height:800pt;
         margin:0;
         padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
-        font-size:1em;
-        color:#172044;
-        font-weight:500;
         box-sizing:border-box;
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
       ">
-        {/* Ceci ne fait pas double emploi : le header ci-dessous contient la date à droite */}
-      </div>
-      <div style="padding:0 ${PADDING}pt;">
         ${unifiedHeader}
         ${makeTitle("Attestation d’inscription")}
         <div style="
@@ -392,7 +399,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           line-height:1.72;
           text-align:justify;
           padding:0;
-          width:${innerWidth}pt;
+          width:100%;
           box-sizing:border-box;
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
@@ -400,7 +407,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           <b>${annee}</b>, en <b>${child.section} section.</b><br/><br/>
           Fait pour servir et valoir ce que de droit.
         </div>
-        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
+        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:100%;">
           Le Directeur
         </div>
       </div>
