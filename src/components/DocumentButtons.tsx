@@ -1,3 +1,4 @@
+
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
@@ -27,12 +28,12 @@ function toFrenchDate(dateIso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-// Fonction pour générer dynamiquement l’en-tête depuis les infos admin SANS LE LOGO
+// EN-TÊTE ULTRA PRÉCIS, FORMATÉ SUR PLUSIEURS LIGNES
 function getAdminHeader() {
-  // Par défaut si aucun profil n’est enregistré
+  // Valeurs par défaut si non renseigné
   const defaultData = {
     nom: "Crèche et préscolaire L’île des Bambins",
-    adresse: "123, Avenue de l’Exemple",
+    adresse: "",
     telephone: "",
     email: "",
     nif: "",
@@ -48,31 +49,49 @@ function getAdminHeader() {
       admin = { ...defaultData, ...JSON.parse(stored) };
     }
   } catch {
-    // default fallback
+    // fallback
   }
+  // Compose la date du jour au format JJ/MM/AAAA
+  const now = new Date();
+  const today = now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
-  // Style du header harmonisé avec la facture (centré, typo, espacement)
+  // Construit l’en-tête ligne à ligne :
+  // Nom (gros, gras)
+  // “Crèche et préscolaire”
+  // Adresse
+  // Tél
+  // Email
+  // NIF
+  // RC
+  // N° Article
+  // (NIS PAS affiché mais si tu veux tu peux l’ajouter)
+  // Date
+
   return `
-    <div style="margin-bottom:28px; text-align:center;">
-      <div style="font-size:1.2em; font-weight:bold; letter-spacing:0.5px; margin-bottom:4px; color:#212121;">
-        ${admin.nom}
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:1.18em; font-weight:bold; letter-spacing:0.3px; color:#222;">
+        ${admin.nom || "Crèche et préscolaire L’île des Bambins"}
       </div>
-      <div style="color:#484848; font-size:1em; margin-bottom:2px;">
-        ${admin.adresse ? admin.adresse + "<br/>" : ""}
+      <div style="font-size:1.08em; color:#333; margin-bottom:1px;">Crèche et préscolaire</div>
+      <div style="font-size:1em; color:#222; margin-bottom:1px;">
+        <span style="font-weight:500;">Adresse :</span> ${admin.adresse || "<span style='color:#aaa'>Non renseignée</span>"}
       </div>
-      <div style="color:#444; font-size:0.97em; margin-bottom:2px;">
-        ${[admin.telephone, admin.email].filter(Boolean).join(" | ")}
+      <div style="font-size:1em; color:#222; margin-bottom:1px;">
+        <span style="font-weight:500;">Tél :</span> ${admin.telephone || "<span style='color:#aaa'>Non renseigné</span>"}
       </div>
-      ${
-        [admin.nif, admin.article, admin.rc, admin.nis].some(Boolean)
-          ? `<div style="font-size:0.94em; color:#666; margin-top:1.5px;">
-              ${admin.nif ? "NIF : " + admin.nif + " &nbsp; " : ""}
-              ${admin.article ? "N° Article : " + admin.article + " &nbsp; " : ""}
-              ${admin.rc ? "RC : " + admin.rc + " &nbsp; " : ""}
-              ${admin.nis ? "NIS : " + admin.nis : ""}
-            </div>`
-          : ""
-      }
+      <div style="font-size:1em; color:#222; margin-bottom:1px;">
+        <span style="font-weight:500;">Email :</span> ${admin.email || "<span style='color:#aaa'>Non renseigné</span>"}
+      </div>
+      <div style="font-size:1em; color:#222; margin-bottom:1px;">
+        <span style="font-weight:500;">NIF&nbsp;:</span> ${admin.nif || "<span style='color:#aaa'>Non renseigné</span>"}
+      </div>
+      <div style="font-size:1em; color:#222; margin-bottom:1px;">
+        <span style="font-weight:500;">RC&nbsp;:</span> ${admin.rc || "<span style='color:#aaa'>Non renseigné</span>"}
+      </div>
+      <div style="font-size:1em; color:#222; margin-bottom:4px;">
+        <span style="font-weight:500;">N° Article&nbsp;:</span> ${admin.article || "<span style='color:#aaa'>Non renseigné</span>"}
+      </div>
+      <div style="font-size:0.98em; color:#171717; font-style:italic; margin-top:4px;">Date : ${today}</div>
     </div>
   `;
 }
@@ -81,14 +100,14 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const [loading, setLoading] = useState(false);
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
 
-  // En-tête dynamique depuis admin_profile (sauf si headerHtml forcé)
+  // En-tête dynamique selon admin_profile (sauf si headerHtml forcé)
   const header = headerHtml ?? getAdminHeader();
 
   // Certificat de scolarité
   const scolariteHtml = `
     <div style="width: 480px; font-family: Arial,sans-serif; color:#222; padding:20px; background: #fff;">
       ${header}
-      <h2 style="text-align:center; margin-top:24px; margin-bottom:24px; font-size:1.25em;">Certificat de scolarité</h2>
+      <h2 style="text-align:center; margin-top:26px; margin-bottom:26px; font-size:1.18em; font-weight:500;">Certificat de scolarité</h2>
       <p style="margin:34px 0 44px 0; text-align:justify;">
         Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
         Cette attestation est faite pour servir et valoir ce que de droit.
@@ -103,7 +122,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const inscriptionHtml = `
     <div style="width: 480px; font-family: Arial,sans-serif; color:#222; padding:20px; background: #fff;">
       ${header}
-      <h2 style="text-align:center; margin-top:24px; margin-bottom:24px; font-size:1.25em;">Attestation d’inscription</h2>
+      <h2 style="text-align:center; margin-top:26px; margin-bottom:26px; font-size:1.18em; font-weight:500;">Attestation d’inscription</h2>
       <p style="margin:30px 0 44px 0; text-align:justify;">
         Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
         Fait pour servir et valoir ce que de droit.
