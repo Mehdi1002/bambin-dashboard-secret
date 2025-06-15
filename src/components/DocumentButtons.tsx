@@ -28,9 +28,8 @@ function toFrenchDate(dateIso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-// EN-TÊTE ULTRA PRÉCIS, FORMATÉ SUR PLUSIEURS LIGNES
+// Nouvel en-tête identique au modèle facture, sans numéro de facture
 function getAdminHeader() {
-  // Valeurs par défaut si non renseigné
   const defaultData = {
     nom: "Crèche et préscolaire L’île des Bambins",
     adresse: "",
@@ -48,50 +47,36 @@ function getAdminHeader() {
     if (stored) {
       admin = { ...defaultData, ...JSON.parse(stored) };
     }
-  } catch {
-    // fallback
-  }
-  // Compose la date du jour au format JJ/MM/AAAA
+  } catch {}
   const now = new Date();
   const today = now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
-
-  // Construit l’en-tête ligne à ligne :
-  // Nom (gros, gras)
-  // “Crèche et préscolaire”
-  // Adresse
-  // Tél
-  // Email
-  // NIF
-  // RC
-  // N° Article
-  // (NIS PAS affiché mais si tu veux tu peux l’ajouter)
-  // Date
-
+  // Bloc : TITRE, toutes infos à gauche, date à droite (table pour faciliter l’alignement PDF)
   return `
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:1.18em; font-weight:bold; letter-spacing:0.3px; color:#222;">
-        ${admin.nom || "Crèche et préscolaire L’île des Bambins"}
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; border-bottom:1px solid #e5e7eb; padding-bottom:10px; margin-bottom:18px;">
+      <div>
+        <div style="font-size:1.18em; font-weight:bold; letter-spacing:0.2px; color:#222;">
+          ${admin.nom}
+        </div>
+        <div style="color:#64748b; font-size:1em; margin-bottom:2px;">Crèche et préscolaire</div>
+
+        <div style="margin-top:6px; font-size:1em;">
+          <b>Adresse :</b> ${admin.adresse || "<span style='color:#aaa'>Non renseignée</span>"}
+        </div>
+        <div style="font-size:1em;">
+          <b>Tél :</b> ${admin.telephone || "<span style='color:#aaa'>Non renseigné</span>"}
+        </div>
+        <div style="font-size:1em;">
+          <b>Email :</b> ${admin.email || "<span style='color:#aaa'>Non renseigné</span>"}
+        </div>
+        <div style="font-size:1em;">
+          <b>NIF :</b> ${admin.nif || "<span style='color:#aaa'>Non renseigné</span>"} 
+          <b>RC :</b> ${admin.rc || "<span style='color:#aaa'>Non renseigné</span>"} 
+          <b>N°Article&nbsp;:</b> ${admin.article || "<span style='color:#aaa'>Non renseigné</span>"}
+        </div>
       </div>
-      <div style="font-size:1.08em; color:#333; margin-bottom:1px;">Crèche et préscolaire</div>
-      <div style="font-size:1em; color:#222; margin-bottom:1px;">
-        <span style="font-weight:500;">Adresse :</span> ${admin.adresse || "<span style='color:#aaa'>Non renseignée</span>"}
+      <div style="text-align:right;margin-left:32px; font-size:1em;">
+        <div style="color:#222; font-weight:500;">Date&nbsp;: <span style="font-weight:bold;">${today}</span></div>
       </div>
-      <div style="font-size:1em; color:#222; margin-bottom:1px;">
-        <span style="font-weight:500;">Tél :</span> ${admin.telephone || "<span style='color:#aaa'>Non renseigné</span>"}
-      </div>
-      <div style="font-size:1em; color:#222; margin-bottom:1px;">
-        <span style="font-weight:500;">Email :</span> ${admin.email || "<span style='color:#aaa'>Non renseigné</span>"}
-      </div>
-      <div style="font-size:1em; color:#222; margin-bottom:1px;">
-        <span style="font-weight:500;">NIF&nbsp;:</span> ${admin.nif || "<span style='color:#aaa'>Non renseigné</span>"}
-      </div>
-      <div style="font-size:1em; color:#222; margin-bottom:1px;">
-        <span style="font-weight:500;">RC&nbsp;:</span> ${admin.rc || "<span style='color:#aaa'>Non renseigné</span>"}
-      </div>
-      <div style="font-size:1em; color:#222; margin-bottom:4px;">
-        <span style="font-weight:500;">N° Article&nbsp;:</span> ${admin.article || "<span style='color:#aaa'>Non renseigné</span>"}
-      </div>
-      <div style="font-size:0.98em; color:#171717; font-style:italic; margin-top:4px;">Date : ${today}</div>
     </div>
   `;
 }
@@ -100,7 +85,6 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const [loading, setLoading] = useState(false);
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
 
-  // En-tête dynamique selon admin_profile (sauf si headerHtml forcé)
   const header = headerHtml ?? getAdminHeader();
 
   // Certificat de scolarité
