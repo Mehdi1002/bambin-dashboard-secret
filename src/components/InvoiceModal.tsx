@@ -132,7 +132,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         <DialogHeader>
           <DialogTitle>Facture du mois de {moisEtAnnee}</DialogTitle>
         </DialogHeader>
-        <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl text-sm my-[9px] mx-0">
+        <div
+          id="invoice-printable"
+          className="bg-white p-3 rounded overflow-x-auto max-w-2xl my-2 mx-1 text-sm"
+        >
           {/* EN-TÊTE ADMINISTRATIF avec le numéro à droite */}
           <div className="mb-4" dangerouslySetInnerHTML={{
           __html: getAdminHeaderHtml({
@@ -140,7 +143,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           })
         }} />
           {/* Titre "Facture" */}
-          <h2 className="text-xl font-semibold mb-3 mt-1 mx-[4px] text-center">Facture</h2>
+          <h2 className="text-xl font-semibold mb-3 mt-1 mx-1 text-center">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
@@ -165,7 +168,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <div className="font-bold text-lg mb-1">
               Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
-            {/* Phrase finale sur une seule ligne, alignée à gauche, marge latérale réduite, sans fond */}
             <div style={{
             background: "none"
           }} className="font-medium w-full text-left px-px my-[34px] rounded-sm">

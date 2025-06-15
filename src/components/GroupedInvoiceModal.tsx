@@ -123,7 +123,10 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
         <DialogHeader>
           <DialogTitle>Facture regroupée ({mois.length} mois)</DialogTitle>
         </DialogHeader>
-        <div id="invoice-printable" className="bg-white p-6 rounded overflow-x-auto max-w-2xl mx-auto text-sm">
+        <div
+          id="invoice-printable"
+          className="bg-white p-3 rounded overflow-x-auto max-w-2xl my-2 mx-1 text-sm"
+        >
           {/* EN-TÊTE ADMINISTRATIF avec numéro à droite */}
           <div
             className="mb-4"
@@ -132,7 +135,7 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
             }}
           />
           {/* Titre "Facture" */}
-          <h2 className="text-xl font-semibold text-center mb-3 mt-1">Facture</h2>
+          <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
