@@ -348,7 +348,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     setLoading(false);
   };
 
-  // Modale d’aperçu : ajout px-[14px] sur le contenu
+  // Modale d’aperçu : affichage A4 fidèle
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
       <div
@@ -356,22 +356,44 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         style={{ fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif" }}
       >
         {/* fond modal */}
-        <div className="bg-white max-w-2xl w-[800px] rounded-lg shadow-xl border relative overflow-auto max-h-[90vh]">
+        <div className="w-full max-w-5xl h-auto flex flex-col items-center justify-center p-2 relative">
           <button
-            className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1"
+            className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1 z-10"
             aria-label="Fermer"
             onClick={onClose}
             style={{ background: "none", border: "none" }}
           >
             ✕
           </button>
-          <div className="p-5 px-[14px]">
+          {/* Container qui impose la taille A4 et centre la page */}
+          <div
+            className="bg-white border shadow-lg flex items-center justify-center overflow-auto"
+            style={{
+              width: "595pt",
+              height: "842pt",
+              minWidth: "595pt",
+              minHeight: "842pt",
+              maxWidth: "100vw",
+              maxHeight: "80vh",
+              margin: "0 auto",
+              padding: 0,
+              boxSizing: "border-box",
+              borderRadius: 8,
+              boxShadow: "0 8px 32px rgba(0,0,0,.16)",
+              position: "relative",
+            }}
+          >
             <div
-              // Rendu HTML "en brut"  
+              style={{
+                width: "595pt",
+                minHeight: "842pt",
+                background: "#fff",
+                overflow: "hidden",
+              }}
               dangerouslySetInnerHTML={{ __html: getHtml(type) }}
             />
           </div>
-          <div className="flex gap-3 justify-end px-5 pb-5 pt-2">
+          <div className="flex gap-3 justify-end w-full max-w-5xl mt-4 px-7">
             <Button
               variant="outline"
               onClick={onClose}
