@@ -418,7 +418,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     setLoading(false);
   };
 
-  // Aperçu : version responsive, marge px-14
+  // Aperçu : version responsive, marge px-2 (8px)
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
       <div
@@ -434,9 +434,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           >
             ✕
           </button>
-          {/* Aperçu responsif, largeur max 100%, marge latérale px-14 */}
+          {/* Aperçu responsif, largeur max 100%, marge latérale px-2 (8px) */}
           <div
-            className="border bg-white shadow-lg flex items-center justify-center overflow-auto px-[14px]"
+            className="border bg-white shadow-lg flex items-center justify-center overflow-auto px-2"
             style={{
               width: "100%",
               maxWidth: "550px",
