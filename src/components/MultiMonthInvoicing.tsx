@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import GroupedInvoiceModal from "@/components/GroupedInvoiceModal";
+import { useToast } from "@/hooks/use-toast";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
@@ -47,6 +48,8 @@ export default function MultiMonthInvoicing() {
   const [modalIdx, setModalIdx] = useState<number>(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalChild, setModalChild] = useState<Child | null>(null);
+
+  const { toast } = useToast();
 
   // Récupérer les enfants actifs
   const { data: children, isLoading } = useQuery({
@@ -95,8 +98,53 @@ export default function MultiMonthInvoicing() {
   // Pour ouvrir la modale groupée pour chaque enfant sélectionné
   const [modalQueue, setModalQueue] = useState<{ child: Child; idx: number }[]>([]);
 
+  // 💡 Nouvelle règle : chaque mois à facturer doit avoir un paiement validé pour tous les enfants sélectionnés
   const startBatchGeneration = () => {
     if (!children || selectedChildren.length === 0 || selectedMonths.length === 0) return;
+    if (!payments) return;
+
+    // Liste de tous les cas où un paiement n'est pas validé
+    const invalids: {
+      child: Child;
+      mois: string[];
+    }[] = [];
+
+    for (const cid of selectedChildren) {
+      const ch = children.find((c) => c.id === cid);
+      if (!ch) continue;
+      const childInvalidMonths: string[] = [];
+      for (const m of selectedMonths) {
+        const paiement = (payments ?? []).find(
+          (p) => p.child_id === cid && p.year === selectedYear && p.month === m
+        );
+        if (!paiement || !paiement.validated) {
+          const label = MONTHS[m - 1] + " " + selectedYear;
+          childInvalidMonths.push(label);
+        }
+      }
+      if (childInvalidMonths.length > 0) {
+        invalids.push({ child: ch, mois: childInvalidMonths });
+      }
+    }
+
+    if (invalids.length > 0) {
+      // Affiche un message clair sur le(s) mois concernés, pour le(s) bon(s) enfant(s)
+      const msg = invalids
+        .map(
+          ({ child, mois }) =>
+            `<div>Impossible de générer la facture pour <b>${child.nom} ${child.prenom}</b>.<br />Le paiement du mois de <b>${mois.join(", ")}</b> n’est pas encore validé.</div>`
+        )
+        .join("<br/>");
+      toast({
+        title: "Erreur : Facture impossible",
+        description: (
+          <span dangerouslySetInnerHTML={{ __html: msg }} />
+        ),
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Construire une file d'attente : une entrée par enfant sélectionné
     const queue: { child: Child; idx: number }[] = [];
     let idx = 1;
@@ -239,7 +287,7 @@ export default function MultiMonthInvoicing() {
         total={modalChild ? getTotalForChild(modalChild) : 0}
         indexFacture={modalIdx}
         dateFacturation={selectedYear + "-01-01"}
-        paiements={modalChild ? getPaiementsForChild(modalChild) : []} // 💡 nouveau
+        paiements={modalChild ? getPaiementsForChild(modalChild) : []}
       />
       <div className="mt-4 text-xs text-muted-foreground">
         Sélectionnez un ou plusieurs enfants, un ou plusieurs mois et cliquez sur "Générer les factures regroupées".<br />
