@@ -1,4 +1,3 @@
-
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
@@ -48,13 +47,18 @@ function getAdminHeader() {
     }
   } catch {}
 
-  // En-tête sur toute la largeur sans aucune marge/padding
+  // En-tête : infos chacune sur une ligne et marges minimes
   return `
     <div style="
-      width:595pt;display:flex;align-items:flex-start;justify-content:space-between;
-      border-bottom:1.5px solid #e5e7eb;padding:0;
+      width:100%;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      border-bottom:1.5px solid #e5e7eb;
+      box-sizing:border-box;
+      margin-bottom:18px;
+      padding:0 6pt 0 6pt;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      box-sizing:border-box;margin-bottom:20px;
     ">
       <div style="display:flex;align-items:flex-start;gap:18px;margin:0;">
         ${
@@ -67,10 +71,12 @@ function getAdminHeader() {
         <div style="margin:0;">
           <div style="font-size:1.13em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
           <div style="color:#697184;font-size:1em;line-height:1.3;margin-bottom:6px;">Crèche et préscolaire</div>
-          <div style="color:#223046;font-size:1em;"><b>Adresse :</b> ${admin.adresse}</div>
-          <div style="color:#223046;font-size:1em;"><b>Tél :</b> ${admin.telephone}</div>
-          <div style="color:#223046;font-size:1em;"><b>Email :</b> ${admin.email}</div>
-          <div style="color:#223046;font-size:1em;"><b>NIF :</b> ${admin.nif} &nbsp;&nbsp; <b>RC :</b> ${admin.rc} &nbsp;&nbsp; <b>N°Article :</b> ${admin.article}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Adresse :</b> ${admin.adresse}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Tél :</b> ${admin.telephone}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Email :</b> ${admin.email}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>NIF :</b> ${admin.nif}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>RC :</b> ${admin.rc}</div>
+          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>N°Article :</b> ${admin.article}</div>
         </div>
       </div>
     </div>
@@ -105,8 +111,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     `;
   }
 
-  // Wrapper principal : pas de padding/marge horizontale (0), 100% largeur 595pt 
+  // On veut une toute petite marge latérale (ex: 6pt = ~2mm sur chaque côté)
   const PAGE_WIDTH = 595;
+  const PADDING = 6; // points (très faible)
+  const innerWidth = PAGE_WIDTH - 2 * PADDING;
+
   const scolariteHtml = `
     <div style="
       background:#fff;
@@ -121,36 +130,39 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     ">
       <!-- DATE EN HAUT À DROITE -->
       <div style="
-        width:595pt;
+        width:${PAGE_WIDTH}pt;
         display:flex;
         justify-content:flex-end;
         align-items:flex-start;
         margin:0;
-        padding:0;
+        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
         font-size:1em;
         color:#172044;
         font-weight:500;
-      ">
-        <span style="padding:14px 8px 0 0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
-      </div>
-      ${header}
-      ${makeTitle("Certificat de scolarité")}
-      <div style="
-        margin:32px 0 42px 0;
-        font-size:1.08em;
-        line-height:1.72;
-        text-align:justify;
-        padding:0 0 0 0;
-        width:595pt;
         box-sizing:border-box;
       ">
-        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
-        <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en
-        <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
-        Cette attestation est faite pour servir et valoir ce que de droit.
+        <span style="padding:0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
       </div>
-      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:595pt;">
-        Le Directeur
+      <div style="padding:0 ${PADDING}pt;">
+        ${header}
+        ${makeTitle("Certificat de scolarité")}
+        <div style="
+          margin:32px 0 42px 0;
+          font-size:1.08em;
+          line-height:1.72;
+          text-align:justify;
+          padding:0;
+          width:${innerWidth}pt;
+          box-sizing:border-box;
+        ">
+          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
+          <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en
+          <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+          Cette attestation est faite pour servir et valoir ce que de droit.
+        </div>
+        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
+          Le Directeur
+        </div>
       </div>
     </div>
   `;
@@ -169,36 +181,39 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     ">
       <!-- DATE EN HAUT À DROITE -->
       <div style="
-        width:595pt;
+        width:${PAGE_WIDTH}pt;
         display:flex;
         justify-content:flex-end;
         align-items:flex-start;
         margin:0;
-        padding:0;
+        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
         font-size:1em;
         color:#172044;
         font-weight:500;
-      ">
-        <span style="padding:14px 8px 0 0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
-      </div>
-      ${header}
-      ${makeTitle("Attestation d’inscription")}
-      <div style="
-        margin:32px 0 42px 0;
-        font-size:1.08em;
-        line-height:1.72;
-        text-align:justify;
-        padding:0 0 0 0;
-        width:595pt;
         box-sizing:border-box;
       ">
-        Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
-        <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire
-        <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
-        Fait pour servir et valoir ce que de droit.
+        <span style="padding:0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
       </div>
-      <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:595pt;">
-        Le Directeur
+      <div style="padding:0 ${PADDING}pt;">
+        ${header}
+        ${makeTitle("Attestation d’inscription")}
+        <div style="
+          margin:32px 0 42px 0;
+          font-size:1.08em;
+          line-height:1.72;
+          text-align:justify;
+          padding:0;
+          width:${innerWidth}pt;
+          box-sizing:border-box;
+        ">
+          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
+          <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire
+          <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
+          Fait pour servir et valoir ce que de droit.
+        </div>
+        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
+          Le Directeur
+        </div>
       </div>
     </div>
   `;
