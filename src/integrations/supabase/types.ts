@@ -18,13 +18,18 @@ export type Database = {
           id: string
           mere: string | null
           nom: string
+          num_doc_mere: string | null
+          num_doc_pere: string | null
           pere: string | null
           photo: string | null
           prenom: string
           section: string
+          sexe: string | null
           statut: string
           tel_mere: string | null
           tel_pere: string | null
+          type_doc_mere: string | null
+          type_doc_pere: string | null
         }
         Insert: {
           allergies?: string | null
@@ -34,13 +39,18 @@ export type Database = {
           id?: string
           mere?: string | null
           nom: string
+          num_doc_mere?: string | null
+          num_doc_pere?: string | null
           pere?: string | null
           photo?: string | null
           prenom: string
           section: string
+          sexe?: string | null
           statut: string
           tel_mere?: string | null
           tel_pere?: string | null
+          type_doc_mere?: string | null
+          type_doc_pere?: string | null
         }
         Update: {
           allergies?: string | null
@@ -50,13 +60,18 @@ export type Database = {
           id?: string
           mere?: string | null
           nom?: string
+          num_doc_mere?: string | null
+          num_doc_pere?: string | null
           pere?: string | null
           photo?: string | null
           prenom?: string
           section?: string
+          sexe?: string | null
           statut?: string
           tel_mere?: string | null
           tel_pere?: string | null
+          type_doc_mere?: string | null
+          type_doc_pere?: string | null
         }
         Relationships: []
       }
