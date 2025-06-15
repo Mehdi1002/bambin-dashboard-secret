@@ -2,6 +2,7 @@ import { Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
 import { useState } from "react";
+import { getAdminHeaderHtml } from "./AdminHeaderHtml";
 
 type Child = {
   nom: string;
@@ -291,9 +292,15 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
 
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
-  const header = headerHtml ?? getAdminHeader();
+  // Détermination de la date pour le header (au format DD/MM/YYYY)
+  const todayShort = (() => {
+    const now = new Date();
+    return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  })();
 
-  // Génère le HTML du titre — centré
+  // --- EN-TÊTE unifié comme la facture (logo à gauche, infos à gauche, right=Date) ---
+  const unifiedHeader = getAdminHeaderHtml({ right: `Date : <span style="font-weight:700">${todayShort}</span>` });
+
   function makeTitle(label: string) {
     return `
       <div style="
@@ -311,12 +318,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     `;
   }
 
-  // Marges latérales pour garder 4 lignes de texte (environ 50pt)
   const PAGE_WIDTH = 595;
   const PADDING = 50;
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
-  // --- MODIFICATION: Amélioration marge et présentation, suppression de la date, preview px-14 ---
+  // --- Présentation du certificat et de l'attestation avec l'en-tête unifié ---
   const scolariteHtml = `
     <div style="
       background:#fff;
@@ -329,7 +335,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       padding:0;
     ">
       <div style="max-width:520px;margin:0 auto;padding:30px 0 36px 0;">
-        ${getAdminHeaderFlexCertifSansDate()}
+        ${unifiedHeader}
         ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
         <div style="
           margin:24px 0 38px 0;
@@ -375,10 +381,10 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         font-weight:500;
         box-sizing:border-box;
       ">
-        <span style="padding:0;margin:0;">Date : <span style="font-weight:600">${getTodayFR()}</span></span>
+        {/* Ceci ne fait pas double emploi : le header ci-dessous contient la date à droite */}
       </div>
       <div style="padding:0 ${PADDING}pt;">
-        ${header}
+        ${unifiedHeader}
         ${makeTitle("Attestation d’inscription")}
         <div style="
           margin:32px 0 42px 0;
@@ -391,7 +397,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
           <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est ${genreInscrit(child.sexe)} au sein de l’établissement pour l’année scolaire
-          <b>${annee}</b>, en <b>${child.section} section.</b><br/><br/> <!-- Ajout de "section" ici -->
+          <b>${annee}</b>, en <b>${child.section} section.</b><br/><br/>
           Fait pour servir et valoir ce que de droit.
         </div>
         <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:${innerWidth}pt;">
