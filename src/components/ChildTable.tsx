@@ -1,7 +1,7 @@
+
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus, Trash } from "lucide-react";
-import avatar from "/placeholder.svg";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -20,7 +20,6 @@ type ChildRow = {
   mere: string | null;
   tel_mere: string | null;
   allergies: string | null;
-  photo: string | null;
   sexe: string | null;
   type_doc_pere: string | null;
   num_doc_pere: string | null;
@@ -33,7 +32,7 @@ export default function ChildTable() {
   const [showForm, setShowForm] = useState(false);
   const [edit, setEdit] = useState<ChildRow | null>(null);
 
-  // Charge les enfants depuis Supabase
+  // Récupère les enfants en veillant à gérer les nouvelles colonnes (photo retirée)
   const { data: children, isLoading, error } = useQuery({
     queryKey: ["children"],
     queryFn: async () => {
@@ -42,11 +41,29 @@ export default function ChildTable() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as ChildRow[];
+      // Normalisation pour éviter les erreurs de typage :
+      return (data || []).map((row: any) => ({
+        id: row.id,
+        nom: row.nom,
+        prenom: row.prenom,
+        date_naissance: row.date_naissance,
+        section: row.section,
+        date_inscription: row.date_inscription ?? "",
+        statut: row.statut,
+        pere: row.pere ?? "",
+        tel_pere: row.tel_pere ?? "",
+        mere: row.mere ?? "",
+        tel_mere: row.tel_mere ?? "",
+        allergies: row.allergies ?? "",
+        sexe: row.sexe ?? "",
+        type_doc_pere: row.type_doc_pere ?? "",
+        num_doc_pere: row.num_doc_pere ?? "",
+        type_doc_mere: row.type_doc_mere ?? "",
+        num_doc_mere: row.num_doc_mere ?? ""
+      })) as ChildRow[];
     },
   });
 
-  // Ajout/enregistrement : mapping snake_case avant mutation
   const mutationUpsert = useMutation({
     mutationFn: async (child: any) => {
       const row = {
@@ -54,10 +71,8 @@ export default function ChildTable() {
         date_naissance: child.date_naissance ?? child.dateNaissance,
         date_inscription: child.date_inscription ?? child.dateInscription,
         tel_pere: child.tel_pere ?? child.telPere,
-        tel_mere: child.tel_mere ?? child.telMere,
-        photo: child.photo ?? null,
+        tel_mere: child.tel_mere ?? child.telMere
       };
-      // Élimine toutes les variantes camelCase pour éviter la confusion
       delete row.dateNaissance;
       delete row.dateInscription;
       delete row.telPere;
@@ -95,7 +110,6 @@ export default function ChildTable() {
     },
   });
 
-  // Suppression
   const mutationDelete = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("children").delete().eq("id", id);
@@ -127,16 +141,13 @@ export default function ChildTable() {
   };
 
   const handleSubmit = (c: any) => {
-    // Pour la création, NE PAS passer id !
     const isUpdate = !!edit?.id;
     mutationUpsert.mutate({
       ...c,
       ...(isUpdate ? { id: edit.id } : {}),
-      // Les clés sont déjà en snake_case depuis ChildForm
     });
   };
 
-  // Chargement/erreur
   if (isLoading) {
     return <div>Chargement…</div>;
   }
@@ -168,7 +179,7 @@ export default function ChildTable() {
             <table className="min-w-full">
               <thead>
                 <tr className="bg-muted">
-                  <th className="px-3 py-2 text-left">Photo</th>
+                  {/* <th className="px-3 py-2 text-left">Photo</th> Retiré */}
                   <th className="px-3 py-2 text-left">Nom</th>
                   <th className="px-3 py-2 text-left">Prénom</th>
                   <th className="px-3 py-2 text-left">Sexe</th>
@@ -187,21 +198,7 @@ export default function ChildTable() {
                 {children && children.length > 0 ? (
                   children.map((c) => (
                     <tr key={c.id} className="border-b hover:bg-muted/40">
-                      <td className="px-3 py-2">
-                        {c.photo ? (
-                          <img
-                            src={c.photo}
-                            alt={c.nom}
-                            className="w-10 h-10 rounded-full border object-cover"
-                          />
-                        ) : (
-                          <img
-                            src={avatar}
-                            alt="Enfant"
-                            className="w-10 h-10 rounded-full border object-cover opacity-80"
-                          />
-                        )}
-                      </td>
+                      {/* Photo retirée */}
                       <td className="px-3 py-2 font-medium">{c.nom}</td>
                       <td className="px-3 py-2">{c.prenom}</td>
                       <td className="px-3 py-2">{c.sexe ?? ""}</td>
@@ -242,13 +239,17 @@ export default function ChildTable() {
                           section: c.section,
                           sexe: c.sexe,
                           date_naissance: c.date_naissance,
+                          type_doc_pere: c.type_doc_pere,
+                          num_doc_pere: c.num_doc_pere,
+                          type_doc_mere: c.type_doc_mere,
+                          num_doc_mere: c.num_doc_mere
                         }} />
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={13} className="p-5 text-center text-muted-foreground">
+                    <td colSpan={12} className="p-5 text-center text-muted-foreground">
                       Aucun enfant enregistré.
                     </td>
                   </tr>

@@ -4,11 +4,13 @@ const sectionList = ["Petite", "Moyenne", "Prescolaire"] as const;
 const statutList = ["Actif", "Inactif"] as const;
 const sexeList = ["Garçon", "Fille"] as const;
 const docList = ["Carte d'identité", "Permis de conduire"] as const;
+
 type Props = {
   initial?: any;
   onSubmit: (c: any) => void;
   onCancel: () => void;
 };
+
 export default function ChildForm({
   initial,
   onSubmit,
@@ -45,26 +47,13 @@ export default function ChildForm({
     allergies: "",
     section: "Petite",
     dateInscription: "",
-    statut: "Actif",
-    photo: ""
+    statut: "Actif"
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-  };
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      setForm((f: any) => ({
-        ...f,
-        photo: ev.target?.result?.toString() || ""
-      }));
-    };
-    reader.readAsDataURL(file);
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,15 +73,15 @@ export default function ChildForm({
       tel_mere: form.telMere,
       type_doc_mere: form.typeDocMere,
       num_doc_mere: form.numDocMere,
-      allergies: form.allergies,
-      photo: form.photo
+      allergies: form.allergies
     };
     if (initial && initial.id) {
       dataToSubmit["id"] = initial.id;
     }
     onSubmit(dataToSubmit);
   };
-  return <form className="bg-white rounded-lg shadow max-w-2xl mx-auto p-7 border" onSubmit={handleSubmit}>
+  return (
+    <form className="bg-white rounded-lg shadow max-w-2xl mx-auto p-7 border" onSubmit={handleSubmit}>
       <h2 className="text-lg font-bold mb-4">
         {initial ? "Modifier la fiche enfant" : "Ajouter un enfant"}
       </h2>
@@ -183,5 +172,6 @@ export default function ChildForm({
           {initial ? "Enregistrer" : "Ajouter"}
         </button>
       </div>
-    </form>;
+    </form>
+  );
 }
