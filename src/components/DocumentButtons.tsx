@@ -47,37 +47,35 @@ function getAdminHeader() {
     }
   } catch {}
 
-  // En-tête : infos chacune sur une ligne et marges minimes
+  // En-tête : chaque info sur une ligne différente, marges minimales, layout vertical
   return `
     <div style="
       width:100%;
       display:flex;
       align-items:flex-start;
-      justify-content:space-between;
       border-bottom:1.5px solid #e5e7eb;
       box-sizing:border-box;
       margin-bottom:18px;
-      padding:0 6pt 0 6pt;
+      flex-direction:row;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+      padding:0;
     ">
-      <div style="display:flex;align-items:flex-start;gap:18px;margin:0;">
-        ${
-          admin.logo
-            ? `<div style="flex-shrink:0">
-                  <img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:1.5px solid #E0E0E0;background:#fafbfc;margin-top:2px;" />
+      ${
+        admin.logo
+          ? `<div style="flex-shrink:0;margin-right:14px">
+                  <img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:50%;object-fit:cover;border:1.5px solid #E0E0E0;background:#fafbfc;" />
                 </div>`
-            : ""
-        }
-        <div style="margin:0;">
-          <div style="font-size:1.13em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
-          <div style="color:#697184;font-size:1em;line-height:1.3;margin-bottom:6px;">Crèche et préscolaire</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Adresse :</b> ${admin.adresse}</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Tél :</b> ${admin.telephone}</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Email :</b> ${admin.email}</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>NIF :</b> ${admin.nif}</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>RC :</b> ${admin.rc}</div>
-          <div style="color:#223046;font-size:1em;line-height:1.6;"><b>N°Article :</b> ${admin.article}</div>
-        </div>
+          : ""
+      }
+      <div style="margin:0;display:flex;flex-direction:column;">
+        <div style="font-size:1.13em;font-weight:700;color:#172044;line-height:1">${admin.nom}</div>
+        <div style="color:#697184;font-size:1em;line-height:1;margin-bottom:4px;">Crèche et préscolaire</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Adresse :</b> ${admin.adresse}</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Tél :</b> ${admin.telephone}</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>Email :</b> ${admin.email}</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>NIF :</b> ${admin.nif}</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>RC :</b> ${admin.rc}</div>
+        <div style="color:#223046;font-size:1em;line-height:1.6;"><b>N°Article :</b> ${admin.article}</div>
       </div>
     </div>
   `;
@@ -111,9 +109,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     `;
   }
 
-  // On veut une toute petite marge latérale (ex: 6pt = ~2mm sur chaque côté)
+  // *** Nouveau padding latéral accru pour que le paragraphe fasse ~4 lignes ***
   const PAGE_WIDTH = 595;
-  const PADDING = 6; // points (très faible)
+  const PADDING = 50; // Augmenter la marge à gauche et à droite
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
   const scolariteHtml = `
