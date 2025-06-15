@@ -8,44 +8,38 @@ import type { Payment, Child } from "./MonthlyPaymentsTable";
 type MonthlyPaymentRowProps = {
   child: Child;
   pay: Payment | null | undefined;
-  onEdit: (pay: Payment) => void;
+  onEdit: () => void;
 };
 
 export default function MonthlyPaymentRow({ child, pay, onEdit }: MonthlyPaymentRowProps) {
+  const totalDue = pay ? pay.amount_due + pay.registration_fee : 10000;
+  const registrationFee = pay ? pay.registration_fee : 0;
+  const amountPaid = pay ? pay.amount_paid : 0;
+  const reste = Math.max(totalDue - amountPaid, 0);
+  const isValidated = pay ? pay.validated : false;
+  
+  // Status
+  let statusLabel: { label: string, icon: React.ReactNode };
   if (!pay) {
-    // Paiement non généré (no payment for this child/month)
-    return (
-      <TableRow key={child.id}>
-        <TableCell>{child.nom}</TableCell>
-        <TableCell>{child.prenom}</TableCell>
-        <TableCell>{child.section}</TableCell>
-        <TableCell colSpan={6} className="italic text-muted-foreground">
-          Paiement non généré
-        </TableCell>
-      </TableRow>
-    );
+    statusLabel = { label: "Non payé", icon: <X className="text-red-500 w-4 h-4 inline" /> };
+  } else if (isValidated) {
+    statusLabel = { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline" /> };
+  } else if (amountPaid === 0) {
+    statusLabel = { label: "Retard", icon: <X className="text-red-500 w-4 h-4 inline" /> };
+  } else if (amountPaid < totalDue) {
+    statusLabel = { label: "Retard", icon: <Clock className="text-yellow-500 w-4 h-4 inline" /> };
+  } else {
+    statusLabel = { label: "À valider", icon: <Clock className="text-blue-500 w-4 h-4 inline" /> };
   }
 
-  const totalDue = pay.amount_due + pay.registration_fee;
-  const reste = Math.max(totalDue - pay.amount_paid, 0);
-  const isValidated = pay.validated;
-  const statusLabel = isValidated
-    ? { label: "Validé", icon: <Check className="text-green-600 w-4 h-4 inline" /> }
-    : (pay.amount_paid === 0
-      ? { label: "Retard", icon: <X className="text-red-500 w-4 h-4 inline" /> }
-      : (pay.amount_paid < totalDue
-        ? { label: "Retard", icon: <Clock className="text-yellow-500 w-4 h-4 inline" /> }
-        : { label: "À valider", icon: <Clock className="text-blue-500 w-4 h-4 inline" /> })
-    );
-
   return (
-    <TableRow key={pay.id}>
+    <TableRow>
       <TableCell>{child.nom}</TableCell>
       <TableCell>{child.prenom}</TableCell>
       <TableCell>{child.section}</TableCell>
-      <TableCell>{pay.amount_due}</TableCell>
-      <TableCell>{pay.registration_fee}</TableCell>
-      <TableCell>{pay.amount_paid}</TableCell>
+      <TableCell>{totalDue}</TableCell>
+      <TableCell>{registrationFee}</TableCell>
+      <TableCell>{amountPaid}</TableCell>
       <TableCell>{reste}</TableCell>
       <TableCell>
         <span className="flex items-center gap-1">
@@ -58,7 +52,7 @@ export default function MonthlyPaymentRow({ child, pay, onEdit }: MonthlyPayment
           size="sm"
           variant="default"
           className="px-2 py-1"
-          onClick={() => onEdit(pay)}
+          onClick={onEdit}
         >
           Enregistrer un paiement
         </Button>

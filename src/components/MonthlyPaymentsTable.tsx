@@ -79,49 +79,77 @@ export default function MonthlyPaymentsTable() {
     }
   });
 
-  // Mutation pour MAJ paiement
-  const mutation = useMutation({
-    mutationFn: async (update: Partial<Payment> & { id: string }) => {
-      const { error } = await supabase.from("payments").update(update).eq("id", update.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast({ title: "Paiement mis à jour" });
-      queryClient.invalidateQueries({ queryKey: ["payments", year, month] });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Impossible de mettre à jour ce paiement", variant: "destructive" });
-    }
-  });
+  // Ajoute le bouton sur chaque enfant, même sans paiement
 
   // Pour l’utilisateur
-  const [modalPayId, setModalPayId] = useState<string | null>(null);
-  const [modal, setModal] = useState<{
-    open: boolean;
-    pay?: Payment | null;
-  }>({ open: false, pay: null });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalChild, setModalChild] = useState<Child | null>(null);
+  const [modalPay, setModalPay] = useState<Payment | null>(null);
 
-  // On Open modal, configure initial data
-  const handleOpenModal = (pay: Payment) => {
-    setModal({ open: true, pay });
-    setModalPayId(pay.id);
+  // On ouvre la modale pour n'importe quel enfant
+  const handleOpenModal = (child: Child, pay: Payment | null | undefined) => {
+    setModalChild(child);
+    setModalPay(pay ?? null);
+    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setModal({ open: false, pay: null });
-    setModalPayId(null);
+    setModalChild(null);
+    setModalPay(null);
+    setModalOpen(false);
   };
 
+  // Création ou maj d'un paiement
+  const mutation = useMutation({
+    mutationFn: async (params: {
+      child: Child,
+      pay: Payment | null,
+      amount_due: number,
+      amount_paid: number,
+      year: number,
+      month: number
+    }) => {
+      const { child, pay, amount_due, amount_paid, year, month } = params;
+      const validated = amount_paid >= amount_due;
+      const updateData = {
+        child_id: child.id,
+        year,
+        month,
+        amount_due,
+        registration_fee: pay ? pay.registration_fee : 0,
+        amount_paid,
+        validated,
+        status: validated ? "validated" : "pending"
+      };
+      if (pay) {
+        // Paiement existe : update
+        const { error } = await supabase.from("payments").update(updateData).eq("id", pay.id);
+        if (error) throw error;
+      } else {
+        // Paiement n'existe pas : insert
+        const { error } = await supabase.from("payments").insert(updateData);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast({ title: "Paiement enregistré" });
+      queryClient.invalidateQueries({ queryKey: ["payments", year, month] });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Impossible d'enregistrer ce paiement", variant: "destructive" });
+    }
+  });
+
+  // Quand on valide la modale
   const handleSavePayment = (amountDue: number, amountPaid: number) => {
-    if (!modal.pay) return;
-    // Valide si paiement total, sinon statut = retard
-    const validated = amountPaid >= amountDue;
+    if (!modalChild) return;
     mutation.mutate({
-      id: modal.pay.id,
+      child: modalChild,
+      pay: modalPay,
       amount_due: amountDue,
       amount_paid: amountPaid,
-      validated,
-      status: validated ? "validated" : "pending"
+      year,
+      month,
     });
     handleCloseModal();
   };
@@ -167,7 +195,6 @@ export default function MonthlyPaymentsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* Hook safety: only render table rows if data is loaded */}
             {loadingChildren || loadingPayments ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center">Chargement...</TableCell>
@@ -184,7 +211,7 @@ export default function MonthlyPaymentsTable() {
                     key={pay ? pay.id : child.id}
                     child={child}
                     pay={pay}
-                    onEdit={handleOpenModal}
+                    onEdit={() => handleOpenModal(child, pay)}
                   />
                 );
               })
@@ -194,17 +221,16 @@ export default function MonthlyPaymentsTable() {
       </div>
       {/* Modale paiement rapide */}
       <QuickPaymentModal
-        open={modal.open}
+        open={modalOpen}
         onClose={handleCloseModal}
         onSave={handleSavePayment}
         initialAmountDue={
-          modal.pay
-            ? (modal.pay.amount_due + modal.pay.registration_fee)
+          modalPay
+            ? (modalPay.amount_due + modalPay.registration_fee)
             : 10000
         }
-        initialAmountPaid={modal.pay ? modal.pay.amount_paid : 0}
+        initialAmountPaid={modalPay ? modalPay.amount_paid : 0}
       />
-      {/* Info utilisateur */}
       <div className="mt-4 text-xs text-muted-foreground">
         - Cliquez sur <b>Enregistrer un paiement</b> pour saisir ou ajuster un versement.<br />
         - Le statut et le reste à payer se mettent à jour automatiquement.<br />
