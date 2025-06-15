@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MonthlyPaymentRow from "./MonthlyPaymentRow";
 import QuickPaymentModal from "./QuickPaymentModal";
+import InvoiceModal from "./InvoiceModal";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
@@ -79,7 +80,22 @@ export default function MonthlyPaymentsTable() {
     }
   });
 
-  // Ajoute le bouton sur chaque enfant, même sans paiement
+  // Nouveaux états pour la facture
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [invoiceChild, setInvoiceChild] = useState<Child | null>(null);
+  const [invoiceMonth, setInvoiceMonth] = useState<string>("");
+  const [invoiceTotal, setInvoiceTotal] = useState<number>(0);
+
+  // Génère la facture (ligne)
+  const handleInvoice = (child: Child, pay: Payment | null | undefined) => {
+    setInvoiceChild(child);
+    setInvoiceOpen(true);
+    setInvoiceMonth(MONTHS[month - 1]);
+    // total à facturer = pay.amount_due + pay.registration_fee ou 10000 par défaut
+    let total = 10000;
+    if (pay) total = pay.amount_due + pay.registration_fee;
+    setInvoiceTotal(total);
+  };
 
   // Pour l’utilisateur
   const [modalOpen, setModalOpen] = useState(false);
@@ -241,6 +257,8 @@ export default function MonthlyPaymentsTable() {
                     onEdit={() => handleOpenModal(child, pay)}
                     month={month}
                     monthInscription={monthInscription}
+                    // Passer la prop onInvoice
+                    onInvoice={() => handleInvoice(child, pay)}
                   />
                 );
               })
@@ -266,6 +284,14 @@ export default function MonthlyPaymentsTable() {
             ? modalPay.registration_fee
             : 1000 // valeur par défaut, à ajuster si besoin
         }
+      />
+      {/* MODALE FACTURE */}
+      <InvoiceModal
+        open={invoiceOpen}
+        onClose={() => setInvoiceOpen(false)}
+        child={invoiceChild}
+        mois={invoiceMonth}
+        total={invoiceTotal}
       />
       <div className="mt-4 text-xs text-muted-foreground">
         - Cliquez sur <b>Enregistrer un paiement</b> pour saisir ou ajuster un versement.<br />

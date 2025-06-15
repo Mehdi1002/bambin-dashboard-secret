@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,17 @@ type MonthlyPaymentRowProps = {
   onEdit: () => void;
   month: number;
   monthInscription: number | null;
+  onInvoice: () => void;
 };
 
-export default function MonthlyPaymentRow({ child, pay, onEdit, month, monthInscription }: MonthlyPaymentRowProps) {
+export default function MonthlyPaymentRow({
+  child,
+  pay,
+  onEdit,
+  month,
+  monthInscription,
+  onInvoice,
+}: MonthlyPaymentRowProps) {
   const showInscriptionFee = monthInscription && month === monthInscription;
 
   const totalDue = pay
@@ -59,10 +66,18 @@ export default function MonthlyPaymentRow({ child, pay, onEdit, month, monthInsc
         <Button
           size="sm"
           variant="default"
-          className="px-2 py-1"
+          className="px-2 py-1 mr-2"
           onClick={onEdit}
         >
           Enregistrer un paiement
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="px-2 py-1"
+          onClick={onInvoice}
+        >
+          Facture
         </Button>
       </TableCell>
     </TableRow>
