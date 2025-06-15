@@ -316,7 +316,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const PADDING = 50;
   const innerWidth = PAGE_WIDTH - 2 * PADDING;
 
-  // --- MODIFICATION: Ajout du titre centré juste avant le paragraphe ---
+  // --- MODIFICATION: Amélioration marge et présentation, suppression de la date, preview px-14 ---
   const scolariteHtml = `
     <div style="
       background:#fff;
@@ -328,7 +328,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       border-radius:12px;
       padding:0;
     ">
-      <div style="max-width:540px;margin:0 auto;padding:26px 24px 32px 24px;">
+      <div style="max-width:520px;margin:0 auto;padding:30px 0 36px 0;">
         ${getAdminHeaderFlexCertifSansDate()}
         ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
         <div style="
@@ -418,7 +418,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     setLoading(false);
   };
 
-  // Aperçu : version responsive (plus A4 - preview en largeur auto)
+  // Aperçu : version responsive, marge px-14
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
       <div
@@ -434,9 +434,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           >
             ✕
           </button>
-          {/* Aperçu responsif, largeur max 100% */}
+          {/* Aperçu responsif, largeur max 100%, marge latérale px-14 */}
           <div
-            className="border bg-white shadow-lg flex items-center justify-center overflow-auto"
+            className="border bg-white shadow-lg flex items-center justify-center overflow-auto px-[14px]"
             style={{
               width: "100%",
               maxWidth: "550px",
