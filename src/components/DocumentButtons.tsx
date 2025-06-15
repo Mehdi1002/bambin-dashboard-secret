@@ -148,6 +148,7 @@ function getAdminHeaderFlexCertif(date?: string) {
       align-items:flex-start;
       border-bottom:2px solid #d1e3fc;
       padding-bottom:22px;
+      box-sizing:border-box;
     ">
       <div style="flex:1;min-width:0;">
         ${admin.logo
@@ -177,8 +178,26 @@ function getAdminHeaderFlexCertif(date?: string) {
           ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
         </div>
       </div>
-      <div style="flex-shrink:0;text-align:right;padding-left:12px;min-width:130px;">
-        <div style="background:#dbeafe;padding:6px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.04em;font-weight:500;color:#1059b0;margin-bottom:4px;margin-top:20px;">
+      <div style="
+        flex-shrink:0;
+        min-width:0;
+        margin-left:24px;
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        justify-content:flex-start;
+      ">
+        <div style="
+          background:#dbeafe;
+          padding:6px 12px;
+          display:inline-block;
+          border-radius:6px;
+          font-size:1.06em;
+          font-weight:500;
+          color:#1059b0;
+          margin-top:4px;
+          white-space:nowrap;
+        ">
           Date : <span style="font-weight:700;">${date ?? getTodayShortFR()}</span>
         </div>
       </div>
