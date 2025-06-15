@@ -179,7 +179,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               Total général&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
             {/* Phrase finale sur une seule ligne, alignée à gauche, marge latérale réduite, sans fond */}
-            <div className="font-medium w-full text-left px-1" style={{ background: "none" }}>
+            <div style={{
+            background: "none"
+          }} className="font-medium w-full text-left px-px my-[34px] rounded-sm">
               Arrêtée la présente facture à la somme de&nbsp;:
               <span className="uppercase text-black">&nbsp;{totalStr}</span>.
             </div>
