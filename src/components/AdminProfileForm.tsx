@@ -9,6 +9,8 @@ export default function AdminProfileForm() {
     email: "",
     nif: "",
     article: "",
+    // Ajout du champ numéro d’agrément :
+    agrement: "",
     rc: "",
     nis: "",
     logo: ""
@@ -79,6 +81,10 @@ export default function AdminProfileForm() {
             <input name="article" value={form.article} onChange={handleChange} className="border rounded px-3 py-2 w-full" />
           </div>
           <div>
+            <label className="block text-xs mb-1">N° Agrément</label>
+            <input name="agrement" value={form.agrement} onChange={handleChange} className="border rounded px-3 py-2 w-full" />
+          </div>
+          <div>
             <label className="block text-xs mb-1">RC</label>
             <input name="rc" value={form.rc} onChange={handleChange} className="border rounded px-3 py-2 w-full" />
           </div>
@@ -119,6 +125,11 @@ export default function AdminProfileForm() {
           <div>
             <span className="font-medium">N° Article :</span> {form.article || <span className="text-muted-foreground italic">Non renseigné</span>}
           </div>
+          {form.agrement && (
+            <div>
+              <span className="font-medium">N° Agrément :</span> {form.agrement}
+            </div>
+          )}
           <div>
             <span className="font-medium">RC :</span> {form.rc || <span className="text-muted-foreground italic">Non renseigné</span>}
           </div>
@@ -129,3 +140,4 @@ export default function AdminProfileForm() {
       </div>
     </>;
 }
+

@@ -13,6 +13,7 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
     cb: "",
     nif: "196506010063735",
     article: "06017732933",
+    agrement: "", // <- Ajout du champ N° Agrément
     rc: "06/01-0961315A10",
     nis: "",
     logo: ""
@@ -97,6 +98,13 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
             <b>N° Article :</b> ${admin.article || ""}
           </div>
+          ${
+            admin.agrement
+              ? `<div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
+                    <b>N° Agrément :</b> ${admin.agrement}
+                </div>`
+              : ""
+          }
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
             <b>RC :</b> ${admin.rc || ""}
           </div>
