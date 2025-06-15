@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import DocumentButtons from "./DocumentButtons";
 import ChildrenCsvImport from "./ChildrenCsvImport";
+import ChildrenListTable from "./ChildrenListTable";
 
 type ChildRow = {
   id: string;
@@ -193,79 +194,11 @@ export default function ChildTable() {
               Importer CSV
             </button>
           </div>
-          <div className="border rounded-lg overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-muted">
-                  {/* <th className="px-3 py-2 text-left">Photo</th> Retiré */}
-                  <th className="px-3 py-2 text-left">Nom</th>
-                  <th className="px-3 py-2 text-left">Prénom</th>
-                  <th className="px-3 py-2 text-left">Sexe</th>
-                  <th className="px-3 py-2 text-left">Date naissance</th>
-                  <th className="px-3 py-2 text-left">Section</th>
-                  {/* Suppression des colonnes documents parents */}
-                  <th className="px-3 py-2 text-left">Date inscription</th>
-                  <th className="px-3 py-2 text-left">Statut</th>
-                  <th className="px-3 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {children && children.length > 0 ? (
-                  children.map((c) => (
-                    <tr key={c.id} className="border-b hover:bg-muted/40">
-                      {/* Photo retirée */}
-                      <td className="px-3 py-2 font-medium">{c.nom}</td>
-                      <td className="px-3 py-2">{c.prenom}</td>
-                      <td className="px-3 py-2">{c.sexe ?? ""}</td>
-                      <td className="px-3 py-2">{c.date_naissance}</td>
-                      <td className="px-3 py-2">{c.section}</td>
-                      {/* Suppression des colonnes doc parents */}
-                      <td className="px-3 py-2">{c.date_inscription ?? ""}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            c.statut === "Actif"
-                              ? "bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs"
-                              : "bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs"
-                          }
-                        >
-                          {c.statut}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 flex gap-2 flex-wrap">
-                        <button
-                          className="text-primary hover:underline text-xs"
-                          onClick={() => handleEdit(c)}
-                        >
-                          Modifier
-                        </button>
-                        <button
-                          className="text-destructive hover:underline text-xs"
-                          onClick={() => handleDelete(c.id)}
-                        >
-                          <Trash className="w-4 h-4 inline" /> Supprimer
-                        </button>
-                        {/* DocumentButtons conserve juste l'essentiel */}
-                        <DocumentButtons child={{
-                          nom: c.nom,
-                          prenom: c.prenom,
-                          section: c.section,
-                          sexe: c.sexe,
-                          date_naissance: c.date_naissance
-                        }} />
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={8} className="p-5 text-center text-muted-foreground">
-                      Aucun enfant enregistré.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <ChildrenListTable
+            childrenRows={children}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         </>
       )}
     </div>
