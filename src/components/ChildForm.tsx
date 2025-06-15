@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 const sectionList = ["Petite", "Moyenne", "Prescolaire"] as const;
 const statutList = ["Actif", "Inactif"] as const;
@@ -57,7 +56,8 @@ export default function ChildForm({
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const dataToSubmit = {
+    // NE PAS inclure les champs document parents dans le dataToSubmit :
+    const dataToSubmit: Record<string, any> = {
       nom: form.nom,
       prenom: form.prenom,
       sexe: form.sexe,
@@ -67,14 +67,11 @@ export default function ChildForm({
       statut: form.statut,
       pere: form.pere,
       tel_pere: form.telPere,
-      type_doc_pere: form.typeDocPere,
-      num_doc_pere: form.numDocPere,
       mere: form.mere,
       tel_mere: form.telMere,
-      type_doc_mere: form.typeDocMere,
-      num_doc_mere: form.numDocMere,
       allergies: form.allergies
     };
+    // Facultatif : Ajouter l'ID uniquement lors de l'édition
     if (initial && initial.id) {
       dataToSubmit["id"] = initial.id;
     }
