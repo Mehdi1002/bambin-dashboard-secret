@@ -108,6 +108,13 @@ function getAdminHeader() {
   `;
 }
 
+function getTodayShortFR() {
+  // Formate la date en DD/MM/YYYY, toujours 2 chiffres
+  const now = new Date();
+  return now
+    .toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 function getAdminHeaderFlexCertif(date?: string) {
   const defaultData = {
     nom: "L’île des Bambins",
@@ -170,9 +177,9 @@ function getAdminHeaderFlexCertif(date?: string) {
           ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
         </div>
       </div>
-      <div style="flex-shrink:0;text-align:right;padding-left:28px;min-width:235px;">
-        <div style="background:#dbeafe;padding:7px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.13em;font-weight:500;color:#1059b0;margin-bottom:4px;margin-top:20px;">
-          Date : <span style="font-weight:700;">${date ?? getTodayFR()}</span>
+      <div style="flex-shrink:0;text-align:right;padding-left:12px;min-width:130px;">
+        <div style="background:#dbeafe;padding:6px 10px 6px 10px;display:inline-block;border-radius:6px;font-size:1.04em;font-weight:500;color:#1059b0;margin-bottom:4px;margin-top:20px;">
+          Date : <span style="font-weight:700;">${date ?? getTodayShortFR()}</span>
         </div>
       </div>
     </div>
