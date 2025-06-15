@@ -16,6 +16,8 @@ type Props = {
   child: Child;
   anneeScolaire?: string;
   headerHtml?: string;
+  // Ajout optionnelle dateFacturation pour transmettre la date comme la facture
+  dateFacturation?: string;
 };
 
 const DEFAULT_ANNEE = () => {
@@ -287,23 +289,26 @@ function genreInscrit(sexe?: string) {
   return "inscrit";
 }
 
-export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Props) {
+export default function DocumentButtons({ child, anneeScolaire, headerHtml, dateFacturation }: Props) {
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
 
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
-  // Détermination de la date pour le header (au format DD/MM/YYYY)
-  const todayShort = (() => {
-    const now = new Date();
-    return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
-  })();
 
-  // --- EN-TÊTE unifié comme la facture (logo à gauche, infos à gauche, right=Date) ---
-  const unifiedHeader = getAdminHeaderHtml({ right: `Date : <span style="font-weight:700">${todayShort}</span>` });
+  // ⚡ On harmonise la date utilisée : même logique que la facture
+  const dateFacture = dateFacturation
+    ? new Date(dateFacturation).toLocaleDateString("fr-DZ")
+    : new Date().toLocaleDateString("fr-DZ");
 
-  const PAGE_WIDTH = 595;
+  // Header unifié : bloc à droite = date de facturation
+  const unifiedHeader = getAdminHeaderHtml({
+    right: `Date&nbsp;: <span style="font-weight:700">${dateFacture}</span>`
+  });
+
+  // Harmonisation stricte avec la facture (taille page, padding, centering, etc)
+  const PAGE_WIDTH = 595; // points (≈A4 @ 72dpi) comme facture
   const PAGE_HEIGHT = 842;
-  const PADDING = 36; // Paddings identiques facture
+  const PADDING = 36;
   const INNER_MAX_WIDTH = PAGE_WIDTH - 2 * PADDING;
 
   function makeTitle(label: string) {
@@ -325,121 +330,74 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     `;
   }
 
-  // Contenus avec styles harmonisés et largeur fixée
-  const scolariteHtml = `
-    <div style="
-      background:#fff;
-      width:${PAGE_WIDTH}pt;
-      min-height:${PAGE_HEIGHT}pt;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      color:#222;
-      margin:0 auto;
-      box-sizing:border-box;
-      border-radius:0;
-      padding:0;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      position:relative;
-    ">
+  // ✅ Contenu principal harmonisé
+  function getHtml(type: "scolarite" | "inscription") {
+    return `
       <div style="
-        width:100%;
-        max-width:${PAGE_WIDTH}pt;
-        min-height:${PAGE_HEIGHT - 2 * PADDING}pt;
+        background:#fff;
+        width:${PAGE_WIDTH}px;
+        min-height:${PAGE_HEIGHT}px;
+        font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+        color:#222;
+        margin:0 auto;
         box-sizing:border-box;
-        margin:0;
-        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
+        border-radius:0;
+        padding:0;
         display:flex;
         flex-direction:column;
-        align-items:stretch;
+        align-items:center;
         position:relative;
       ">
-        ${unifiedHeader}
-        ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
         <div style="
-          margin:32px 0 44px 0;
-          font-size:1.12em;
-          line-height:1.7;
-          text-align:justify;
           width:100%;
-          color:#23344a;
-          font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+          max-width:${PAGE_WIDTH}px;
+          min-height:${PAGE_HEIGHT - 2 * PADDING}px;
+          box-sizing:border-box;
+          margin:0;
+          padding:${PADDING}px ${PADDING}px 0 ${PADDING}px;
+          display:flex;
+          flex-direction:column;
+          align-items:stretch;
+          position:relative;
         ">
-          Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
-          <b style="color:#1852a1;">${child.nom} ${child.prenom}</b> est <b>${genreInscrit(child.sexe)}</b> au sein de notre établissement en
-          <b style="color:#1852a1;">${child.section} section</b> pour l’année scolaire <b style="color:#1852a1;">${annee}</b>.<br/><br/>
-          Cette attestation est faite pour servir et valoir ce que de droit.
-        </div>
-        <div style="
-          margin-top:68px; 
-          text-align:right;
-          font-size:1.07em;
-          width:100%;
-        ">
-          Le Directeur
-        </div>
-      </div>
-    </div>
-  `;
-
-  const inscriptionHtml = `
-    <div style="
-      background:#fff;
-      width:${PAGE_WIDTH}pt;
-      min-height:${PAGE_HEIGHT}pt;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      color:#222;
-      border-radius:0;
-      margin:0 auto;
-      box-sizing:border-box;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      position:relative;
-    ">
-      <div style="
-        width:100%;
-        max-width:${PAGE_WIDTH}pt;
-        min-height:${PAGE_HEIGHT - 2 * PADDING}pt;
-        box-sizing:border-box;
-        margin:0;
-        padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
-        display:flex;
-        flex-direction:column;
-        align-items:stretch;
-        position:relative;
-      ">
-        ${unifiedHeader}
-        ${makeTitle("Attestation d’inscription")}
-        <div style="
-          margin:32px 0 44px 0;
-          font-size:1.08em;
-          line-height:1.72;
-          text-align:justify;
-          width:100%;
-          color:#23344a;
-          font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-        ">
-          Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
-          <b style="color:#1852a1;">${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est <b>${genreInscrit(child.sexe)}</b> au sein de l’établissement pour l’année scolaire
-          <b style="color:#1852a1;">${annee}</b>, en <b style="color:#1852a1;">${child.section} section.</b><br/><br/>
-          Fait pour servir et valoir ce que de droit.
-        </div>
-        <div style="
-          margin-top:68px;
-          padding:0;
-          text-align:right;
-          font-size:1.07em;
-          width:100%;
-        ">
-          Le Directeur
+          ${unifiedHeader}
+          ${makeTitle(type === "scolarite" ? "CERTIFICAT DE SCOLARITÉ" : "Attestation d’inscription")}
+          <div style="
+            margin:32px 0 44px 0;
+            font-size:1.12em;
+            line-height:1.7;
+            text-align:justify;
+            width:100%;
+            max-width:${INNER_MAX_WIDTH}px;
+            color:#23344a;
+            font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+            margin-left:auto;
+            margin-right:auto;
+            ">
+            ${
+              type === "scolarite"
+                ? `Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
+                <b style="color:#1852a1;">${child.nom} ${child.prenom}</b> est <b>${genreInscrit(child.sexe)}</b> au sein de notre établissement en
+                <b style="color:#1852a1;">${child.section} section</b> pour l’année scolaire <b style="color:#1852a1;">${annee}</b>.<br/><br/>
+                Cette attestation est faite pour servir et valoir ce que de droit.`
+                : `Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
+                <b style="color:#1852a1;">${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est <b>${genreInscrit(child.sexe)}</b> au sein de l’établissement pour l’année scolaire
+                <b style="color:#1852a1;">${annee}</b>, en <b style="color:#1852a1;">${child.section} section.</b><br/><br/>
+                Fait pour servir et valoir ce que de droit.`
+            }
+          </div>
+          <div style="
+            margin-top:68px; 
+            text-align:right;
+            font-size:1.07em;
+            width:100%;
+          ">
+            Le Directeur
+          </div>
         </div>
       </div>
-    </div>
-  `;
-
-  const getHtml = (type: "scolarite" | "inscription") =>
-    type === "scolarite" ? scolariteHtml : inscriptionHtml;
+    `;
+  }
 
   // Remplacement : option PDF → margin: [2, 2, 2, 2] (réduction à 2mm)
   const handleExport = async (type: "scolarite" | "inscription") => {
@@ -448,7 +406,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
       margin: [0.5, 0.5], // pouces, identique à la facture
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" } // unité = pouces
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
     };
     const content = getHtml(type);
     await html2pdf().set(opt).from(content).save();
@@ -471,15 +429,14 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           >
             ✕
           </button>
-          {/* Aperçu responsif, largeur max 100%, marge latérale px-2 (8px) */}
           <div
             className="border bg-white shadow-lg flex items-center justify-center overflow-auto px-2"
             style={{
               width: "100%",
-              maxWidth: "550px",
+              maxWidth: "595px",
               minHeight: "320px",
               margin: "0 auto",
-              padding: "0",
+              padding: 0,
               borderRadius: "12px",
               boxShadow: "0 8px 32px rgba(0,0,0,.13)",
               position: "relative",
