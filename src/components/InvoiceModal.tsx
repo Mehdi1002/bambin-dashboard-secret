@@ -1,7 +1,9 @@
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import n2words from "n2words";
+import html2pdf from "html2pdf.js";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -91,6 +93,23 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     setTimeout(() => win.print(), 200);
   };
 
+  // 👇 Fonction de génération PDF avec html2pdf.js
+  const handleDownloadPdf = () => {
+    const invoiceElem = document.getElementById("invoice-printable");
+    if (!invoiceElem) return;
+
+    // html2pdf utilisera l’élément HTML déjà stylé (ce que voit l’utilisateur)
+    const opt = {
+      margin:       [0.5, 0.5], // pouces
+      filename:     `${invoiceNumber}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    html2pdf().set(opt).from(invoiceElem).save();
+  };
+
   if (!child) return null;
 
   return (
@@ -153,6 +172,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
         </div>
         <DialogFooter>
+          <Button onClick={handleDownloadPdf} variant="default">Télécharger PDF</Button>
           <Button onClick={handlePrint} variant="outline">Imprimer</Button>
           <Button onClick={onClose} variant="secondary">Fermer</Button>
         </DialogFooter>
@@ -162,3 +182,4 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 };
 
 export default InvoiceModal;
+
