@@ -145,7 +145,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
-              <tr className="text-left bg-gray-50 border-b">
+              <tr className="text-left bg-gray-800 text-white border-b">
                 <th className="py-2 px-3">Nom & Prénom</th>
                 <th className="py-2 px-3">Mois facturé</th>
                 <th className="py-2 px-3 text-right">Total à payer (DA)</th>
