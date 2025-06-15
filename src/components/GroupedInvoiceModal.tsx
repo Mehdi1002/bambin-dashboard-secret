@@ -131,6 +131,8 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
               __html: getAdminHeaderHtml({ right: invoiceNumber })
             }}
           />
+          {/* Titre "Facture" */}
+          <h2 className="text-xl font-semibold text-center mb-3 mt-1">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
           <table className="w-full mb-6">
             <thead>
