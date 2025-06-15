@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 const sectionList = ["Petite", "Moyenne", "Prescolaire"] as const;
 const statutList = ["Actif", "Inactif"] as const;
+const sexeList = ["Garçon", "Fille"] as const;
+const docList = ["Carte d'identité", "Permis de conduire"] as const;
 type Props = {
   initial?: any;
   onSubmit: (c: any) => void;
@@ -11,7 +14,6 @@ export default function ChildForm({
   onSubmit,
   onCancel
 }: Props) {
-  // Remapper les clés snake_case du backend vers camelCase pour le formulaire
   const formatInitial = (init: any) => {
     if (!init) return undefined;
     return {
@@ -19,17 +21,27 @@ export default function ChildForm({
       dateNaissance: init.date_naissance ?? init.dateNaissance ?? "",
       dateInscription: init.date_inscription ?? init.dateInscription ?? "",
       telPere: init.tel_pere ?? init.telPere ?? "",
-      telMere: init.tel_mere ?? init.telMere ?? ""
+      telMere: init.tel_mere ?? init.telMere ?? "",
+      sexe: init.sexe ?? "",
+      typeDocPere: init.type_doc_pere ?? "",
+      numDocPere: init.num_doc_pere ?? "",
+      typeDocMere: init.type_doc_mere ?? "",
+      numDocMere: init.num_doc_mere ?? "",
     };
   };
   const [form, setForm] = useState(initial ? formatInitial(initial) : {
     nom: "",
     prenom: "",
+    sexe: "",
     dateNaissance: "",
     pere: "",
     telPere: "",
+    typeDocPere: "",
+    numDocPere: "",
     mere: "",
     telMere: "",
+    typeDocMere: "",
+    numDocMere: "",
     allergies: "",
     section: "Petite",
     dateInscription: "",
@@ -56,18 +68,22 @@ export default function ChildForm({
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Remap les clés camelCase vers snake_case (conforme à la base)
     const dataToSubmit = {
       nom: form.nom,
       prenom: form.prenom,
+      sexe: form.sexe,
       date_naissance: form.dateNaissance,
       section: form.section,
       date_inscription: form.dateInscription,
       statut: form.statut,
       pere: form.pere,
       tel_pere: form.telPere,
+      type_doc_pere: form.typeDocPere,
+      num_doc_pere: form.numDocPere,
       mere: form.mere,
       tel_mere: form.telMere,
+      type_doc_mere: form.typeDocMere,
+      num_doc_mere: form.numDocMere,
       allergies: form.allergies,
       photo: form.photo
     };
@@ -88,6 +104,13 @@ export default function ChildForm({
         <div>
           <label className="block text-xs mb-1">Prénom</label>
           <input name="prenom" value={form.prenom} onChange={handleChange} className="border px-3 py-2 w-full rounded" required />
+        </div>
+        <div>
+          <label className="block text-xs mb-1">Sexe</label>
+          <select name="sexe" value={form.sexe} onChange={handleChange} className="border px-3 py-2 w-full rounded" required>
+            <option value="">Choisir</option>
+            {sexeList.map(s => <option key={s}>{s}</option>)}
+          </select>
         </div>
         <div>
           <label className="block text-xs mb-1">Date de naissance</label>
@@ -118,6 +141,17 @@ export default function ChildForm({
           <input name="telPere" value={form.telPere} onChange={handleChange} className="border px-3 py-2 w-full rounded" />
         </div>
         <div>
+          <label className="block text-xs mb-1">Type document père</label>
+          <select name="typeDocPere" value={form.typeDocPere} onChange={handleChange} className="border px-3 py-2 w-full rounded">
+            <option value="">Choisir</option>
+            {docList.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs mb-1">N° document père</label>
+          <input name="numDocPere" value={form.numDocPere} onChange={handleChange} className="border px-3 py-2 w-full rounded" />
+        </div>
+        <div>
           <label className="block text-xs mb-1">Nom de la mère</label>
           <input name="mere" value={form.mere} onChange={handleChange} className="border px-3 py-2 w-full rounded" />
         </div>
@@ -125,11 +159,21 @@ export default function ChildForm({
           <label className="block text-xs mb-1">Téléphone de la mère</label>
           <input name="telMere" value={form.telMere} onChange={handleChange} className="border px-3 py-2 w-full rounded" />
         </div>
+        <div>
+          <label className="block text-xs mb-1">Type document mère</label>
+          <select name="typeDocMere" value={form.typeDocMere} onChange={handleChange} className="border px-3 py-2 w-full rounded">
+            <option value="">Choisir</option>
+            {docList.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs mb-1">N° document mère</label>
+          <input name="numDocMere" value={form.numDocMere} onChange={handleChange} className="border px-3 py-2 w-full rounded" />
+        </div>
         <div className="col-span-2">
           <label className="block text-xs mb-1">Allergies</label>
           <textarea name="allergies" value={form.allergies} onChange={handleChange} className="border px-3 py-2 w-full rounded" rows={2} />
         </div>
-        
       </div>
       <div className="flex gap-4 justify-end">
         <button type="button" onClick={onCancel} className="bg-muted text-primary border border-primary px-6 py-2 rounded hover:bg-muted/80">

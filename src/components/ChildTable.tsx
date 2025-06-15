@@ -21,6 +21,11 @@ type ChildRow = {
   tel_mere: string | null;
   allergies: string | null;
   photo: string | null;
+  sexe: string | null;
+  type_doc_pere: string | null;
+  num_doc_pere: string | null;
+  type_doc_mere: string | null;
+  num_doc_mere: string | null;
 };
 
 export default function ChildTable() {
@@ -166,8 +171,13 @@ export default function ChildTable() {
                   <th className="px-3 py-2 text-left">Photo</th>
                   <th className="px-3 py-2 text-left">Nom</th>
                   <th className="px-3 py-2 text-left">Prénom</th>
+                  <th className="px-3 py-2 text-left">Sexe</th>
                   <th className="px-3 py-2 text-left">Date naissance</th>
                   <th className="px-3 py-2 text-left">Section</th>
+                  <th className="px-3 py-2 text-left">Type doc Père</th>
+                  <th className="px-3 py-2 text-left">N° doc Père</th>
+                  <th className="px-3 py-2 text-left">Type doc Mère</th>
+                  <th className="px-3 py-2 text-left">N° doc Mère</th>
                   <th className="px-3 py-2 text-left">Date inscription</th>
                   <th className="px-3 py-2 text-left">Statut</th>
                   <th className="px-3 py-2">Actions</th>
@@ -194,8 +204,13 @@ export default function ChildTable() {
                       </td>
                       <td className="px-3 py-2 font-medium">{c.nom}</td>
                       <td className="px-3 py-2">{c.prenom}</td>
+                      <td className="px-3 py-2">{c.sexe ?? ""}</td>
                       <td className="px-3 py-2">{c.date_naissance}</td>
                       <td className="px-3 py-2">{c.section}</td>
+                      <td className="px-3 py-2">{c.type_doc_pere ?? ""}</td>
+                      <td className="px-3 py-2">{c.num_doc_pere ?? ""}</td>
+                      <td className="px-3 py-2">{c.type_doc_mere ?? ""}</td>
+                      <td className="px-3 py-2">{c.num_doc_mere ?? ""}</td>
                       <td className="px-3 py-2">{c.date_inscription ?? ""}</td>
                       <td className="px-3 py-2">
                         <span
@@ -221,11 +236,11 @@ export default function ChildTable() {
                         >
                           <Trash className="w-4 h-4 inline" /> Supprimer
                         </button>
-                        {/* Boutons document ici */}
                         <DocumentButtons child={{
                           nom: c.nom,
                           prenom: c.prenom,
                           section: c.section,
+                          sexe: c.sexe,
                           date_naissance: c.date_naissance,
                         }} />
                       </td>
@@ -233,7 +248,7 @@ export default function ChildTable() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="p-5 text-center text-muted-foreground">
+                    <td colSpan={13} className="p-5 text-center text-muted-foreground">
                       Aucun enfant enregistré.
                     </td>
                   </tr>

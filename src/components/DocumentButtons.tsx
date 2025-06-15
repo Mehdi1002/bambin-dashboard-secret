@@ -8,6 +8,7 @@ type Child = {
   prenom: string;
   section: string;
   date_naissance: string;
+  sexe?: string; // Ajouté
 };
 
 type Props = {
@@ -86,6 +87,12 @@ function getTodayFR() {
   return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+// Utilitaire accord genre
+function genreInscrit(sexe?: string) {
+  if ((sexe ?? "").toLowerCase().startsWith("f")) return "inscrite";
+  return "inscrit";
+}
+
 export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Props) {
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
@@ -155,7 +162,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           box-sizing:border-box;
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
-          <b>${child.nom} ${child.prenom}</b> est inscrit au sein de notre établissement en
+          <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
           <b>${child.section}</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
           Cette attestation est faite pour servir et valoir ce que de droit.
         </div>
@@ -205,7 +212,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           box-sizing:border-box;
         ">
           Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
-          <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est inscrit(e) au sein de l’établissement pour l’année scolaire
+          <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est ${genreInscrit(child.sexe)} au sein de l’établissement pour l’année scolaire
           <b>${annee}</b>, en <b>${child.section}</b>.<br/><br/>
           Fait pour servir et valoir ce que de droit.
         </div>
