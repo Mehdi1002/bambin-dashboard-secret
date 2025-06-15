@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -47,9 +48,13 @@ function totalEnLettres(total: number) {
     currency: "DZD"
   });
   txt = txt.replace(/^un /i, "Un ");
-  txt = txt.replace(/ et zéro centime\.?$/i, " ET ZÉRO CENTIME");
   txt = txt.toLocaleUpperCase("fr-FR");
+  if (!txt.includes("DINARS")) {
+    txt = txt.replace(/ ET ZÉRO CENTIME\.?$/, "");
+    txt += " DINARS";
+  }
   if (!txt.includes("CENTIME")) txt += " ET ZÉRO CENTIME";
+  txt = txt.replace(/(?<!DINARS) ET ZÉRO CENTIME/, " DINARS ET ZÉRO CENTIME");
   return txt;
 }
 

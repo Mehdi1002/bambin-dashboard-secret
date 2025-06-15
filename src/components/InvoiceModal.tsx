@@ -43,11 +43,16 @@ function totalEnLettres(total: number) {
     currency: "DZD"
   });
   txt = txt.replace(/^un /i, "Un "); // Respect Maj initiale
-  txt = txt.replace(/ et zéro centime\.?$/i, " ET ZÉRO CENTIME");
-  // Force en majuscules
   txt = txt.toLocaleUpperCase("fr-FR");
-  // Harmonise la fin : DZD => DINARS ET ZÉRO CENTIME, ou bien laisse par défaut la structure fournie
+  // S'assurer de l'ajout DINARS si absent
+  if (!txt.includes("DINARS")) {
+    txt = txt.replace(/ ET ZÉRO CENTIME\.?$/, "");
+    txt += " DINARS";
+  }
+  // Ajoute ET ZÉRO CENTIME à la fin si absent
   if (!txt.includes("CENTIME")) txt += " ET ZÉRO CENTIME";
+  // Si déjà ET ZÉRO CENTIME mais pas DINARS devant, rajoute DINARS devant
+  txt = txt.replace(/(?<!DINARS) ET ZÉRO CENTIME/, " DINARS ET ZÉRO CENTIME");
   return txt;
 }
 const InvoiceModal: React.FC<InvoiceModalProps> = ({
