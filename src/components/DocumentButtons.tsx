@@ -180,8 +180,9 @@ function getAdminHeaderFlexCertif(date?: string) {
       </div>
       <div style="
         flex-shrink:0;
-        min-width:0;
-        margin-left:24px;
+        min-width:110px; /* Ajout pour forcer une largeur raisonnable et éviter débordement */
+        max-width:180px; /* On limite la largeur pour garder la date dans la page */
+        margin-left:12px; /* Réduit l'écart pour moins coller à la droite */
         display:flex;
         flex-direction:column;
         align-items:flex-end;
@@ -197,6 +198,7 @@ function getAdminHeaderFlexCertif(date?: string) {
           color:#1059b0;
           margin-top:4px;
           white-space:nowrap;
+          box-sizing:border-box;
         ">
           Date : <span style="font-weight:700;">${date ?? getTodayShortFR()}</span>
         </div>
@@ -348,15 +350,14 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     setLoading(false);
   };
 
-  // Modale d’aperçu : affichage A4 fidèle
+  // Aperçu : version responsive (plus A4 - preview en largeur auto)
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
         style={{ fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif" }}
       >
-        {/* fond modal */}
-        <div className="w-full max-w-5xl h-auto flex flex-col items-center justify-center p-2 relative">
+        <div className="w-full max-w-4xl h-auto flex flex-col items-center justify-center p-2 relative">
           <button
             className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1 z-10"
             aria-label="Fermer"
@@ -365,35 +366,33 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           >
             ✕
           </button>
-          {/* Container qui impose la taille A4 et centre la page */}
+          {/* Aperçu responsif, largeur max 100% */}
           <div
-            className="bg-white border shadow-lg flex items-center justify-center overflow-auto"
+            className="border bg-white shadow-lg flex items-center justify-center overflow-auto"
             style={{
-              width: "595pt",
-              height: "842pt",
-              minWidth: "595pt",
-              minHeight: "842pt",
-              maxWidth: "100vw",
-              maxHeight: "80vh",
+              width: "100%",
+              maxWidth: "650px",
+              minHeight: "60vh",
               margin: "0 auto",
-              padding: 0,
-              boxSizing: "border-box",
-              borderRadius: 8,
-              boxShadow: "0 8px 32px rgba(0,0,0,.16)",
+              padding: "0",
+              borderRadius: "8px",
+              boxShadow: "0 8px 32px rgba(0,0,0,.13)",
               position: "relative",
+              boxSizing: "border-box",
             }}
           >
             <div
               style={{
-                width: "595pt",
-                minHeight: "842pt",
+                width: "100%",
+                minHeight: "750px",
                 background: "#fff",
                 overflow: "hidden",
+                boxSizing: "border-box",
               }}
               dangerouslySetInnerHTML={{ __html: getHtml(type) }}
             />
           </div>
-          <div className="flex gap-3 justify-end w-full max-w-5xl mt-4 px-7">
+          <div className="flex gap-3 justify-end w-full max-w-4xl mt-4 px-7">
             <Button
               variant="outline"
               onClick={onClose}
