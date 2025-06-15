@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from "react";
 export default function AdminProfileForm() {
   // Chargement initial depuis localStorage
   const [form, setForm] = useState({
-    nom: "Crèche et préscolaire L'île des Bambins",
+    nom: "L'île des Bambins",
     adresse: "",
     telephone: "",
     email: "",
