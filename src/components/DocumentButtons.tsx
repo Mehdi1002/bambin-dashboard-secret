@@ -303,20 +303,21 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const getHtml = (type: "scolarite" | "inscription") =>
     type === "scolarite" ? scolariteHtml : inscriptionHtml;
 
+  // Remplacement : option PDF → margin: [10, 10, 10, 10]
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
-      margin: 0,
+      margin: [10, 10, 10, 10], // 10mm sur chaque côté
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" }
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
     const content = getHtml(type);
     await html2pdf().set(opt).from(content).save();
     setLoading(false);
   };
 
-  // Affiche document dans une modal avant téléchargement :
+  // Modale d’aperçu : ajout px-[14px] sur le contenu
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
       <div
@@ -333,9 +334,9 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
           >
             ✕
           </button>
-          <div className="p-5">
+          <div className="p-5 px-[14px]">
             <div
-              // Attention : rendu HTML "en brut" pour affichage fidèle
+              // Rendu HTML "en brut"  
               dangerouslySetInnerHTML={{ __html: getHtml(type) }}
             />
           </div>
@@ -349,10 +350,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
             </Button>
             <Button
               variant="default"
-              onClick={() => {
-                handleExport(type);
-                onClose();
-              }}
+              onClick={() => { handleExport(type); onClose(); }}
               disabled={loading}
             >
               <Download className="w-4 h-4" /> Télécharger
