@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ interface InvoiceModalProps {
   mois: string; // e.g. "Avril"
   total: number;
   dateFacturation?: string;
+  indexFacture?: number; // 👈 Nouvelle prop pour index facture
 }
 
 function useAdminProfile() {
@@ -25,25 +25,13 @@ function useAdminProfile() {
   }, []);
 }
 
-// Fonction pour générer un numéro unique de facture : FAC-YYYY-MM-XXX
-function useInvoiceNumber(child: { nom: string; prenom: string } | null, mois: string, dateFacturation?: string) {
-  // On essaie d'utiliser l’enfant, l’année, le mois pour générer un numéro lisible et (quasi) unique : FAC-2025-04-NOMPRE (troncation)
-  if (!child) return "";
+// Numéro unique FAC-YYYY-XXX
+function useInvoiceNumber(indexFacture?: number, dateFacturation?: string) {
   const date = dateFacturation ? new Date(dateFacturation) : new Date();
   const year = date.getFullYear();
-  // Trouver le numéro du mois : on suppose que mois est ex : "Avril"
-  const monthMap = {
-    Janvier: "01", Février: "02", Mars: "03", Avril: "04", Mai: "05", Juin: "06", Juillet: "07",
-    Août: "08", Septembre: "09", Octobre: "10", Novembre: "11", Décembre: "12"
-  } as Record<string, string>;
-  let mm = Object.entries(monthMap).find(([k]) => mois.startsWith(k));
-  const monthStr = mm ? mm[1] : (date.getMonth() + 1).toString().padStart(2, "0");
-
-  // Générer un hash du nom pour l’ordre (ou troncature)
-  const initials =
-    (child.nom.substring(0, 3).toUpperCase() + child.prenom.substring(0, 2).toUpperCase());
-  // Numéro d’ordre fictif pour test demo (ajuster via une variable incrémentale côté back/db dans le futur)
-  return `FAC-${year}-${monthStr}-${initials}`;
+  // Pad index avec 3 chiffres (001, 002...)
+  const order = (indexFacture ?? 1).toString().padStart(3, "0");
+  return `FAC-${year}-${order}`;
 }
 
 // Met en MAJUSCULES françaises et retire la devise de n2words à la fin
@@ -66,11 +54,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   mois,
   total,
   dateFacturation,
+  indexFacture,
 }) => {
   const admin = useAdminProfile();
 
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
-  const invoiceNumber = useInvoiceNumber(child, mois, dateFacturation);
+  const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation); // modifié
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
 

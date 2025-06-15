@@ -85,9 +85,11 @@ export default function MonthlyPaymentsTable() {
   const [invoiceChild, setInvoiceChild] = useState<Child | null>(null);
   const [invoiceMonth, setInvoiceMonth] = useState<string>("");
   const [invoiceTotal, setInvoiceTotal] = useState<number>(0);
+  // 👇 Ajout index pour le numéro de facture
+  const [invoiceIndex, setInvoiceIndex] = useState<number>(1);
 
   // Génère la facture (ligne)
-  const handleInvoice = (child: Child, pay: Payment | null | undefined) => {
+  const handleInvoice = (child: Child, pay: Payment | null | undefined, index: number) => {
     setInvoiceChild(child);
     setInvoiceOpen(true);
     setInvoiceMonth(MONTHS[month - 1]);
@@ -95,6 +97,7 @@ export default function MonthlyPaymentsTable() {
     let total = 10000;
     if (pay) total = pay.amount_due + pay.registration_fee;
     setInvoiceTotal(total);
+    setInvoiceIndex(index + 1); // +1 pour numéroter à partir de 1
   };
 
   // Pour l’utilisateur
@@ -236,7 +239,7 @@ export default function MonthlyPaymentsTable() {
                 <TableCell colSpan={9} className="text-center">Aucun enfant trouvé.</TableCell>
               </TableRow>
             ) : (
-              children.map(child => {
+              children.map((child, idx) => {
                 const pay = (payments ?? []).find(p => p.child_id === child.id);
                 // Trouver le mois d’inscription de l’enfant
                 const monthInscription = (() => {
@@ -257,8 +260,8 @@ export default function MonthlyPaymentsTable() {
                     onEdit={() => handleOpenModal(child, pay)}
                     month={month}
                     monthInscription={monthInscription}
-                    // Passer la prop onInvoice
-                    onInvoice={() => handleInvoice(child, pay)}
+                    // Passer la prop onInvoice avec l’index pour facture
+                    onInvoice={() => handleInvoice(child, pay, idx)}
                   />
                 );
               })
@@ -292,6 +295,8 @@ export default function MonthlyPaymentsTable() {
         child={invoiceChild}
         mois={invoiceMonth}
         total={invoiceTotal}
+        // 👇 nouvelle prop indexFacture
+        indexFacture={invoiceIndex}
       />
       <div className="mt-4 text-xs text-muted-foreground">
         - Cliquez sur <b>Enregistrer un paiement</b> pour saisir ou ajuster un versement.<br />
