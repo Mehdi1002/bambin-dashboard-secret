@@ -301,68 +301,81 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   // --- EN-TÊTE unifié comme la facture (logo à gauche, infos à gauche, right=Date) ---
   const unifiedHeader = getAdminHeaderHtml({ right: `Date : <span style="font-weight:700">${todayShort}</span>` });
 
+  const PAGE_WIDTH = 595;
+  const PAGE_HEIGHT = 842;
+  const PADDING = 36; // Paddings identiques facture
+  const INNER_MAX_WIDTH = PAGE_WIDTH - 2 * PADDING;
+
   function makeTitle(label: string) {
     return `
       <div style="
         width:100%;
         text-align:center;
-        margin:0 auto 12px auto;
-        font-size:1.6em;
+        margin:0 auto 22px auto;
+        font-size:1.65em;
         font-weight:700;
         letter-spacing:1.2px;
         color:#1852a1;
         font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
+        border-bottom:1.5px solid #e5e7eb;
+        padding-bottom:6px;
       ">
         ${label}
       </div>
     `;
   }
 
-  const PAGE_WIDTH = 595;
-  const PADDING = 36; // Harmonisé avec la facture (facture = 36pt de chaque côté)
-  const innerWidth = PAGE_WIDTH - 2 * PADDING;
-
-  // --- Présentation du certificat et de l'attestation avec l'en-tête unifié ---
+  // Contenus avec styles harmonisés et largeur fixée
   const scolariteHtml = `
     <div style="
       background:#fff;
       width:${PAGE_WIDTH}pt;
-      min-height:842pt;
+      min-height:${PAGE_HEIGHT}pt;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
       color:#222;
-      margin:0;
+      margin:0 auto;
       box-sizing:border-box;
       border-radius:0;
       padding:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      position:relative;
     ">
       <div style="
-        width:${PAGE_WIDTH}pt;
-        min-height:800pt;
+        width:100%;
+        max-width:${PAGE_WIDTH}pt;
+        min-height:${PAGE_HEIGHT - 2 * PADDING}pt;
         box-sizing:border-box;
         margin:0;
         padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
         display:flex;
         flex-direction:column;
         align-items:stretch;
+        position:relative;
       ">
         ${unifiedHeader}
         ${makeTitle("CERTIFICAT DE SCOLARITÉ")}
         <div style="
-          margin:28px 0 42px 0;
-          font-size:1.10em;
+          margin:32px 0 44px 0;
+          font-size:1.12em;
           line-height:1.7;
           text-align:justify;
-          padding:0;
-          color:#23344a;
           width:100%;
-          box-sizing:border-box;
+          color:#23344a;
+          font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
         ">
-          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’élève
-          <b>${child.nom} ${child.prenom}</b> est ${genreInscrit(child.sexe)} au sein de notre établissement en
-          <b>${child.section} section</b> pour l’année scolaire <b>${annee}</b>.<br/><br/>
+          Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
+          <b style="color:#1852a1;">${child.nom} ${child.prenom}</b> est <b>${genreInscrit(child.sexe)}</b> au sein de notre établissement en
+          <b style="color:#1852a1;">${child.section} section</b> pour l’année scolaire <b style="color:#1852a1;">${annee}</b>.<br/><br/>
           Cette attestation est faite pour servir et valoir ce que de droit.
         </div>
-        <div style="margin-top:62px;text-align:right;font-size:1.07em;width:100%;">
+        <div style="
+          margin-top:68px; 
+          text-align:right;
+          font-size:1.07em;
+          width:100%;
+        ">
           Le Directeur
         </div>
       </div>
@@ -373,41 +386,52 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
     <div style="
       background:#fff;
       width:${PAGE_WIDTH}pt;
-      min-height:842pt;
+      min-height:${PAGE_HEIGHT}pt;
       font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
       color:#222;
       border-radius:0;
-      margin:0;
+      margin:0 auto;
       box-sizing:border-box;
-      padding:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      position:relative;
     ">
       <div style="
-        width:${PAGE_WIDTH}pt;
-        min-height:800pt;
+        width:100%;
+        max-width:${PAGE_WIDTH}pt;
+        min-height:${PAGE_HEIGHT - 2 * PADDING}pt;
+        box-sizing:border-box;
         margin:0;
         padding:${PADDING}pt ${PADDING}pt 0 ${PADDING}pt;
-        box-sizing:border-box;
         display:flex;
         flex-direction:column;
         align-items:stretch;
+        position:relative;
       ">
         ${unifiedHeader}
         ${makeTitle("Attestation d’inscription")}
         <div style="
-          margin:32px 0 42px 0;
+          margin:32px 0 44px 0;
           font-size:1.08em;
           line-height:1.72;
           text-align:justify;
-          padding:0;
           width:100%;
-          box-sizing:border-box;
+          color:#23344a;
+          font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
         ">
-          Je soussigné, Monsieur le Directeur de la crèche <b>L’Île des Bambins</b>, atteste que l’enfant
-          <b>${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est ${genreInscrit(child.sexe)} au sein de l’établissement pour l’année scolaire
-          <b>${annee}</b>, en <b>${child.section} section.</b><br/><br/>
+          Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
+          <b style="color:#1852a1;">${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est <b>${genreInscrit(child.sexe)}</b> au sein de l’établissement pour l’année scolaire
+          <b style="color:#1852a1;">${annee}</b>, en <b style="color:#1852a1;">${child.section} section.</b><br/><br/>
           Fait pour servir et valoir ce que de droit.
         </div>
-        <div style="margin-top:62px;padding:0;text-align:right;font-size:1.07em;width:100%;">
+        <div style="
+          margin-top:68px;
+          padding:0;
+          text-align:right;
+          font-size:1.07em;
+          width:100%;
+        ">
           Le Directeur
         </div>
       </div>
