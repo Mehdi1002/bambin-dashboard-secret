@@ -408,10 +408,10 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml }: Pr
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
-      margin: [2, 2, 2, 2], // 2mm sur chaque côté (ultra marges fines)
+      margin: [0.5, 0.5], // pouces, identique à la facture
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" } // unité = pouces
     };
     const content = getHtml(type);
     await html2pdf().set(opt).from(content).save();
