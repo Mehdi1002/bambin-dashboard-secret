@@ -31,7 +31,7 @@ function toFrenchDate(dateIso: string) {
 function getAdminHeader() {
   const defaultData = {
     nom: "L’île des Bambins",   // ← n’affiche plus “Crèche et préscolaire”
-    sousTitre: "Vente de radiateurs automobile-motoculture-industrie",
+    sousTitre: "Crèche et préscolaire", // ← remis sur la bonne valeur
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
@@ -122,7 +122,7 @@ function genreInscrit(sexe?: string) {
 function getAdminHeaderFlexCertif(date?: string) {
   const defaultData = {
     nom: "L’île des Bambins", // ← nom raccourci partout
-    sousTitre: "Vente de radiateurs automobile-motoculture-industrie",
+    sousTitre: "Crèche et préscolaire", // ← remis sur la bonne valeur
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
