@@ -133,15 +133,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <div>
               <div className="font-bold text-lg">{admin.nom || "L’île des Bambins"}</div>
               <div className="text-base text-muted-foreground mb-2">Crèche et préscolaire</div>
-              <div><span className="font-medium">Adresse :</span> {admin.adresse || <span className="text-muted-foreground italic">Non renseignée</span>}</div>
-              <div><span className="font-medium">Tél :</span> {admin.telephone || <span className="text-muted-foreground italic">Non renseigné</span>}</div>
-              <div><span className="font-medium">Email :</span> {admin.email || <span className="text-muted-foreground italic">Non renseigné</span>}</div>
               <div>
-                {admin.nif && <span className="mr-1">NIF : {admin.nif}</span>}
-                {admin.rc && <span className="mr-1">RC : {admin.rc}</span>}
-                {admin.article && <span>N°Article : {admin.article}</span>}
-                {admin.nis && <span className="ml-1">NIS : {admin.nis}</span>}
+                <span className="font-medium">Adresse :</span> {admin.adresse || <span className="text-muted-foreground italic">Non renseignée</span>}
               </div>
+              <div>
+                <span className="font-medium">Tél :</span> {admin.telephone || <span className="text-muted-foreground italic">Non renseigné</span>}
+              </div>
+              <div>
+                <span className="font-medium">Email :</span> {admin.email || <span className="text-muted-foreground italic">Non renseigné</span>}
+              </div>
+              {/* Numéros administratifs sur lignes séparées */}
+              {admin.nif && <div className="mt-1"><span className="font-medium">NIF&nbsp;: </span>{admin.nif}</div>}
+              {admin.rc && <div className="mt-1"><span className="font-medium">RC&nbsp;: </span>{admin.rc}</div>}
+              {admin.article && <div className="mt-1"><span className="font-medium">N°Article&nbsp;: </span>{admin.article}</div>}
+              {admin.nis && <div className="mt-1"><span className="font-medium">NIS&nbsp;: </span>{admin.nis}</div>}
               {/* Numéro unique de facture */}
               <div className="mt-2 font-semibold text-blue-700">Facture N° : {invoiceNumber}</div>
             </div>
