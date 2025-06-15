@@ -7,7 +7,7 @@
 export function getAdminHeaderHtml(options?: { right?: string }) {
   const defaultData = {
     nom: "L’île des Bambins",
-    sousTitre: "Crèche et préscolaire", // <-- ce champ ne sera plus utilisé
+    sousTitre: "Crèche et préscolaire",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
     email: "liledesbambins@gmail.com",
@@ -49,7 +49,7 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
           </div>`
       : "";
 
-  // On retire complètement la ligne qui affiche le sous-titre
+  // Afficher le sous-titre sous le nom
   return `
     <div style="
       width:100%;
@@ -71,7 +71,9 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
           <div style="font-size:1.55em;font-weight:700;color:#1852a1;line-height:1;margin-bottom:3px;letter-spacing:0.1px;">
             ${admin.nom}
           </div>
-          <!-- ligne sous-titre supprimée -->
+          <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
+            ${admin.sousTitre || ""}
+          </div>
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
             <b>Adresse :</b> ${admin.adresse || ""}
           </div>
