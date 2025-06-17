@@ -42,23 +42,17 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
 
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
 
-  // ✅ Date formatée exactement comme dans la facture
+  // ✅ Date formatée EXACTEMENT comme dans la facture
   const dateFacture = dateFacturation
     ? new Date(dateFacturation).toLocaleDateString("fr-DZ")
     : new Date().toLocaleDateString("fr-DZ");
 
-  // ✅ Header unifié identique à la facture
+  // ✅ Header unifié IDENTIQUE à la facture
   const unifiedHeader = getAdminHeaderHtml({
     right: `Date&nbsp;: <span style="font-weight:700">${dateFacture}</span>`
   });
 
-  // ✅ Dimensions EXACTEMENT identiques à la facture avec marges réduites
-  const INVOICE_PAGE_WIDTH = 595; // points A4
-  const INVOICE_PAGE_HEIGHT = 842; // points A4
-  const INVOICE_PADDING = 20; // ✅ RÉDUIT de 36 à 20 pour marges identiques facture
-  const INVOICE_INNER_WIDTH = INVOICE_PAGE_WIDTH - 2 * INVOICE_PADDING;
-
-  // ✅ Titre avec style IDENTIQUE à la facture + noir forcé
+  // ✅ Titre avec style IDENTIQUE à la facture
   function makeDocumentTitle(label: string) {
     return `
       <h2 style="
@@ -75,62 +69,50 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
     `;
   }
 
-  // ✅ Contenu principal avec dimensions et styles IDENTIQUES à la facture
+  // ✅ Contenu principal avec EXACTEMENT les mêmes paramètres que la facture
   function getDocumentHtml(type: "scolarite" | "inscription") {
     return `
-      <div style="
+      <div class="bg-white p-3 rounded overflow-x-auto max-w-2xl my-2 mx-1 text-sm" style="
         background: #fff;
-        width: ${INVOICE_PAGE_WIDTH}px;
-        min-height: ${INVOICE_PAGE_HEIGHT}px;
-        font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        overflow-x: auto;
+        max-width: 32rem;
+        margin: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
         color: #000000 !important;
-        margin: 0 auto;
-        box-sizing: border-box;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
       ">
+        ${unifiedHeader}
+        
+        ${makeDocumentTitle(type === "scolarite" ? "CERTIFICAT DE SCOLARITÉ" : "ATTESTATION D'INSCRIPTION")}
+        
         <div style="
+          margin: 32px 0 44px 0;
+          font-size: 0.875rem;
+          line-height: 1.7;
+          text-align: justify;
           width: 100%;
-          max-width: ${INVOICE_PAGE_WIDTH}px;
-          min-height: ${INVOICE_PAGE_HEIGHT - 2 * INVOICE_PADDING}px;
-          box-sizing: border-box;
-          padding: ${INVOICE_PADDING}px;
-          display: flex;
-          flex-direction: column;
+          color: #000000 !important;
+          font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
         ">
-          ${unifiedHeader}
-          
-          ${makeDocumentTitle(type === "scolarite" ? "CERTIFICAT DE SCOLARITÉ" : "ATTESTATION D'INSCRIPTION")}
-          
-          <div style="
-            margin: 32px 0 44px 0;
-            font-size: 0.875rem;
-            line-height: 1.7;
-            text-align: justify;
-            width: 100%;
-            max-width: ${INVOICE_INNER_WIDTH}px;
-            color: #000000 !important;
-            font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
-          ">
-            ${
-              type === "scolarite"
-                ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong> est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #000000 !important;">${child.section} section</strong> pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
-                : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong>, né(e) le <strong style="color: #000000 !important;">${toFrenchDate(child.date_naissance)}</strong>, est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>, en <strong style="color: #000000 !important;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
-            }
-          </div>
-          
-          <div style="
-            margin-top: 68px; 
-            text-align: right;
-            font-size: 0.875rem;
-            font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
-            width: 100%;
-            color: #000000 !important;
-          ">
-            Le Directeur
-          </div>
+          ${
+            type === "scolarite"
+              ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong> est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #000000 !important;">${child.section} section</strong> pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
+              : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong>, né(e) le <strong style="color: #000000 !important;">${toFrenchDate(child.date_naissance)}</strong>, est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>, en <strong style="color: #000000 !important;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
+          }
+        </div>
+        
+        <div style="
+          margin-top: 68px; 
+          text-align: right;
+          font-size: 0.875rem;
+          font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+          width: 100%;
+          color: #000000 !important;
+        ">
+          Le Directeur
         </div>
       </div>
     `;
