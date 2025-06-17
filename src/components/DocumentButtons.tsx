@@ -1,3 +1,4 @@
+
 import { Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import html2pdf from "html2pdf.js";
@@ -9,14 +10,13 @@ type Child = {
   prenom: string;
   section: string;
   date_naissance: string;
-  sexe?: string; // Ajouté
+  sexe?: string;
 };
 
 type Props = {
   child: Child;
   anneeScolaire?: string;
   headerHtml?: string;
-  // Ajout optionnelle dateFacturation pour transmettre la date comme la facture
   dateFacturation?: string;
 };
 
@@ -31,259 +31,6 @@ function toFrenchDate(dateIso: string) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-function getAdminHeader() {
-  const defaultData = {
-    nom: "L’île des Bambins",
-    sousTitre: "Crèche et préscolaire",
-    adresse: "1000 logt IHEDDADEN BEJAIA",
-    telephone: "0553367356 / 034 11 98 27",
-    email: "liledesbambins@gmail.com",
-    cb: "",
-    nif: "196506010063735",
-    article: "06017732933",
-    rc: "06/01-0961315A10",
-    nis: "",
-    logo: ""
-  };
-  let admin = defaultData;
-  try {
-    const stored = localStorage.getItem("admin_profile");
-    if (stored) {
-      admin = { ...defaultData, ...JSON.parse(stored) };
-    }
-  } catch {}
-
-  return `
-    <div style="
-      width:100%;
-      box-sizing:border-box;
-      margin-bottom:22px;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      border-bottom:1.5px solid #e5e7eb;
-      padding-bottom:18px;
-    ">
-      <div style="display:flex;align-items:flex-start;">
-        ${
-          admin.logo
-            ? `<div style="flex-shrink:0;margin-right:26px">
-                  <img src="${admin.logo}" alt="logo" style="width:66px;height:66px;border-radius:12px;object-fit:cover;border:2px solid #173583;background:#f5f8ff;box-shadow:0 2px 8px rgba(22,50,100,0.10);" />
-                </div>`
-            : ""
-        }
-        <div style="flex:1;">
-          <div style="font-size:1.55em;font-weight:700;color:#1852a1;line-height:1;margin-bottom:3px;letter-spacing:0.1px;">
-            L’île des Bambins
-          </div>
-          <div style="font-style:italic;color:#2e4a70;font-size:1.06em;line-height:1.2;margin-bottom:9px;">
-            ${admin.sousTitre || ""}
-          </div>
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>Adresse :</b> ${admin.adresse || ""}
-          </div>
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>Tél :</b> ${admin.telephone || ""}
-          </div>
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>Email :</b> ${admin.email || ""}
-          </div>
-          ${admin.cb ? `
-            <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-              <b>C.B BNA :</b> ${admin.cb}
-            </div>
-          ` : ""}
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>NIF :</b> ${admin.nif || ""}
-          </div>
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>N° Article :</b> ${admin.article || ""}
-          </div>
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>RC :</b> ${admin.rc || ""}
-          </div>
-          ${admin.nis ? `
-            <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-              <b>NIS :</b> ${admin.nis}
-            </div>
-          ` : ""}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getTodayShortFR() {
-  // Formate la date en DD/MM/YYYY, toujours 2 chiffres
-  const now = new Date();
-  return now
-    .toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
-}
-
-function getAdminHeaderFlexCertif(date?: string) {
-  const defaultData = {
-    nom: "L’île des Bambins",
-    sousTitre: "Crèche et préscolaire",
-    adresse: "1000 logt IHEDDADEN BEJAIA",
-    telephone: "0553367356 / 034 11 98 27",
-    email: "liledesbambins@gmail.com",
-    cb: "",
-    nif: "196506010063735",
-    article: "06017732933",
-    agrement: "", // <- Ajout du champ N° Agrément (prise en charge)
-    rc: "06/01-0961315A10",
-    nis: "",
-    logo: ""
-  };
-  let admin = defaultData;
-  try {
-    const stored = localStorage.getItem("admin_profile");
-    if (stored) {
-      admin = { ...defaultData, ...JSON.parse(stored) };
-    }
-  } catch {}
-
-  return `
-    <div style="
-      width:100%;
-      margin-bottom:28px;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      display:flex;
-      flex-direction:row;
-      align-items:flex-start;
-      border-bottom:2px solid #d1e3fc;
-      padding-bottom:22px;
-      box-sizing:border-box;
-    ">
-      <div style="flex:1;min-width:0;">
-        ${admin.logo
-          ? `<img src="${admin.logo}" alt="logo" style="width:62px;height:62px;border-radius:12px;object-fit:cover;border:2px solid #1852a1;background:#f5f8ff;margin-bottom:9px;margin-right:8px;vertical-align:middle;display:block;" />`
-          : ""}
-        <div style="font-size:1.3em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
-          L’île des Bambins
-        </div>
-        <div style="font-style:italic;color:#2e4a70;font-size:1em;line-height:1.4;margin-bottom:7px;">
-          ${admin.sousTitre || ""}
-        </div>
-        <div style="font-size:1em;line-height:1.7;margin-bottom:0px;">
-          <div style="margin-bottom:7px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
-          <div style="margin-bottom:7px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
-          <div style="margin-bottom:7px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
-          ${admin.cb ? `<div style="margin-bottom:7px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
-        </div>
-        <div style="margin-top:7px;font-size:0.98em;">
-          ${admin.nif ? `<div style="margin-bottom:7px;color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
-          ${admin.article ? `<div style="margin-bottom:7px;color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
-          ${
-            admin.agrement
-              ? `<div style="margin-bottom:7px;color:#222;"><b>N° Agrément :</b> ${admin.agrement}</div>`
-              : ""
-          }
-          ${admin.rc ? `<div style="margin-bottom:7px;color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
-          ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
-        </div>
-      </div>
-      <div style="
-        flex-shrink:0;
-        min-width:110px; /* Ajout pour forcer une largeur raisonnable et éviter débordement */
-        max-width:180px; /* On limite la largeur pour garder la date dans la page */
-        margin-left:12px; /* Réduit l'écart pour moins coller à la droite */
-        display:flex;
-        flex-direction:column;
-        align-items:flex-end;
-        justify-content:flex-start;
-      ">
-        <div style="
-          background:#dbeafe;
-          padding:6px 12px;
-          display:inline-block;
-          border-radius:6px;
-          font-size:1.06em;
-          font-weight:500;
-          color:#1059b0;
-          margin-top:4px;
-          white-space:nowrap;
-          box-sizing:border-box;
-        ">
-          Date : <span style="font-weight:700;">${date ?? getTodayShortFR()}</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getAdminHeaderFlexCertifSansDate() {
-  // Version du header SANS la date à droite
-  const defaultData = {
-    nom: "L’île des Bambins",
-    sousTitre: "Crèche et préscolaire",
-    adresse: "1000 logt IHEDDADEN BEJAIA",
-    telephone: "0553367356 / 034 11 98 27",
-    email: "liledesbambins@gmail.com",
-    cb: "",
-    nif: "196506010063735",
-    article: "06017732933",
-    agrement: "",
-    rc: "06/01-0961315A10",
-    nis: "",
-    logo: ""
-  };
-  let admin = defaultData;
-  try {
-    const stored = localStorage.getItem("admin_profile");
-    if (stored) {
-      admin = { ...defaultData, ...JSON.parse(stored) };
-    }
-  } catch {}
-
-  return `
-    <div style="
-      width:100%;
-      margin-bottom:28px;
-      font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-      display:flex;
-      flex-direction:row;
-      align-items:flex-start;
-      border-bottom:2px solid #d1e3fc;
-      padding-bottom:20px;
-      box-sizing:border-box;
-    ">
-      <div style="flex:1;min-width:0;">
-        ${admin.logo
-          ? `<img src="${admin.logo}" alt="logo" style="width:58px;height:58px;border-radius:12px;object-fit:cover;border:2px solid #1852a1;background:#f5f8ff;margin-bottom:9px;margin-right:8px;vertical-align:middle;display:block;" />`
-          : ""}
-        <div style="font-size:1.18em;font-weight:700;color:#1852a1;letter-spacing:0.2px;margin-bottom:2px;">
-          L’île des Bambins
-        </div>
-        <div style="font-style:italic;color:#2e4a70;font-size:.98em;line-height:1.3;margin-bottom:7px;">
-          ${admin.sousTitre || ""}
-        </div>
-        <div style="font-size:.98em;line-height:1.7;margin-bottom:0px;">
-          <div style="margin-bottom:7px;color:#222;"><b>Adresse :</b> ${admin.adresse || ""}</div>
-          <div style="margin-bottom:7px;color:#222;"><b>Tél :</b> ${admin.telephone || ""}</div>
-          <div style="margin-bottom:7px;color:#222;"><b>Email :</b> ${admin.email || ""}</div>
-          ${admin.cb ? `<div style="margin-bottom:7px;color:#222;"><b>C.B BNA :</b> ${admin.cb}</div>` : ""}
-        </div>
-        <div style="margin-top:6px;font-size:0.95em;">
-          ${admin.nif ? `<div style="margin-bottom:7px;color:#222;"><b>NIF :</b> ${admin.nif}</div>` : ""}
-          ${admin.article ? `<div style="margin-bottom:7px;color:#222;"><b>N° Article :</b> ${admin.article}</div>` : ""}
-          ${
-            admin.agrement
-              ? `<div style="margin-bottom:7px;color:#222;"><b>N° Agrément :</b> ${admin.agrement}</div>`
-              : ""
-          }
-          ${admin.rc ? `<div style="margin-bottom:7px;color:#222;"><b>RC :</b> ${admin.rc}</div>` : ""}
-          ${admin.nis ? `<div style="margin-bottom:7px;color:#222;"><b>NIS :</b> ${admin.nis}</div>` : ""}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getTodayFR() {
-  const now = new Date();
-  return now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
-}
-
-// Utilitaire accord genre
 function genreInscrit(sexe?: string) {
   if ((sexe ?? "").toLowerCase().startsWith("f")) return "inscrite";
   return "inscrit";
@@ -295,102 +42,92 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
 
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
 
-  // ⚡ On harmonise la date utilisée : même logique que la facture
+  // ✅ Date formatée exactement comme dans la facture
   const dateFacture = dateFacturation
     ? new Date(dateFacturation).toLocaleDateString("fr-DZ")
     : new Date().toLocaleDateString("fr-DZ");
 
-  // Header unifié : bloc à droite = date de facturation
+  // ✅ Header unifié identique à la facture
   const unifiedHeader = getAdminHeaderHtml({
     right: `Date&nbsp;: <span style="font-weight:700">${dateFacture}</span>`
   });
 
-  // Harmonisation stricte avec la facture (taille page, padding, centering, etc)
-  const PAGE_WIDTH = 595; // points (≈A4 @ 72dpi) comme facture
-  const PAGE_HEIGHT = 842;
-  const PADDING = 36;
-  const INNER_MAX_WIDTH = PAGE_WIDTH - 2 * PADDING;
+  // ✅ Dimensions EXACTEMENT identiques à la facture
+  const INVOICE_PAGE_WIDTH = 595; // points A4
+  const INVOICE_PAGE_HEIGHT = 842; // points A4
+  const INVOICE_PADDING = 36; // padding exact de la facture
+  const INVOICE_INNER_WIDTH = INVOICE_PAGE_WIDTH - 2 * INVOICE_PADDING;
 
-  function makeTitle(label: string) {
+  // ✅ Titre avec style IDENTIQUE à la facture
+  function makeDocumentTitle(label: string) {
     return `
-      <div style="
-        width:100%;
-        text-align:center;
-        margin:0 auto 22px auto;
-        font-size:1.65em;
-        font-weight:700;
-        letter-spacing:1.2px;
-        color:#1852a1;
-        font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-        border-bottom:1.5px solid #e5e7eb;
-        padding-bottom:6px;
+      <h2 style="
+        text-align: center;
+        margin: 0 auto 22px auto;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #222;
+        font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+        line-height: 1.2;
       ">
         ${label}
-      </div>
+      </h2>
     `;
   }
 
-  // ✅ Contenu principal harmonisé
-  function getHtml(type: "scolarite" | "inscription") {
+  // ✅ Contenu principal avec dimensions et styles IDENTIQUES à la facture
+  function getDocumentHtml(type: "scolarite" | "inscription") {
     return `
       <div style="
-        background:#fff;
-        width:${PAGE_WIDTH}px;
-        min-height:${PAGE_HEIGHT}px;
-        font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-        color:#222;
-        margin:0 auto;
-        box-sizing:border-box;
-        border-radius:0;
-        padding:0;
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        position:relative;
+        background: #fff;
+        width: ${INVOICE_PAGE_WIDTH}px;
+        min-height: ${INVOICE_PAGE_HEIGHT}px;
+        font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+        color: #222;
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       ">
         <div style="
-          width:100%;
-          max-width:${PAGE_WIDTH}px;
-          min-height:${PAGE_HEIGHT - 2 * PADDING}px;
-          box-sizing:border-box;
-          margin:0;
-          padding:${PADDING}px ${PADDING}px 0 ${PADDING}px;
-          display:flex;
-          flex-direction:column;
-          align-items:stretch;
-          position:relative;
+          width: 100%;
+          max-width: ${INVOICE_PAGE_WIDTH}px;
+          min-height: ${INVOICE_PAGE_HEIGHT - 2 * INVOICE_PADDING}px;
+          box-sizing: border-box;
+          padding: ${INVOICE_PADDING}px;
+          display: flex;
+          flex-direction: column;
         ">
           ${unifiedHeader}
-          ${makeTitle(type === "scolarite" ? "CERTIFICAT DE SCOLARITÉ" : "Attestation d’inscription")}
+          
+          ${makeDocumentTitle(type === "scolarite" ? "CERTIFICAT DE SCOLARITÉ" : "ATTESTATION D'INSCRIPTION")}
+          
           <div style="
-            margin:32px 0 44px 0;
-            font-size:1.12em;
-            line-height:1.7;
-            text-align:justify;
-            width:100%;
-            max-width:${INNER_MAX_WIDTH}px;
-            color:#23344a;
-            font-family:'Segoe UI',Arial,'Helvetica Neue',sans-serif;
-            margin-left:auto;
-            margin-right:auto;
-            ">
+            margin: 32px 0 44px 0;
+            font-size: 0.875rem;
+            line-height: 1.7;
+            text-align: justify;
+            width: 100%;
+            max-width: ${INVOICE_INNER_WIDTH}px;
+            color: #222;
+            font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+          ">
             ${
               type === "scolarite"
-                ? `Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
-                <b style="color:#1852a1;">${child.nom} ${child.prenom}</b> est <b>${genreInscrit(child.sexe)}</b> au sein de notre établissement en
-                <b style="color:#1852a1;">${child.section} section</b> pour l’année scolaire <b style="color:#1852a1;">${annee}</b>.<br/><br/>
-                Cette attestation est faite pour servir et valoir ce que de droit.`
-                : `Je soussigné, Monsieur le Directeur de la crèche <b style="color:#1852a1;">L’Île des Bambins</b>, atteste que
-                <b style="color:#1852a1;">${child.nom} ${child.prenom}</b>, né(e) le <b>${toFrenchDate(child.date_naissance)}</b>, est <b>${genreInscrit(child.sexe)}</b> au sein de l’établissement pour l’année scolaire
-                <b style="color:#1852a1;">${annee}</b>, en <b style="color:#1852a1;">${child.section} section.</b><br/><br/>
-                Fait pour servir et valoir ce que de droit.`
+                ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #1852a1;">L'Île des Bambins</strong>, atteste que <strong style="color: #1852a1;">${child.nom} ${child.prenom}</strong> est <strong>${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #1852a1;">${child.section} section</strong> pour l'année scolaire <strong style="color: #1852a1;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
+                : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #1852a1;">L'Île des Bambins</strong>, atteste que <strong style="color: #1852a1;">${child.nom} ${child.prenom}</strong>, né(e) le <strong>${toFrenchDate(child.date_naissance)}</strong>, est <strong>${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #1852a1;">${annee}</strong>, en <strong style="color: #1852a1;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
             }
           </div>
+          
           <div style="
-            margin-top:68px; 
-            text-align:right;
-            font-size:1.07em;
-            width:100%;
+            margin-top: 68px; 
+            text-align: right;
+            font-size: 0.875rem;
+            font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+            width: 100%;
+            color: #222;
           ">
             Le Directeur
           </div>
@@ -399,66 +136,45 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
     `;
   }
 
-  // Remplacement : option PDF → margin: [2, 2, 2, 2] (réduction à 2mm)
+  // ✅ Export PDF avec options IDENTIQUES à la facture
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
-      margin: [0.5, 0.5], // pouces, identique à la facture
+      margin: [0.5, 0.5], // EXACTEMENT comme la facture
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
-    const content = getHtml(type);
+    const content = getDocumentHtml(type);
     await html2pdf().set(opt).from(content).save();
     setLoading(false);
   };
 
-  // Aperçu : version responsive, marge px-2 (8px)
+  // ✅ Modal d'aperçu responsive
   function PreviewModal({ type, onClose }: { type: "scolarite" | "inscription", onClose: () => void }) {
     return (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-        style={{ fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif" }}
-      >
-        <div className="w-full max-w-lg h-auto flex flex-col items-center justify-center p-2 relative">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="w-full max-w-2xl h-auto flex flex-col items-center justify-center p-4 relative">
           <button
-            className="absolute right-2 top-2 text-muted-foreground hover:text-black p-1 z-10"
-            aria-label="Fermer"
+            className="absolute right-4 top-4 text-gray-600 hover:text-black p-2 z-10 bg-white rounded-full shadow-md"
             onClick={onClose}
-            style={{ background: "none", border: "none" }}
           >
             ✕
           </button>
-          <div
-            className="border bg-white shadow-lg flex items-center justify-center overflow-auto px-2"
-            style={{
-              width: "100%",
-              maxWidth: "595px",
-              minHeight: "320px",
-              margin: "0 auto",
-              padding: 0,
-              borderRadius: "12px",
-              boxShadow: "0 8px 32px rgba(0,0,0,.13)",
-              position: "relative",
-              boxSizing: "border-box",
-            }}
-          >
+          <div className="border bg-white shadow-lg overflow-auto w-full max-w-2xl" style={{
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.13)",
+            maxHeight: "80vh"
+          }}>
             <div
-              style={{
-                width: "100%",
-                background: "#fff",
-                overflow: "hidden",
-                boxSizing: "border-box",
-              }}
-              dangerouslySetInnerHTML={{ __html: getHtml(type) }}
+              style={{ width: "100%", background: "#fff", overflow: "hidden" }}
+              dangerouslySetInnerHTML={{ __html: getDocumentHtml(type) }}
             />
           </div>
-          <div className="flex gap-3 justify-end w-full max-w-lg mt-4 px-7">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-            >
+          <div className="flex gap-3 justify-end w-full max-w-2xl mt-4">
+            <Button variant="outline" onClick={onClose} disabled={loading}>
               Fermer
             </Button>
             <Button
@@ -466,7 +182,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
               onClick={() => { handleExport(type); onClose(); }}
               disabled={loading}
             >
-              <Download className="w-4 h-4" /> Télécharger
+              <Download className="w-4 h-4 mr-2" />
+              Télécharger PDF
             </Button>
           </div>
         </div>
@@ -482,9 +199,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
           size="sm"
           disabled={loading}
           onClick={() => setShowPreview("scolarite")}
-          title="Aperçu du certificat de scolarité"
         >
-          <Eye className="w-4 h-4" />
+          <Eye className="w-4 h-4 mr-2" />
           Certificat
         </Button>
         <Button
@@ -492,9 +208,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
           size="sm"
           disabled={loading}
           onClick={() => setShowPreview("inscription")}
-          title="Aperçu de l'attestation d'inscription"
         >
-          <Eye className="w-4 h-4" />
+          <Eye className="w-4 h-4 mr-2" />
           Attestation
         </Button>
       </div>
