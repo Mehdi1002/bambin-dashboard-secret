@@ -42,47 +42,49 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
 
   const annee = anneeScolaire ?? DEFAULT_ANNEE();
 
-  // ✅ Date formatée EXACTEMENT comme dans la facture
+  // Date formatée en français pour l'Algérie
   const dateFacture = dateFacturation
     ? new Date(dateFacturation).toLocaleDateString("fr-DZ")
     : new Date().toLocaleDateString("fr-DZ");
 
-  // ✅ Header unifié IDENTIQUE à la facture
+  // Header unifié avec date parfaitement alignée à droite
   const unifiedHeader = getAdminHeaderHtml({
-    right: `Date&nbsp;: <span style="font-weight:700">${dateFacture}</span>`
+    right: `Date&nbsp;: <span style="font-weight:700;color:#000000 !important;">${dateFacture}</span>`
   });
 
-  // ✅ Titre avec style IDENTIQUE à la facture
+  // Titre parfaitement centré
   function makeDocumentTitle(label: string) {
     return `
       <h2 style="
         text-align: center;
-        margin: 0 auto 22px auto;
+        margin: 0 auto 30px auto;
         font-size: 1.25rem;
         font-weight: 600;
         color: #000000 !important;
         font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
         line-height: 1.2;
+        width: 100%;
       ">
         ${label}
       </h2>
     `;
   }
 
-  // ✅ Contenu principal avec EXACTEMENT les mêmes paramètres que la facture
+  // Contenu principal avec marges équilibrées et texte en noir pur
   function getDocumentHtml(type: "scolarite" | "inscription") {
     return `
-      <div class="bg-white p-3 rounded overflow-x-auto max-w-2xl my-2 mx-1 text-sm" style="
+      <div style="
         background: #fff;
         padding: 0.75rem;
         border-radius: 0.375rem;
-        overflow-x: auto;
         max-width: 32rem;
-        margin: 0.5rem 0.25rem;
+        margin: 0.5rem auto;
         font-size: 0.875rem;
         line-height: 1.25rem;
         color: #000000 !important;
         font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+        width: 100%;
+        box-sizing: border-box;
       ">
         ${unifiedHeader}
         
@@ -93,9 +95,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
           font-size: 0.875rem;
           line-height: 1.7;
           text-align: justify;
-          width: 100%;
           color: #000000 !important;
           font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
+          padding: 0 1rem;
+          max-width: 100%;
+          box-sizing: border-box;
         ">
           ${
             type === "scolarite"
@@ -109,8 +113,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
           text-align: right;
           font-size: 0.875rem;
           font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
-          width: 100%;
           color: #000000 !important;
+          padding-right: 1rem;
         ">
           Le Directeur
         </div>
@@ -118,11 +122,11 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
     `;
   }
 
-  // ✅ Export PDF avec options IDENTIQUES à la facture
+  // Export PDF avec options identiques à la facture
   const handleExport = async (type: "scolarite" | "inscription") => {
     setLoading(true);
     const opt = {
-      margin: [0.5, 0.5], // EXACTEMENT comme la facture
+      margin: [0.5, 0.5],
       filename: `${type === "scolarite" ? "certificat" : "attestation"}-${child.nom}-${child.prenom}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
