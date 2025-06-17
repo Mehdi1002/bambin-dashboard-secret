@@ -52,13 +52,13 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
     right: `Date&nbsp;: <span style="font-weight:700">${dateFacture}</span>`
   });
 
-  // ✅ Dimensions EXACTEMENT identiques à la facture
+  // ✅ Dimensions EXACTEMENT identiques à la facture avec marges réduites
   const INVOICE_PAGE_WIDTH = 595; // points A4
   const INVOICE_PAGE_HEIGHT = 842; // points A4
-  const INVOICE_PADDING = 36; // padding exact de la facture
+  const INVOICE_PADDING = 20; // ✅ RÉDUIT de 36 à 20 pour marges identiques facture
   const INVOICE_INNER_WIDTH = INVOICE_PAGE_WIDTH - 2 * INVOICE_PADDING;
 
-  // ✅ Titre avec style IDENTIQUE à la facture
+  // ✅ Titre avec style IDENTIQUE à la facture + noir forcé
   function makeDocumentTitle(label: string) {
     return `
       <h2 style="
@@ -66,7 +66,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
         margin: 0 auto 22px auto;
         font-size: 1.25rem;
         font-weight: 600;
-        color: #222;
+        color: #000000 !important;
         font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
         line-height: 1.2;
       ">
@@ -83,7 +83,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
         width: ${INVOICE_PAGE_WIDTH}px;
         min-height: ${INVOICE_PAGE_HEIGHT}px;
         font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
-        color: #222;
+        color: #000000 !important;
         margin: 0 auto;
         box-sizing: border-box;
         padding: 0;
@@ -111,13 +111,13 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
             text-align: justify;
             width: 100%;
             max-width: ${INVOICE_INNER_WIDTH}px;
-            color: #222;
+            color: #000000 !important;
             font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
           ">
             ${
               type === "scolarite"
-                ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #1852a1;">L'Île des Bambins</strong>, atteste que <strong style="color: #1852a1;">${child.nom} ${child.prenom}</strong> est <strong>${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #1852a1;">${child.section} section</strong> pour l'année scolaire <strong style="color: #1852a1;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
-                : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #1852a1;">L'Île des Bambins</strong>, atteste que <strong style="color: #1852a1;">${child.nom} ${child.prenom}</strong>, né(e) le <strong>${toFrenchDate(child.date_naissance)}</strong>, est <strong>${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #1852a1;">${annee}</strong>, en <strong style="color: #1852a1;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
+                ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong> est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #000000 !important;">${child.section} section</strong> pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
+                : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong>, né(e) le <strong style="color: #000000 !important;">${toFrenchDate(child.date_naissance)}</strong>, est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>, en <strong style="color: #000000 !important;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
             }
           </div>
           
@@ -127,7 +127,7 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
             font-size: 0.875rem;
             font-family: 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
             width: 100%;
-            color: #222;
+            color: #000000 !important;
           ">
             Le Directeur
           </div>
