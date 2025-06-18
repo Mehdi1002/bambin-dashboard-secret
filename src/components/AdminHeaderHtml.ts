@@ -1,11 +1,12 @@
+
 /**
  * Utilitaire: génère le HTML à injecter pour en-tête admin
  * Usage: import { getAdminHeaderHtml } from "./AdminHeaderHtml"
- * Ajout: optionnellement, permet d’inclure un bloc à droite (ex : numéro de facture)
+ * Ajout: optionnellement, permet d'inclure un bloc à droite (ex : numéro de facture)
  */
 export function getAdminHeaderHtml(options?: { right?: string }) {
   const defaultData = {
-    nom: "L’île des Bambins",
+    nom: "L'île des Bambins",
     sousTitre: "Crèche et préscolaire",
     adresse: "1000 logt IHEDDADEN BEJAIA",
     telephone: "0553367356 / 034 11 98 27",
@@ -27,10 +28,10 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
   } catch {}
 
   // On force nom et sousTitre fixes pour l'entête facture
-  const MAIN_TITLE = "L’île des Bambins";
+  const MAIN_TITLE = "L'île des Bambins";
   const SUB_TITLE = "Crèche et préscolaire";
 
-  // Ajout du bloc à droite si fourni (ex : numéro de facture)
+  // Ajout du bloc à droite si fourni (ex : numéro de facture)
   const rightBloc =
     options?.right
       ? `<div style="
@@ -93,6 +94,9 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
             </div>
           ` : ""}
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
+            <b>RC :</b> ${admin.rc || ""}
+          </div>
+          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
             <b>NIF :</b> ${admin.nif || ""}
           </div>
           <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
@@ -105,9 +109,6 @@ export function getAdminHeaderHtml(options?: { right?: string }) {
                 </div>`
               : ""
           }
-          <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
-            <b>RC :</b> ${admin.rc || ""}
-          </div>
           ${admin.nis ? `
             <div style="margin-bottom:7px;color:#222;font-size:1em;line-height:1.56;">
               <b>NIS :</b> ${admin.nis}
