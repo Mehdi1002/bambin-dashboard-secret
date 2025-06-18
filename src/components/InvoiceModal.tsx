@@ -152,9 +152,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <table className="w-full mb-6 border-collapse border border-gray-400">
             <thead>
               <tr className="text-left bg-gray-800 text-white border-b border-gray-400">
-                <th className="py-2 px-3 text-center border border-gray-400">Nom & Prénom</th>
-                <th className="py-2 px-3 text-center border border-gray-400">Mois facturé</th>
-                <th className="py-2 px-3 text-center border border-gray-400">Total à payer</th>
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Nom & Prénom</th>
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Mois facturé</th>
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Total à payer</th>
               </tr>
             </thead>
             <tbody>
