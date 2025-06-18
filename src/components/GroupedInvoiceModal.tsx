@@ -159,8 +159,8 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
                       {child.nom + " " + child.prenom}
                     </td>
                   ) : null}
-                  <td className="py-2 px-3 border border-gray-400">{p.mois}</td>
-                  <td className="py-2 px-3 text-right border border-gray-400">{p.montant.toLocaleString("fr-DZ")} DA</td>
+                  <td className="py-2 px-3 text-center align-middle border border-gray-400">{p.mois}</td>
+                  <td className="py-2 px-3 text-center align-middle border border-gray-400">{p.montant.toLocaleString("fr-DZ")} DA</td>
                 </tr>
               ))}
             </tbody>

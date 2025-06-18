@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import n2words from "n2words";
 import html2pdf from "html2pdf.js";
 import { getAdminHeaderHtml } from "./AdminHeaderHtml";
+
 interface InvoiceModalProps {
   open: boolean;
   onClose: () => void;
@@ -16,6 +17,7 @@ interface InvoiceModalProps {
   dateFacturation?: string;
   indexFacture?: number; // 👈 Nouvelle prop pour index facture
 }
+
 function useAdminProfile() {
   return useMemo(() => {
     try {
@@ -56,6 +58,7 @@ function totalEnLettres(total: number) {
   txt = txt.replace(/(?<!DINARS) ET ZÉRO CENTIME/, " DINARS ET ZÉRO CENTIME");
   return txt;
 }
+
 const InvoiceModal: React.FC<InvoiceModalProps> = ({
   open,
   onClose,
@@ -102,7 +105,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     const invoiceElem = document.getElementById("invoice-printable");
     if (!invoiceElem) return;
 
-    // html2pdf utilisera l’élément HTML déjà stylé (ce que voit l’utilisateur)
+    // html2pdf utilisera l'élément HTML déjà stylé (ce que voit l'utilisateur)
     const opt = {
       margin: [0.5, 0.5],
       // pouces
@@ -126,8 +129,11 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     };
     html2pdf().set(opt).from(invoiceElem).save();
   };
+
   if (!child) return null;
-  return <Dialog open={open} onOpenChange={onClose}>
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl mx-0">
         <DialogHeader>
           <DialogTitle>Facture du mois de {moisEtAnnee}</DialogTitle>
@@ -138,10 +144,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         >
           {/* EN-TÊTE ADMINISTRATIF avec le numéro à droite */}
           <div className="mb-4" dangerouslySetInnerHTML={{
-          __html: getAdminHeaderHtml({
-            right: invoiceNumber
-          })
-        }} />
+            __html: getAdminHeaderHtml({
+              right: invoiceNumber
+            })
+          }} />
           {/* Affiche la date de facturation alignée à droite */}
           <div className="text-right mb-3 text-xs text-gray-600 font-medium">
             Date de facturation&nbsp;: <span className="font-semibold">{date}</span>
@@ -159,9 +165,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </thead>
             <tbody>
               <tr className="border border-gray-400">
-                <td className="py-2 px-3 border border-gray-400">{child.nom + " " + child.prenom}</td>
-                <td className="py-2 px-3 border border-gray-400">{moisEtAnnee}</td>
-                <td className="py-2 px-3 text-right border border-gray-400">{total.toLocaleString("fr-DZ")} DA</td>
+                <td className="py-2 px-3 text-center align-middle border border-gray-400">{child.nom + " " + child.prenom}</td>
+                <td className="py-2 px-3 text-center align-middle border border-gray-400">{moisEtAnnee}</td>
+                <td className="py-2 px-3 text-center align-middle border border-gray-400">{total.toLocaleString("fr-DZ")} DA</td>
               </tr>
             </tbody>
           </table>
@@ -172,8 +178,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
             <div style={{
-            background: "none"
-          }} className="font-medium w-full text-left px-px my-6 rounded-sm">
+              background: "none"
+            }} className="font-medium w-full text-left px-px my-6 rounded-sm">
               Arrêtée la présente facture à la somme de&nbsp;:
               <span className="uppercase text-black">&nbsp;{totalStr}</span>.
             </div>
@@ -185,6 +191,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <Button onClick={onClose} variant="secondary">Fermer</Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
+
 export default InvoiceModal;
