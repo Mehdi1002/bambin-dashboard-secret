@@ -67,11 +67,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 }) => {
   const admin = useAdminProfile();
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
-  const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation); // modifié
+  const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation);
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
   const moisEtAnnee = useMemo(() => {
-    // Ex : Avril 2025
     if (dateFacturation) {
       try {
         const d = new Date(dateFacturation);
@@ -83,6 +82,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     }
     return `${mois} ${new Date().getFullYear()}`;
   }, [mois, dateFacturation]);
+
   const handlePrint = () => {
     const printContent = document.getElementById("invoice-printable");
     const win = window.open("", "FACTURE", "width=800,height=900");
@@ -149,32 +149,31 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold mb-3 mt-1 mx-1 text-center">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
-          <table className="w-full mb-6">
+          <table className="w-full mb-6 border-collapse border border-gray-400">
             <thead>
-              <tr className="text-left bg-gray-800 text-white border-b">
-                <th className="py-2 px-3">Nom & Prénom</th>
-                <th className="py-2 px-3">Mois facturé</th>
-                <th className="py-2 px-3 text-right">Total à payer&nbsp;
-              </th>
+              <tr className="text-left bg-gray-800 text-white border-b border-gray-400">
+                <th className="py-2 px-3 text-center border border-gray-400">Nom & Prénom</th>
+                <th className="py-2 px-3 text-center border border-gray-400">Mois facturé</th>
+                <th className="py-2 px-3 text-center border border-gray-400">Total à payer</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-2 px-3">{child.nom + " " + child.prenom}</td>
-                <td className="py-2 px-3">{moisEtAnnee}</td>
-                <td className="py-2 px-3 text-right">{total.toLocaleString("fr-DZ")} DA</td>
+              <tr className="border border-gray-400">
+                <td className="py-2 px-3 border border-gray-400">{child.nom + " " + child.prenom}</td>
+                <td className="py-2 px-3 border border-gray-400">{moisEtAnnee}</td>
+                <td className="py-2 px-3 text-right border border-gray-400">{total.toLocaleString("fr-DZ")} DA</td>
               </tr>
             </tbody>
           </table>
 
-          {/* TOTAUX bas de page */}
-          <div className="flex flex-col items-end">
-            <div className="font-bold text-lg mb-1">
+          {/* TOTAUX bas de page avec espacement adapté */}
+          <div className="flex flex-col items-end" style={{ marginTop: '20px' }}>
+            <div className="font-bold text-lg mb-4">
               Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
             <div style={{
             background: "none"
-          }} className="font-medium w-full text-left px-px my-[34px] rounded-sm">
+          }} className="font-medium w-full text-left px-px my-6 rounded-sm">
               Arrêtée la présente facture à la somme de&nbsp;:
               <span className="uppercase text-black">&nbsp;{totalStr}</span>.
             </div>

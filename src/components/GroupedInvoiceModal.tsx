@@ -117,6 +117,9 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
     html2pdf().set(opt).from(invoiceElem).save();
   };
 
+  // Calcul de l'espacement adapté au nombre de lignes
+  const dynamicSpacing = Math.max(20, paiements.length * 5);
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -137,37 +140,37 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
-          <table className="w-full mb-6">
+          <table className="w-full mb-6 border-collapse border border-gray-400">
             <thead>
-              <tr className="text-left bg-gray-800 text-white border-b">
-                <th className="py-2 px-3 text-center">Nom & Prénom</th>
-                <th className="py-2 px-3">Mois facturé</th>
-                <th className="py-2 px-3 text-right">Montant (DA)</th>
+              <tr className="text-left bg-gray-800 text-white border-b border-gray-400">
+                <th className="py-2 px-3 text-center border border-gray-400">Nom & Prénom</th>
+                <th className="py-2 px-3 text-center border border-gray-400">Mois facturé</th>
+                <th className="py-2 px-3 text-center border border-gray-400">Montant (DA)</th>
               </tr>
             </thead>
             <tbody>
               {paiements.map((p, idx) => (
-                <tr key={idx}>
+                <tr key={idx} className="border border-gray-400">
                   {idx === 0 ? (
                     <td
-                      className="py-2 px-3 text-center align-middle font-medium"
+                      className="py-2 px-3 text-center align-middle font-medium border border-gray-400"
                       rowSpan={paiements.length}
                     >
                       {child.nom + " " + child.prenom}
                     </td>
                   ) : null}
-                  <td className="py-2 px-3">{p.mois}</td>
-                  <td className="py-2 px-3 text-right">{p.montant.toLocaleString("fr-DZ")} DA</td>
+                  <td className="py-2 px-3 border border-gray-400">{p.mois}</td>
+                  <td className="py-2 px-3 text-right border border-gray-400">{p.montant.toLocaleString("fr-DZ")} DA</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {/* TOTAUX bas de page */}
-          <div className="flex flex-col items-end">
-            <div className="font-bold text-lg mb-1">
+          {/* TOTAUX bas de page avec espacement dynamique */}
+          <div className="flex flex-col items-end" style={{ marginTop: `${dynamicSpacing}px` }}>
+            <div className="font-bold text-lg mb-4">
               Total&nbsp;: {total.toLocaleString("fr-DZ")} DA
             </div>
-            <div className="font-medium w-full text-left px-1" style={{ background: "none" }}>
+            <div className="font-medium w-full text-left px-1 my-6" style={{ background: "none" }}>
               Arrêtée la présente facture à la somme de&nbsp;:
               <span className="uppercase text-black">&nbsp;{totalStr}</span>.
             </div>
