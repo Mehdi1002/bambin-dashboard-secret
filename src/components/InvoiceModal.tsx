@@ -1,4 +1,5 @@
 
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -73,14 +74,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
   const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation);
 
-  // Format date pour "Béjaïa, le JJ/MM/AAAA"
+  // Format date pour "Béjaïa, le JJ/MM/AAAA" - utilise la date actuelle
   const formatBejaiDate = useMemo(() => {
-    const d = dateFacturation ? new Date(dateFacturation) : new Date();
+    const d = new Date(); // Toujours utiliser la date actuelle
     const day = d.getDate().toString().padStart(2, '0');
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
     const year = d.getFullYear();
     return `Béjaïa, le ${day}/${month}/${year}`;
-  }, [dateFacturation]);
+  }, []);
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
   const moisEtAnnee = useMemo(() => {
@@ -167,7 +168,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             fontSize: '0.875rem',
             color: '#000000',
             fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif",
-            fontWeight: '500'
+            fontWeight: '400'
           }}>
             {formatBejaiDate}
           </div>
@@ -215,3 +216,4 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 };
 
 export default InvoiceModal;
+
