@@ -1,4 +1,5 @@
 
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -140,29 +141,27 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
           
-          {/* TABLEAU DE FACTURATION EN DIV STRUCTURE */}
+          {/* TABLEAU AVEC DIVS pour compatibilité PDF */}
           <div className="w-full mb-6 border border-gray-400">
             {/* En-tête du tableau */}
             <div className="flex bg-gray-800 text-white border-b border-gray-400">
-              <div className="flex-1 py-2 px-3 text-center font-medium border-r border-gray-400">
+              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
                 Nom & Prénom
               </div>
-              <div className="flex-1 py-2 px-3 text-center font-medium border-r border-gray-400">
+              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
                 Mois facturé
               </div>
-              <div className="flex-1 py-2 px-3 text-center font-medium">
+              <div className="flex-1 py-2 px-3 text-center align-middle font-medium">
                 Montant (DA)
               </div>
             </div>
             
             {/* Corps du tableau */}
             <div className="flex">
-              {/* Colonne Nom & Prénom (fusionnée) */}
-              <div className="flex-1 border-r border-gray-400">
-                <div 
-                  className="h-full py-2 px-3 text-center font-medium border-gray-400 flex items-center justify-center"
-                  style={{ minHeight: `${paiements.length * 40}px` }}
-                >
+              {/* Colonne Nom & Prénom - fusionnée verticalement */}
+              <div className="flex-1 border-r border-gray-400 flex items-center justify-center" 
+                   style={{ minHeight: `${paiements.length * 48}px` }}>
+                <div className="py-2 px-3 text-center align-middle font-medium">
                   {child.nom + " " + child.prenom}
                 </div>
               </div>
@@ -170,11 +169,11 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
               {/* Colonnes Mois et Montant */}
               <div className="flex-2 flex flex-col">
                 {paiements.map((p, idx) => (
-                  <div key={idx} className="flex border-b border-gray-400 last:border-b-0">
-                    <div className="flex-1 py-2 px-3 text-center border-r border-gray-400">
+                  <div key={idx} className="flex border-b border-gray-400 last:border-b-0" style={{ height: '48px' }}>
+                    <div className="flex-1 py-2 px-3 text-center flex items-center justify-center border-r border-gray-400">
                       {p.mois}
                     </div>
-                    <div className="flex-1 py-2 px-3 text-center">
+                    <div className="flex-1 py-2 px-3 text-center flex items-center justify-center">
                       {p.montant.toLocaleString("fr-DZ")} DA
                     </div>
                   </div>
@@ -205,3 +204,4 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
 };
 
 export default GroupedInvoiceModal;
+
