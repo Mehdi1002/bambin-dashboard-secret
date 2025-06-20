@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,6 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
     win.document.write('<link href="/index.css" rel="stylesheet" />');
     win.document.write("</head><body>");
     win.document.write(printContent.innerHTML);
-    win.document.write("</body></html>");
     win.document.close();
     win.focus();
     setTimeout(() => win.print(), 200);
