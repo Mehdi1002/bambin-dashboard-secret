@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ function useInvoiceNumber(indexFacture?: number, dateFacturation?: string) {
 
 // Met en MAJUSCULES françaises et retire la devise de n2words à la fin
 function totalEnLettres(total: number) {
-  // n2words retourne ex : ‘douze mille dinars algériens’
+  // n2words retourne ex : 'douze mille dinars algériens'
   let txt = n2words(total, {
     lang: "fr",
     currency: "DZD"
@@ -71,6 +72,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const admin = useAdminProfile();
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
   const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation);
+
+  // Format date pour "Béjaïa, le JJ/MM/AAAA"
+  const formatBejaiDate = useMemo(() => {
+    const d = dateFacturation ? new Date(dateFacturation) : new Date();
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `Béjaïa, le ${day}/${month}/${year}`;
+  }, [dateFacturation]);
 
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
   const moisEtAnnee = useMemo(() => {
@@ -151,6 +161,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Affiche la date de facturation alignée à droite */}
           <div className="text-right mb-3 text-xs text-gray-600 font-medium">
             Date de facturation&nbsp;: <span className="font-semibold">{date}</span>
+          </div>
+          {/* Date au format Béjaïa */}
+          <div className="text-right mb-4" style={{
+            fontSize: '0.875rem',
+            color: '#000000',
+            fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif",
+            fontWeight: '500'
+          }}>
+            {formatBejaiDate}
           </div>
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold mb-3 mt-1 mx-1 text-center">Facture</h2>

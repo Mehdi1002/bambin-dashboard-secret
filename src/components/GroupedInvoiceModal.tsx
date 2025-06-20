@@ -73,6 +73,15 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
   const date = dateFacturation || new Date().toLocaleDateString("fr-DZ");
   const invoiceNumber = useInvoiceNumber(indexFacture, dateFacturation);
 
+  // Format date pour "Béjaïa, le JJ/MM/AAAA"
+  const formatBejaiDate = useMemo(() => {
+    const d = dateFacturation ? new Date(dateFacturation) : new Date();
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `Béjaïa, le ${day}/${month}/${year}`;
+  }, [dateFacturation]);
+
   const totalStr = useMemo(() => totalEnLettres(total), [total]);
 
   if (!child) return null;
@@ -137,6 +146,15 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
               __html: getAdminHeaderHtml({ right: invoiceNumber })
             }}
           />
+          {/* Date au format Béjaïa */}
+          <div className="text-right mb-4" style={{
+            fontSize: '0.875rem',
+            color: '#000000',
+            fontFamily: "'Segoe UI', Arial, 'Helvetica Neue', sans-serif",
+            fontWeight: '500'
+          }}>
+            {formatBejaiDate}
+          </div>
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
           {/* TABLEAU CENTRAL DE FACTURATION */}
