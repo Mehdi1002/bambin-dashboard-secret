@@ -1,5 +1,4 @@
 
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -140,48 +139,32 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           />
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
-          
-          {/* TABLEAU AVEC DIVS pour compatibilité PDF */}
-          <div className="w-full mb-6 border border-gray-400">
-            {/* En-tête du tableau */}
-            <div className="flex bg-gray-800 text-white border-b border-gray-400">
-              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
-                Nom & Prénom
-              </div>
-              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
-                Mois facturé
-              </div>
-              <div className="flex-1 py-2 px-3 text-center align-middle font-medium">
-                Montant (DA)
-              </div>
-            </div>
-            
-            {/* Corps du tableau */}
-            <div className="flex">
-              {/* Colonne Nom & Prénom - fusionnée verticalement */}
-              <div className="flex-1 border-r border-gray-400 flex items-center justify-center" 
-                   style={{ minHeight: `${paiements.length * 48}px` }}>
-                <div className="py-2 px-3 text-center align-middle font-medium">
-                  {child.nom + " " + child.prenom}
-                </div>
-              </div>
-              
-              {/* Colonnes Mois et Montant */}
-              <div className="flex-2 flex flex-col">
-                {paiements.map((p, idx) => (
-                  <div key={idx} className="flex border-b border-gray-400 last:border-b-0" style={{ height: '48px' }}>
-                    <div className="flex-1 py-2 px-3 text-center flex items-center justify-center border-r border-gray-400">
-                      {p.mois}
-                    </div>
-                    <div className="flex-1 py-2 px-3 text-center flex items-center justify-center">
-                      {p.montant.toLocaleString("fr-DZ")} DA
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
+          {/* TABLEAU CENTRAL DE FACTURATION */}
+          <table className="w-full mb-6 border-collapse border border-gray-400">
+            <thead>
+              <tr className="text-left bg-gray-800 text-white border-b border-gray-400">
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Nom & Prénom</th>
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Mois facturé</th>
+                <th className="py-2 px-3 text-center align-middle border border-gray-400">Montant (DA)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paiements.map((p, idx) => (
+                <tr key={idx} className="border border-gray-400">
+                  {idx === 0 ? (
+                    <td
+                      className="py-2 px-3 text-center align-middle font-medium border border-gray-400"
+                      rowSpan={paiements.length}
+                    >
+                      {child.nom + " " + child.prenom}
+                    </td>
+                  ) : null}
+                  <td className="py-2 px-3 text-center align-middle border border-gray-400">{p.mois}</td>
+                  <td className="py-2 px-3 text-center align-middle border border-gray-400">{p.montant.toLocaleString("fr-DZ")} DA</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           {/* TOTAUX bas de page avec espacement dynamique */}
           <div className="flex flex-col items-end" style={{ marginTop: `${dynamicSpacing}px` }}>
             <div className="font-bold text-lg mb-4">
@@ -204,4 +187,3 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
 };
 
 export default GroupedInvoiceModal;
-
