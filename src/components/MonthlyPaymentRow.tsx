@@ -2,7 +2,7 @@
 import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, X } from "lucide-react";
+import { Check, Clock, X, Edit } from "lucide-react";
 import type { Payment, Child } from "./MonthlyPaymentsTable";
 
 type MonthlyPaymentRowProps = {
@@ -64,33 +64,51 @@ export default function MonthlyPaymentRow({
         </span>
       </TableCell>
       <TableCell>
-        <Button
-          size="sm"
-          variant="default"
-          className="px-2 py-1 mr-2"
-          onClick={onEdit}
-        >
-          Enregistrer un paiement
-        </Button>
-        {pay && pay.validated ? (
+        <div className="flex gap-2 flex-wrap">
+          {/* Bouton pour enregistrer/modifier un paiement - toujours disponible */}
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             className="px-2 py-1"
-            onClick={onInvoice}
+            onClick={onEdit}
           >
-            Facture
+            {pay ? "Modifier" : "Enregistrer un paiement"}
           </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="px-2 py-1"
-            disabled
-          >
-            Facture
-          </Button>
-        )}
+          
+          {/* Bouton modifier supplémentaire pour les paiements validés */}
+          {pay && pay.validated && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="px-2 py-1"
+              onClick={onEdit}
+            >
+              <Edit className="w-3 h-3 mr-1" />
+              Corriger
+            </Button>
+          )}
+          
+          {/* Bouton facture - disponible seulement si validé */}
+          {pay && pay.validated ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="px-2 py-1"
+              onClick={onInvoice}
+            >
+              Facture
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              className="px-2 py-1"
+              disabled
+            >
+              Facture
+            </Button>
+          )}
+        </div>
       </TableCell>
     </TableRow>
   );

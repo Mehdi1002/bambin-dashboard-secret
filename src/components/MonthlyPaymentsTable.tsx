@@ -111,7 +111,7 @@ export default function MonthlyPaymentsTable() {
     setModalChild(child);
     setModalPay(pay ?? null);
 
-    // Récupérer le mois d’inscription pour l’enfant (c.date_inscription: "YYYY-MM-DD")
+    // Récupérer le mois d'inscription pour l'enfant (c.date_inscription: "YYYY-MM-DD")
     let monthInscription = null;
     const c = child as any;
     if (c.date_inscription) {
@@ -279,7 +279,7 @@ export default function MonthlyPaymentsTable() {
             ? modalPay.amount_due
             : 10000
         }
-        // frais d’inscription pour ce mois ? affichable/éditable si mois d’inscription
+        // frais d'inscription pour ce mois ? affichable/éditable si mois d'inscription
         initialAmountPaid={modalPay ? modalPay.amount_paid : 0}
         inscriptionFeeEditable={modalMonthInscription && month === modalMonthInscription}
         initialInscriptionFee={
@@ -287,6 +287,7 @@ export default function MonthlyPaymentsTable() {
             ? modalPay.registration_fee
             : 1000 // valeur par défaut, à ajuster si besoin
         }
+        isEditing={!!modalPay} // Indique si on modifie un paiement existant
       />
       {/* MODALE FACTURE */}
       <InvoiceModal

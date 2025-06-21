@@ -12,6 +12,7 @@ type PaymentModalProps = {
   initialAmountPaid: number;
   inscriptionFeeEditable?: boolean;
   initialInscriptionFee?: number;
+  isEditing?: boolean; // Nouvelle prop pour indiquer si on modifie
 };
 
 export default function QuickPaymentModal({
@@ -22,6 +23,7 @@ export default function QuickPaymentModal({
   initialAmountPaid,
   inscriptionFeeEditable = false,
   initialInscriptionFee = 0,
+  isEditing = false,
 }: PaymentModalProps) {
   const [amountDue, setAmountDue] = useState(initialAmountDue);
   const [amountPaid, setAmountPaid] = useState(initialAmountPaid);
@@ -40,9 +42,19 @@ export default function QuickPaymentModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Enregistrer un paiement</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Modifier le paiement" : "Enregistrer un paiement"}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {isEditing && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Vous modifiez un paiement existant. Les changements seront appliqués immédiatement.
+              </p>
+            </div>
+          )}
+          
           <div>
             <label className="block text-xs mb-1">Montant à payer</label>
             <Input
@@ -76,13 +88,13 @@ export default function QuickPaymentModal({
             />
           </div>
           <div className="text-sm">
-            <span className="font-medium">Reste à payer : </span>
+            <span className="font-medium">Reste à payer : </span>
             <span className={reste > 0 ? "text-red-500" : "text-green-600"}>
               {reste > 0 ? `${reste} DA` : "0 DA"}
             </span>
           </div>
           <div className="text-sm">
-            <span className="font-medium">Statut automatique : </span>
+            <span className="font-medium">Statut automatique : </span>
             <span className={isValidated ? "text-green-600" : "text-red-500"}>
               {isValidated ? "Validé" : "Retard"}
             </span>
@@ -96,7 +108,7 @@ export default function QuickPaymentModal({
             variant="default"
             onClick={() => onSave(amountDue, amountPaid, inscriptionFeeEditable ? registrationFee : undefined)}
           >
-            Enregistrer
+            {isEditing ? "Sauvegarder les modifications" : "Enregistrer"}
           </Button>
         </DialogFooter>
       </DialogContent>
