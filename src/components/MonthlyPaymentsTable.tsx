@@ -129,6 +129,28 @@ export default function MonthlyPaymentsTable() {
     setModalOpen(false);
   };
 
+  // Mutation pour supprimer un paiement
+  const deleteMutation = useMutation({
+    mutationFn: async (paymentId: string) => {
+      const { error } = await supabase.from("payments").delete().eq("id", paymentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "Paiement supprimé" });
+      queryClient.invalidateQueries({ queryKey: ["payments", year, month] });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Impossible de supprimer ce paiement", variant: "destructive" });
+    }
+  });
+
+  // Fonction pour gérer la suppression
+  const handleDeletePayment = (pay: Payment) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce paiement ?")) {
+      deleteMutation.mutate(pay.id);
+    }
+  };
+
   const mutation = useMutation({
     mutationFn: async (params: {
       child: Child,
@@ -241,9 +263,9 @@ export default function MonthlyPaymentsTable() {
             ) : (
               children.map((child, idx) => {
                 const pay = (payments ?? []).find(p => p.child_id === child.id);
-                // Trouver le mois d’inscription de l’enfant
+                // Trouver le mois d’inscription de l'enfant
                 const monthInscription = (() => {
-                  // Chercher l’enfant dans children list pour trouver date_inscription (string ou null)
+                  // Chercher l'enfant dans children list pour trouver date_inscription (string ou null)
                   const c = child as any;
                   if (c.date_inscription) {
                     // c.date_inscription: "YYYY-MM-DD" => on récupère le mois
@@ -258,9 +280,10 @@ export default function MonthlyPaymentsTable() {
                     child={child}
                     pay={pay}
                     onEdit={() => handleOpenModal(child, pay)}
+                    onDelete={() => pay && handleDeletePayment(pay)}
                     month={month}
                     monthInscription={monthInscription}
-                    // Passer la prop onInvoice avec l’index pour facture
+                    // Passer la prop onInvoice avec l'index pour facture
                     onInvoice={() => handleInvoice(child, pay, idx)}
                   />
                 );

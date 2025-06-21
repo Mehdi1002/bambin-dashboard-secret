@@ -2,13 +2,14 @@
 import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, X, Edit } from "lucide-react";
+import { Check, Clock, X, Edit, Trash } from "lucide-react";
 import type { Payment, Child } from "./MonthlyPaymentsTable";
 
 type MonthlyPaymentRowProps = {
   child: Child;
   pay: Payment | null | undefined;
   onEdit: () => void;
+  onDelete: () => void;
   month: number;
   monthInscription: number | null;
   onInvoice: () => void;
@@ -18,6 +19,7 @@ export default function MonthlyPaymentRow({
   child,
   pay,
   onEdit,
+  onDelete,
   month,
   monthInscription,
   onInvoice,
@@ -65,18 +67,18 @@ export default function MonthlyPaymentRow({
       </TableCell>
       <TableCell>
         <div className="flex gap-2 flex-wrap">
-          {/* Bouton pour enregistrer/modifier un paiement - toujours disponible */}
+          {/* Bouton principal pour enregistrer un paiement */}
           <Button
             size="sm"
             variant="default"
             className="px-2 py-1"
             onClick={onEdit}
           >
-            {pay ? "Modifier" : "Enregistrer un paiement"}
+            {pay ? "Paiement" : "Enregistrer un paiement"}
           </Button>
           
-          {/* Bouton modifier supplémentaire pour les paiements validés */}
-          {pay && pay.validated && (
+          {/* Bouton modifier - disponible seulement s'il y a un paiement */}
+          {pay && (
             <Button
               size="sm"
               variant="outline"
@@ -84,7 +86,20 @@ export default function MonthlyPaymentRow({
               onClick={onEdit}
             >
               <Edit className="w-3 h-3 mr-1" />
-              Corriger
+              Modifier
+            </Button>
+          )}
+          
+          {/* Bouton supprimer - disponible seulement s'il y a un paiement */}
+          {pay && (
+            <Button
+              size="sm"
+              variant="destructive"
+              className="px-2 py-1"
+              onClick={onDelete}
+            >
+              <Trash className="w-3 h-3 mr-1" />
+              Supprimer
             </Button>
           )}
           
