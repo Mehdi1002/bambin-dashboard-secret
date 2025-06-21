@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -158,45 +157,71 @@ const GroupedInvoiceModal: React.FC<GroupedInvoiceModalProps> = ({
           {/* Titre "Facture" */}
           <h2 className="text-xl font-semibold text-center mb-3 mt-1 mx-1">Facture</h2>
           
-          {/* TABLEAU REMPLACÉ PAR DES DIVS FLEXBOX */}
-          <div className="w-full mb-6 border border-gray-400">
+          {/* TABLEAU SIMPLIFIÉ SANS BORDURES INTERNES */}
+          <div className="w-full mb-6 border border-gray-400" style={{ borderCollapse: 'collapse' }}>
             {/* EN-TÊTE */}
-            <div className="flex bg-gray-800 text-white border-b border-gray-400">
-              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
+            <div className="flex bg-gray-800 text-white">
+              <div className="w-1/3 py-2 px-3 text-center font-medium border-r border-gray-400">
                 Nom & Prénom
               </div>
-              <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400 font-medium">
+              <div className="w-1/3 py-2 px-3 text-center font-medium border-r border-gray-400">
                 Mois facturé
               </div>
-              <div className="flex-1 py-2 px-3 text-center align-middle font-medium">
+              <div className="w-1/3 py-2 px-3 text-center font-medium">
                 Montant (DA)
               </div>
             </div>
             
-            {/* LIGNES DE DONNÉES */}
-            <div className="flex">
-              {/* COLONNE NOM FUSIONNÉE */}
-              <div className="flex-1 border-r border-gray-400">
-                <div 
-                  className="h-full py-2 px-3 text-center font-medium flex items-center justify-center bg-white"
-                  style={{ minHeight: `${paiements.length * 2.5}rem` }}
-                >
-                  {child.nom + " " + child.prenom}
-                </div>
+            {/* DONNÉES - STRUCTURE SIMPLIFIÉE */}
+            <div className="flex" style={{ minHeight: `${paiements.length * 40}px` }}>
+              {/* COLONNE NOM - SANS BORDURES INTERNES */}
+              <div 
+                className="w-1/3 border-r border-gray-400 bg-white flex items-center justify-center text-center font-medium"
+                style={{ 
+                  padding: '8px 12px',
+                  borderBottom: 'none',
+                  minHeight: `${paiements.length * 40}px`
+                }}
+              >
+                {child.nom + " " + child.prenom}
               </div>
               
               {/* COLONNES MOIS ET MONTANTS */}
-              <div className="flex-2 flex flex-col">
-                {paiements.map((p, idx) => (
-                  <div key={idx} className="flex border-b border-gray-400 last:border-b-0">
-                    <div className="flex-1 py-2 px-3 text-center align-middle border-r border-gray-400">
+              <div className="w-2/3 flex">
+                <div className="w-1/2 border-r border-gray-400">
+                  {paiements.map((p, idx) => (
+                    <div 
+                      key={idx} 
+                      className="py-2 px-3 text-center"
+                      style={{ 
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderBottom: idx < paiements.length - 1 ? '1px solid #9ca3af' : 'none'
+                      }}
+                    >
                       {p.mois}
                     </div>
-                    <div className="flex-1 py-2 px-3 text-center align-middle">
+                  ))}
+                </div>
+                <div className="w-1/2">
+                  {paiements.map((p, idx) => (
+                    <div 
+                      key={idx} 
+                      className="py-2 px-3 text-center"
+                      style={{ 
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderBottom: idx < paiements.length - 1 ? '1px solid #9ca3af' : 'none'
+                      }}
+                    >
                       {p.montant.toLocaleString("fr-DZ")} DA
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
