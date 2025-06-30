@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus, Trash } from "lucide-react";
@@ -39,7 +40,7 @@ export default function ChildTable() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      // Normalisation pour éviter les erreurs de typage :
+      // Normalisation pour éviter les erreurs de typage :
       return (data || []).map((row: any) => ({
         id: row.id,
         nom: row.nom,
@@ -139,7 +140,7 @@ export default function ChildTable() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Supprimer cet enfant ?")) {
+    if (confirm("Supprimer cet enfant ?")) {
       mutationDelete.mutate(id);
     }
   };

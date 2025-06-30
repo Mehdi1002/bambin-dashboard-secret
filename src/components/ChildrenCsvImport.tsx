@@ -80,7 +80,7 @@ export default function ChildrenCsvImport({ onClose, onSuccess }: Props) {
       setLoading(false);
       onSuccess();
     } catch (e: any) {
-      setError("Erreur : " + e.message);
+      setError("Erreur : " + e.message);
       setLoading(false);
     }
   };
@@ -133,7 +133,7 @@ export default function ChildrenCsvImport({ onClose, onSuccess }: Props) {
         ) : (
           <span className="text-muted">Aucune donnée à afficher.</span>
         )}
-        <p className="text-xs text-muted-foreground mb-2">Nombre total de lignes détectées : {csvData.length}</p>
+        <p className="text-xs text-muted-foreground mb-2">Nombre total de lignes détectées : {csvData.length}</p>
         {error && <div className="text-destructive mb-2">{error}</div>}
         <div className="flex gap-3 justify-end">
           <button className="px-4 py-2 rounded border" onClick={onClose}>Annuler</button>
