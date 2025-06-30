@@ -42,3 +42,96 @@ export const useKpis = () => {
     },
   });
 };
+
+export const useChildrenCount = () => {
+  return useQuery({
+    queryKey: ["children-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("children")
+        .select("*", { count: "exact", head: true })
+        .eq("statut", "Actif");
+      return count || 0;
+    },
+  });
+};
+
+export const useSectionsCount = () => {
+  return useQuery({
+    queryKey: ["sections-count"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("children")
+        .select("section")
+        .eq("statut", "Actif");
+
+      if (!data) return [];
+
+      const sectionCounts = data.reduce((acc: any, child) => {
+        const section = child.section || "Non définie";
+        acc[section] = (acc[section] || 0) + 1;
+        return acc;
+      }, {});
+
+      return Object.entries(sectionCounts).map(([section, count]) => ({
+        section,
+        count
+      }));
+    },
+  });
+};
+
+export const useCurrentMonthPaymentsCount = () => {
+  return useQuery({
+    queryKey: ["current-month-payments-count"],
+    queryFn: async () => {
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      
+      const { count } = await supabase
+        .from("payments")
+        .select("*", { count: "exact", head: true })
+        .eq("month", currentMonth)
+        .eq("year", currentYear)
+        .eq("validated", true);
+
+      return count || 0;
+    },
+  });
+};
+
+export const usePaiementRetardataires = ({ prevMonth = false }: { prevMonth?: boolean }) => {
+  return useQuery({
+    queryKey: ["paiement-retardataires", prevMonth],
+    queryFn: async () => {
+      const now = new Date();
+      const targetMonth = prevMonth ? now.getMonth() : now.getMonth() + 1;
+      const targetYear = prevMonth && now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+
+      // Get children who don't have payments for the target month
+      const { data: children } = await supabase
+        .from("children")
+        .select("id, nom, prenom")
+        .eq("statut", "Actif");
+
+      if (!children) return [];
+
+      const { data: payments } = await supabase
+        .from("payments")
+        .select("child_id")
+        .eq("month", targetMonth)
+        .eq("year", targetYear)
+        .eq("validated", true);
+
+      const paidChildrenIds = new Set(payments?.map(p => p.child_id) || []);
+
+      return children
+        .filter(child => !paidChildrenIds.has(child.id))
+        .map(child => ({
+          ...child,
+          month: targetMonth,
+          year: targetYear
+        }));
+    },
+  });
+};
