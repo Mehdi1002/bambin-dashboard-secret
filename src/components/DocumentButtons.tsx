@@ -36,6 +36,11 @@ function genreInscrit(sexe?: string) {
   return "inscrit";
 }
 
+function formatSection(section: string) {
+  if (section === "Prescolaire") return "section préscolaire";
+  return `${section} section`;
+}
+
 export default function DocumentButtons({ child, anneeScolaire, headerHtml, dateFacturation }: Props) {
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState<null | "scolarite" | "inscription">(null);
@@ -99,8 +104,8 @@ export default function DocumentButtons({ child, anneeScolaire, headerHtml, date
         ">
           ${
             type === "scolarite"
-              ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong> est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #000000 !important;">${child.section} section</strong> pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
-              : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong>, né(e) le <strong style="color: #000000 !important;">${toFrenchDate(child.date_naissance)}</strong>, est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>, en <strong style="color: #000000 !important;">${child.section} section.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
+              ? `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong> est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de notre établissement en <strong style="color: #000000 !important;">${formatSection(child.section)}</strong> pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>.<br/><br/>Cette attestation est faite pour servir et valoir ce que de droit.`
+              : `Je soussigné, Monsieur le Directeur de la crèche <strong style="color: #000000 !important;">L'Île des Bambins</strong>, atteste que <strong style="color: #000000 !important;">${child.nom} ${child.prenom}</strong>, né(e) le <strong style="color: #000000 !important;">${toFrenchDate(child.date_naissance)}</strong>, est <strong style="color: #000000 !important;">${genreInscrit(child.sexe)}</strong> au sein de l'établissement pour l'année scolaire <strong style="color: #000000 !important;">${annee}</strong>, en <strong style="color: #000000 !important;">${formatSection(child.section)}.</strong><br/><br/>Fait pour servir et valoir ce que de droit.`
           }
         </div>
         
