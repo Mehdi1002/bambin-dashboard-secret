@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus } from "lucide-react";
@@ -61,43 +60,52 @@ export default function ChildTable() {
 
   const mutationUpsert = useMutation({
     mutationFn: async (child: any) => {
-      const row = {
-        ...child,
-        date_naissance: child.date_naissance ?? child.dateNaissance,
-        date_inscription: child.date_inscription ?? child.dateInscription,
-        tel_pere: child.tel_pere ?? child.telPere,
-        tel_mere: child.tel_mere ?? child.telMere
+      console.log("[ChildTable] Données reçues:", child);
+      
+      // Nettoyer et préparer les données
+      const cleanedData = {
+        nom: child.nom || "",
+        prenom: child.prenom || "",
+        date_naissance: child.date_naissance,
+        section: child.section || "Petite",
+        date_inscription: child.date_inscription || null,
+        statut: child.statut || "Actif",
+        pere: child.pere || null,
+        tel_pere: child.tel_pere || null,
+        mere: child.mere || null,
+        tel_mere: child.tel_mere || null,
+        allergies: child.allergies || null,
+        sexe: child.sexe || null,
+        type_doc_pere: child.type_doc_pere || null,
+        num_doc_pere: child.num_doc_pere || null,
+        type_doc_mere: child.type_doc_mere || null,
+        num_doc_mere: child.num_doc_mere || null,
       };
-      delete row.dateNaissance;
-      delete row.dateInscription;
-      delete row.telPere;
-      delete row.telMere;
 
-      // Ajout d'un log pour tout ce qui va être envoyé à Supabase
-      console.log("[ChildTable] mutationUpsert row envoyé à Supabase:", row);
+      console.log("[ChildTable] Données nettoyées:", cleanedData);
 
-      if (row.id) {
-        // update
+      if (child.id) {
+        // Mise à jour
         const { data, error } = await supabase
           .from("children")
-          .update(row)
-          .eq("id", row.id)
+          .update(cleanedData)
+          .eq("id", child.id)
           .select();
+        
         if (error) {
-          console.error("[ChildTable] erreur update:", error);
+          console.error("[ChildTable] Erreur mise à jour:", error);
           throw error;
         }
         return data?.[0];
       } else {
-        // création : NE PAS inclure la clé `id` (sinon null !)
-        const insertRow = { ...row };
-        delete insertRow.id;
+        // Création
         const { data, error } = await supabase
           .from("children")
-          .insert([insertRow])
+          .insert([cleanedData])
           .select();
+        
         if (error) {
-          console.error("[ChildTable] erreur insert:", error);
+          console.error("[ChildTable] Erreur création:", error);
           throw error;
         }
         return data?.[0];
@@ -110,8 +118,12 @@ export default function ChildTable() {
       setEdit(null);
     },
     onError: (error: any) => {
-      console.error("[ChildTable] onError", error);
-      toast({ variant: "destructive", title: "Erreur", description: "Problème lors de la sauvegarde. " + (error?.message || "") });
+      console.error("[ChildTable] Erreur sauvegarde:", error);
+      toast({ 
+        variant: "destructive", 
+        title: "Erreur", 
+        description: `Problème lors de la sauvegarde: ${error?.message || "Erreur inconnue"}` 
+      });
     },
   });
 
@@ -145,12 +157,13 @@ export default function ChildTable() {
     }
   };
 
-  const handleSubmit = (c: any) => {
-    const isUpdate = !!edit?.id;
-    mutationUpsert.mutate({
-      ...c,
-      ...(isUpdate ? { id: edit.id } : {}),
-    });
+  const handleSubmit = (formData: any) => {
+    console.log("[ChildTable] Soumission formulaire:", formData);
+    const dataToSave = {
+      ...formData,
+      ...(edit?.id ? { id: edit.id } : {}),
+    };
+    mutationUpsert.mutate(dataToSave);
   };
 
   if (isLoading) {
