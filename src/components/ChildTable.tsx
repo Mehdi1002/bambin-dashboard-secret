@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus } from "lucide-react";
@@ -62,7 +63,7 @@ export default function ChildTable() {
     mutationFn: async (child: any) => {
       console.log("[ChildTable] Données reçues:", child);
       
-      // Nettoyer et préparer les données
+      // Nettoyer et préparer les données avec gestion correcte des valeurs vides
       const cleanedData = {
         nom: child.nom || "",
         prenom: child.prenom || "",
@@ -75,11 +76,12 @@ export default function ChildTable() {
         mere: child.mere || null,
         tel_mere: child.tel_mere || null,
         allergies: child.allergies || null,
-        sexe: child.sexe || null,
-        type_doc_pere: child.type_doc_pere || null,
-        num_doc_pere: child.num_doc_pere || null,
-        type_doc_mere: child.type_doc_mere || null,
-        num_doc_mere: child.num_doc_mere || null,
+        sexe: child.sexe === "" ? null : child.sexe || null,
+        // Correction pour les contraintes check : convertir les chaînes vides en null
+        type_doc_pere: child.type_doc_pere === "" ? null : child.type_doc_pere || null,
+        num_doc_pere: child.num_doc_pere === "" ? null : child.num_doc_pere || null,
+        type_doc_mere: child.type_doc_mere === "" ? null : child.type_doc_mere || null,
+        num_doc_mere: child.num_doc_mere === "" ? null : child.num_doc_mere || null,
       };
 
       console.log("[ChildTable] Données nettoyées:", cleanedData);
