@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import ChildForm from "./ChildForm";
-import { Plus, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
