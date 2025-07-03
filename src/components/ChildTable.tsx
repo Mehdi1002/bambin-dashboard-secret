@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import ChildForm from "./ChildForm";
 import { Plus, Download } from "lucide-react";
@@ -29,7 +30,7 @@ export default function ChildTable() {
   const [showForm, setShowForm] = useState(false);
   const [edit, setEdit] = useState<ChildRow | null>(null);
 
-  // Récupère les enfants en veillant à gérer les nouvelles colonnes (photo retirée)
+  // Récupère les enfants en veillant à gérer les nouvelles colonnes
   const { data: children, isLoading, error } = useQuery({
     queryKey: ["children"],
     queryFn: async () => {
@@ -37,22 +38,27 @@ export default function ChildTable() {
         .from("children")
         .select("*")
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      // Normalisation pour éviter les erreurs de typage :
+      
+      if (error) {
+        console.error("[ChildTable] Erreur lors de la récupération:", error);
+        throw error;
+      }
+      
+      // Normalisation pour éviter les erreurs de typage
       return (data || []).map((row: any) => ({
         id: row.id,
-        nom: row.nom,
-        prenom: row.prenom,
+        nom: row.nom || "",
+        prenom: row.prenom || "",
         date_naissance: row.date_naissance,
-        section: row.section,
-        date_inscription: row.date_inscription ?? "",
-        statut: row.statut,
-        pere: row.pere ?? "",
-        tel_pere: row.tel_pere ?? "",
-        mere: row.mere ?? "",
-        tel_mere: row.tel_mere ?? "",
-        allergies: row.allergies ?? "",
-        sexe: row.sexe ?? ""
+        section: row.section || "Petite",
+        date_inscription: row.date_inscription || null,
+        statut: row.statut || "Actif",
+        pere: row.pere || null,
+        tel_pere: row.tel_pere || null,
+        mere: row.mere || null,
+        tel_mere: row.tel_mere || null,
+        allergies: row.allergies || null,
+        sexe: row.sexe || null
       })) as ChildRow[];
     },
   });
@@ -74,12 +80,12 @@ export default function ChildTable() {
         mere: child.mere || null,
         tel_mere: child.tel_mere || null,
         allergies: child.allergies || null,
-        sexe: child.sexe === "" ? null : child.sexe || null,
-        // Correction pour les contraintes check : convertir les chaînes vides en null
-        type_doc_pere: child.type_doc_pere === "" ? null : child.type_doc_pere || null,
-        num_doc_pere: child.num_doc_pere === "" ? null : child.num_doc_pere || null,
-        type_doc_mere: child.type_doc_mere === "" ? null : child.type_doc_mere || null,
-        num_doc_mere: child.num_doc_mere === "" ? null : child.num_doc_mere || null,
+        sexe: child.sexe || null,
+        // Gestion des champs de documents
+        type_doc_pere: child.type_doc_pere || null,
+        num_doc_pere: child.num_doc_pere || null,
+        type_doc_mere: child.type_doc_mere || null,
+        num_doc_mere: child.num_doc_mere || null,
       };
 
       console.log("[ChildTable] Données nettoyées:", cleanedData);
@@ -130,14 +136,22 @@ export default function ChildTable() {
   const mutationDelete = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("children").delete().eq("id", id);
-      if (error) throw error;
+      if (error) {
+        console.error("[ChildTable] Erreur suppression:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({ title: "Enfant supprimé !" });
       queryClient.invalidateQueries({ queryKey: ["children"] });
     },
-    onError: () => {
-      toast({ variant: "destructive", title: "Erreur", description: "Suppression impossible." });
+    onError: (error: any) => {
+      console.error("[ChildTable] Erreur suppression:", error);
+      toast({ 
+        variant: "destructive", 
+        title: "Erreur", 
+        description: "Suppression impossible." 
+      });
     },
   });
 
@@ -212,7 +226,7 @@ export default function ChildTable() {
     return <div>Chargement…</div>;
   }
   if (error) {
-    return <div>Erreur de chargement…</div>;
+    return <div>Erreur de chargement: {error.message}</div>;
   }
 
   return (
