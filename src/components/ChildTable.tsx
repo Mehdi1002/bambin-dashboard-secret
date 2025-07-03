@@ -1,11 +1,12 @@
 import { useState } from "react";
 import ChildForm from "./ChildForm";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import DocumentButtons from "./DocumentButtons";
 import ChildrenListTable from "./ChildrenListTable";
+import Papa from "papaparse";
 
 type ChildRow = {
   id: string;
@@ -165,6 +166,48 @@ export default function ChildTable() {
     mutationUpsert.mutate(dataToSave);
   };
 
+  const handleExportCSV = () => {
+    if (!children || children.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Aucune donnée",
+        description: "Aucun enfant à exporter."
+      });
+      return;
+    }
+
+    // Préparer les données pour l'export CSV
+    const csvData = children.map(child => ({
+      "Nom": child.nom,
+      "Prénom": child.prenom,
+      "Date de naissance": child.date_naissance,
+      "Date d'inscription": child.date_inscription || "",
+      "Section": child.section
+    }));
+
+    // Générer le CSV
+    const csv = Papa.unparse(csvData, {
+      header: true,
+      delimiter: ";"
+    });
+
+    // Créer et télécharger le fichier
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `enfants_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export réussi",
+      description: "La liste des enfants a été exportée en CSV."
+    });
+  };
+
   if (isLoading) {
     return <div>Chargement…</div>;
   }
@@ -190,6 +233,13 @@ export default function ChildTable() {
             >
               <Plus className="w-4 h-4" />
               Ajouter un enfant
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Exporter CSV
             </button>
           </div>
           <ChildrenListTable
