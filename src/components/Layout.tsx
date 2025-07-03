@@ -1,6 +1,8 @@
+
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Users, FileText, Check, ArrowDown, ArrowUp } from "lucide-react";
+
 const nav = [{
   name: "Tableau de bord",
   to: "/",
@@ -21,11 +23,8 @@ const nav = [{
   name: "Facturation",
   to: "/facturation",
   icon: FileText
-}, {
-  name: "Documents",
-  to: "/documents",
-  icon: FileText
 }];
+
 export default function Layout({
   children
 }: {
@@ -39,7 +38,7 @@ export default function Layout({
         <div className="flex items-center gap-3">
           
           <span className="text-xl font-bold tracking-tight">
-            L’île des Bambins
+            L'île des Bambins
           </span>
         </div>
         <nav className="flex gap-2">
