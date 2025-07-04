@@ -1,13 +1,14 @@
-
 import { useState } from "react";
 import ChildForm from "./ChildForm";
-import { Plus, Download } from "lucide-react";
+import { Plus, Download, Search } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import DocumentButtons from "./DocumentButtons";
 import ChildrenListTable from "./ChildrenListTable";
 import Papa from "papaparse";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ChildRow = {
   id: string;
@@ -29,6 +30,7 @@ export default function ChildTable() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [edit, setEdit] = useState<ChildRow | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Récupère les enfants en veillant à gérer les nouvelles colonnes
   const { data: children, isLoading, error } = useQuery({
@@ -62,6 +64,12 @@ export default function ChildTable() {
       })) as ChildRow[];
     },
   });
+
+  // Filter children based on search term
+  const filteredChildren = children?.filter((child) =>
+    child.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    child.prenom.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   const mutationUpsert = useMutation({
     mutationFn: async (child: any) => {
@@ -256,11 +264,29 @@ export default function ChildTable() {
               Exporter CSV
             </button>
           </div>
-          <ChildrenListTable
-            childrenRows={children}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+
+          {/* Search bar */}
+          <div className="mb-4 relative">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Rechercher par nom ou prénom..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Table with scroll area */}
+          <ScrollArea className="h-[600px] border rounded-lg">
+            <ChildrenListTable
+              childrenRows={filteredChildren}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </ScrollArea>
         </>
       )}
     </div>

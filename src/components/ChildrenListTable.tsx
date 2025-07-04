@@ -1,6 +1,14 @@
 
 import { Trash } from "lucide-react";
 import DocumentButtons from "./DocumentButtons";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type ChildRow = {
   id: string;
@@ -26,42 +34,42 @@ type Props = {
 
 export default function ChildrenListTable({ childrenRows, onEdit, onDelete }: Props) {
   return (
-    <div className="border rounded-lg overflow-x-auto">
-      <table className="min-w-full">
-        <thead>
-          <tr className="bg-muted">
-            <th className="px-3 py-2 text-left">Nom</th>
-            <th className="px-3 py-2 text-left">Prénom</th>
-            <th className="px-3 py-2 text-left">Sexe</th>
-            <th className="px-3 py-2 text-left">Date naissance</th>
-            <th className="px-3 py-2 text-left">Section</th>
-            <th className="px-3 py-2 text-left">Date inscription</th>
-            <th className="px-3 py-2 text-left">Statut</th>
-            <th className="px-3 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {childrenRows && childrenRows.length > 0 ? (
-            childrenRows.map((c) => (
-              <tr key={c.id} className="border-b hover:bg-muted/40">
-                <td className="px-3 py-2 font-medium">{c.nom}</td>
-                <td className="px-3 py-2">{c.prenom}</td>
-                <td className="px-3 py-2">{c.sexe ?? ""}</td>
-                <td className="px-3 py-2">{c.date_naissance}</td>
-                <td className="px-3 py-2">{c.section}</td>
-                <td className="px-3 py-2">{c.date_inscription ?? ""}</td>
-                <td className="px-3 py-2">
-                  <span
-                    className={
-                      c.statut === "Actif"
-                        ? "bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs"
-                        : "bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs"
-                    }
-                  >
-                    {c.statut}
-                  </span>
-                </td>
-                <td className="px-3 py-2 flex gap-2 flex-wrap">
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Nom</TableHead>
+          <TableHead>Prénom</TableHead>
+          <TableHead>Sexe</TableHead>
+          <TableHead>Date naissance</TableHead>
+          <TableHead>Section</TableHead>
+          <TableHead>Date inscription</TableHead>
+          <TableHead>Statut</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {childrenRows && childrenRows.length > 0 ? (
+          childrenRows.map((c) => (
+            <TableRow key={c.id}>
+              <TableCell className="font-medium">{c.nom}</TableCell>
+              <TableCell>{c.prenom}</TableCell>
+              <TableCell>{c.sexe ?? ""}</TableCell>
+              <TableCell>{c.date_naissance}</TableCell>
+              <TableCell>{c.section}</TableCell>
+              <TableCell>{c.date_inscription ?? ""}</TableCell>
+              <TableCell>
+                <span
+                  className={
+                    c.statut === "Actif"
+                      ? "bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs"
+                      : "bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs"
+                  }
+                >
+                  {c.statut}
+                </span>
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-2 flex-wrap">
                   <button
                     className="text-primary hover:underline text-xs"
                     onClick={() => onEdit(c)}
@@ -83,18 +91,18 @@ export default function ChildrenListTable({ childrenRows, onEdit, onDelete }: Pr
                       date_naissance: c.date_naissance
                     }}
                   />
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={8} className="p-5 text-center text-muted-foreground">
-                Aucun enfant enregistré.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={8} className="p-5 text-center text-muted-foreground">
+              {childrenRows.length === 0 ? "Aucun enfant trouvé pour cette recherche." : "Aucun enfant enregistré."}
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 }
