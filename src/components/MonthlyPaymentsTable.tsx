@@ -3,9 +3,10 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Check, Clock, X } from "lucide-react";
+import { Check, Clock, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import MonthlyPaymentRow from "./MonthlyPaymentRow";
 import QuickPaymentModal from "./QuickPaymentModal";
 import InvoiceModal from "./InvoiceModal";
@@ -52,6 +53,7 @@ export default function MonthlyPaymentsTable() {
   // Affiche par défaut le mois courant, ou septembre s'il n'est pas dans l'année scolaire
   const initialMonth = SCHOOL_MONTHS.includes(currentMonth) ? currentMonth : 9;
   const [month, setMonth] = useState(initialMonth);
+  const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
   // Récupère les enfants actifs
@@ -65,6 +67,12 @@ export default function MonthlyPaymentsTable() {
       return (data ?? []).filter((c) => c.statut === "Actif") as Child[];
     }
   });
+
+  // Filter children based on search term
+  const filteredChildren = children?.filter((child) =>
+    child.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    child.prenom.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   // Récupère les paiements du mois pour tous les enfants
   const { data: payments, isLoading: loadingPayments } = useQuery({
@@ -93,14 +101,14 @@ export default function MonthlyPaymentsTable() {
     setInvoiceChild(child);
     setInvoiceOpen(true);
     setInvoiceMonth(MONTHS[month - 1]);
-    // total à facturer = pay.amount_due + pay.registration_fee ou 10000 par défaut
+    // total à facturer = pay.amount_due + pay.registration_fee ou 10000 par défaut
     let total = 10000;
     if (pay) total = pay.amount_due + pay.registration_fee;
     setInvoiceTotal(total);
     setInvoiceIndex(index + 1); // +1 pour numéroter à partir de 1
   };
 
-  // Pour l’utilisateur
+  // Pour l'utilisateur
   const [modalOpen, setModalOpen] = useState(false);
   const [modalChild, setModalChild] = useState<Child | null>(null);
   const [modalPay, setModalPay] = useState<Payment | null>(null);
@@ -196,7 +204,7 @@ export default function MonthlyPaymentsTable() {
   const handleSavePayment = (amountDue: number, amountPaid: number, registrationFee?: number) => {
     if (!modalChild) return;
 
-    // Le champ frais d’inscription n’est éditable que si le mois sélectionné est le mois d’inscription de l’enfant
+    // Le champ frais d'inscription n'est éditable que si le mois sélectionné est le mois d'inscription de l'enfant
     const inscriptionFeeEditable = modalMonthInscription && month === modalMonthInscription;
 
     mutation.mutate({
@@ -236,62 +244,83 @@ export default function MonthlyPaymentsTable() {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Prénom</TableHead>
-              <TableHead>Section</TableHead>
-              <TableHead>À payer</TableHead>
-              <TableHead>Frais</TableHead>
-              <TableHead>Payé</TableHead>
-              <TableHead>Reste</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loadingChildren || loadingPayments ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center">Chargement...</TableCell>
-              </TableRow>
-            ) : !children || children.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center">Aucun enfant trouvé.</TableCell>
-              </TableRow>
-            ) : (
-              children.map((child, idx) => {
-                const pay = (payments ?? []).find(p => p.child_id === child.id);
-                // Trouver le mois d’inscription de l'enfant
-                const monthInscription = (() => {
-                  // Chercher l'enfant dans children list pour trouver date_inscription (string ou null)
-                  const c = child as any;
-                  if (c.date_inscription) {
-                    // c.date_inscription: "YYYY-MM-DD" => on récupère le mois
-                    return Number(c.date_inscription.split("-")[1]);
-                  }
-                  return null;
-                })();
 
-                return (
-                  <MonthlyPaymentRow
-                    key={pay ? pay.id : child.id}
-                    child={child}
-                    pay={pay}
-                    onEdit={() => handleOpenModal(child, pay)}
-                    onDelete={() => pay && handleDeletePayment(pay)}
-                    month={month}
-                    monthInscription={monthInscription}
-                    // Passer la prop onInvoice avec l'index pour facture
-                    onInvoice={() => handleInvoice(child, pay, idx)}
-                  />
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+      {/* Search bar */}
+      <div className="mb-4 relative">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            type="text"
+            placeholder="Rechercher par nom ou prénom..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
       </div>
+
+      {/* Table with scroll area */}
+      <ScrollArea className="h-[600px] border rounded-lg">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nom</TableHead>
+                <TableHead>Prénom</TableHead>
+                <TableHead>Section</TableHead>
+                <TableHead>À payer</TableHead>
+                <TableHead>Frais</TableHead>
+                <TableHead>Payé</TableHead>
+                <TableHead>Reste</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loadingChildren || loadingPayments ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center">Chargement...</TableCell>
+                </TableRow>
+              ) : !filteredChildren || filteredChildren.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center">
+                    {searchTerm ? "Aucun enfant trouvé pour cette recherche." : "Aucun enfant trouvé."}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredChildren.map((child, idx) => {
+                  const pay = (payments ?? []).find(p => p.child_id === child.id);
+                  // Trouver le mois d'inscription de l'enfant
+                  const monthInscription = (() => {
+                    // Chercher l'enfant dans children list pour trouver date_inscription (string ou null)
+                    const c = child as any;
+                    if (c.date_inscription) {
+                      // c.date_inscription: "YYYY-MM-DD" => on récupère le mois
+                      return Number(c.date_inscription.split("-")[1]);
+                    }
+                    return null;
+                  })();
+
+                  return (
+                    <MonthlyPaymentRow
+                      key={pay ? pay.id : child.id}
+                      child={child}
+                      pay={pay}
+                      onEdit={() => handleOpenModal(child, pay)}
+                      onDelete={() => pay && handleDeletePayment(pay)}
+                      month={month}
+                      monthInscription={monthInscription}
+                      // Passer la prop onInvoice avec l'index pour facture
+                      onInvoice={() => handleInvoice(child, pay, idx)}
+                    />
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </ScrollArea>
+
       {/* Modale paiement rapide */}
       <QuickPaymentModal
         open={modalOpen}
